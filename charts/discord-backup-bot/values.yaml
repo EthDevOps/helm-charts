@@ -1,23 +1,26 @@
 # Backup once per day at midnight
-backup_schedule: "0 0 * * *"
+backupSchedule: "0 0 * * *"
+
+imageTag: "latest"
+
 
 ### Sensitive values
-discord_token: "ReplaceWithDiscordToken"
+discordToken: "ReplaceWithDiscordToken"
 
 # An ED25519 private key in PEM fromat without the key block delimiter (single line)
-signing_private_key: "ReplaceWithED25519Key"
+signingPrivateKey: "ReplaceWithED25519Key"
 
 ### S3 configuration
 
 # 1 - enabled, 0 - disabled
-s3_enabled: 1
-s3_bucket: "backup-bucket"
-s3_access_key: "1234abc"
-s3_secret_key: "1234abc"
-s3_endpoint: "http://localhost:9000"
+s3Enabled: 1
+s3Bucket: "backup-bucket"
+s3AccessKey: "1234abc"
+s3SecretKey: "1234abc"
+s3Endpoint: "http://localhost:9000"
 
 ### PGP Keys
-pgp_keys:
+pgpKeys:
   pubkey1.asc: |
     -----BEGIN PGP PUBLIC KEY BLOCK-----
     <PGP PUB KEY>
