@@ -6,7 +6,7 @@ type: application
 version: 0.1.0
 
 # App metadata
-appVersion: "1.16.0"
+appVersion: "0.0.1"
 sources:
   - https://github.com/EthDevOps/EFDiscordBackupBot
 maintainers:
