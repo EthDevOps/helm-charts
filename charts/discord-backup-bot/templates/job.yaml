@@ -4,6 +4,7 @@ metadata:
   name: {{ .Release.Name }}-job
 spec:
   schedule: "{{ .Values.backupSchedule }}"
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
