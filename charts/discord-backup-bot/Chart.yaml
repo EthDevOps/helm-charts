@@ -1,0 +1,14 @@
+apiVersion: v2
+name: discord-backup-bot
+description: A Helm chart for the discord backup bot
+type: application
+
+version: 0.1.0
+
+# App metadata
+appVersion: "1.16.0"
+sources:
+  - https://github.com/EthDevOps/EFDiscordBackupBot
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org
