@@ -21,6 +21,8 @@ spec:
               envFrom:
                 - configMapRef:
                     name: {{ .Release.Name }}-bot-config
+                - secretRef:
+                    name: {{ .Release.Name }}-sensitive-config
           restartPolicy: OnFailure
           volumes:
             - name: {{ .Release.Name }}-sign-secret-vol

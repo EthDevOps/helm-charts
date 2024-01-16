@@ -21,11 +21,7 @@ s3Endpoint: "http://localhost:9000"
 
 ### PGP Keys
 pgpKeys:
-  pubkey1.asc: |
-    -----BEGIN PGP PUBLIC KEY BLOCK-----
-    <PGP PUB KEY>
-    -----END PGP PUBLIC KEY BLOCK-----
-  pubkey2.asc: |
+  default.asc: |
     -----BEGIN PGP PUBLIC KEY BLOCK-----
     <PGP PUB KEY>
     -----END PGP PUBLIC KEY BLOCK-----
