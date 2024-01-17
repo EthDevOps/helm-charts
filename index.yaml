@@ -2,6 +2,21 @@ apiVersion: v1
 entries:
   discord-backup-bot:
   - apiVersion: v2
+    appVersion: v0.9.4
+    created: "2024-01-17T07:03:20.92611386Z"
+    description: A Helm chart for the discord backup bot
+    digest: ad19132df5b427aee76ef68c249d37305f58f3ce4bb23a559735dd98719eb45a
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: discord-backup-bot
+    sources:
+    - https://github.com/EthDevOps/EFDiscordBackupBot
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/discord-backup-bot-0.2.9/discord-backup-bot-0.2.9.tgz
+    version: 0.2.9
+  - apiVersion: v2
     appVersion: 0.0.1
     created: "2024-01-16T17:39:53.855880279Z"
     description: A Helm chart for the discord backup bot
@@ -106,4 +121,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/discord-backup-bot-0.1.1/discord-backup-bot-0.1.1.tgz
     version: 0.1.1
-generated: "2024-01-16T17:39:53.855919813Z"
+generated: "2024-01-17T07:03:20.926184271Z"
