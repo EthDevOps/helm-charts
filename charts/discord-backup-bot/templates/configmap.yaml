@@ -9,3 +9,4 @@ data:
   S3_BUCKET: "{{ .Values.s3Bucket }}"
   S3_ENDPOINT: "{{ .Values.s3Endpoint}}"
   SIGN_KEY_PEM: "/var/sign-secret/private_key.pem"
+  HEARTBEAT_URL: "{{ .Values.heartbeatUrl }}"

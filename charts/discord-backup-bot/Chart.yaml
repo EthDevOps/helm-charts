@@ -3,10 +3,10 @@ name: discord-backup-bot
 description: A Helm chart for the discord backup bot
 type: application
 
-version: 0.2.5
+version: 0.2.9
 
 # App metadata
-appVersion: "0.0.1"
+appVersion: "v0.9.4"
 sources:
   - https://github.com/EthDevOps/EFDiscordBackupBot
 maintainers:

@@ -2,7 +2,7 @@
 backupSchedule: "0 0 * * *"
 
 imageTag: "latest"
-
+heartbeatUrl: "http://localhost"
 
 ### Sensitive values
 discordToken: "ReplaceWithDiscordToken"
