@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-sync-config
+data:
+  SOURCE_BUCKET: "{{ .Values.source.bucket }}"
+  SOURCE_ENDPOINT: "{{ .Values.source.endpoint }}"
+  DESTINATION_BUCKET: "{{ .Values.destination.bucket }}"
+  DESTINATION_ENDPOINT: "{{ .Values.destination.endpoint }}"
+  MINIO_EXTRA_ARGS: "{{ .Values.minioExtraArgs }}"

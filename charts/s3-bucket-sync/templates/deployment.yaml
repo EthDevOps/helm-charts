@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-s3-sync
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-s3-sync
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-s3-sync
+      annotations:
+        prometheus.io/scrape: "true"                 # Enable Prometheus scraping
+        prometheus.io/path: "/metrics"               # The path where metrics are exposed
+        prometheus.io/port: "8081"                   # The port on which metrics are exposed
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-minio-mirror
+        image: docker pull ghcr.io/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-sync-config
+          - secretRef:
+              name: {{ .Release.Name }}-credentials
+
