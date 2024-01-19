@@ -9,6 +9,7 @@ spec:
     spec:
       template:
         spec:
+          restartPolicy: OnFailure
           containers:
           - name: {{ .Release.Name }}-minio-mirror
             image: ghcr.io/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
