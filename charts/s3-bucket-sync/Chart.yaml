@@ -3,7 +3,7 @@ name: s3-bucket-sync
 description: Keeps 2 s3 buckets in sync
 type: application
 
-version: 0.0.3
+version: 0.0.4
 
 # App metadata
 appVersion: "v0.9.0"

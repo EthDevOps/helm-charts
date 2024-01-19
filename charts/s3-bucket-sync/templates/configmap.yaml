@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-sync-config
 data:
-  SOURCE_BUCKET: "{{ .Values.source.bucket }}"
-  SOURCE_ENDPOINT: "{{ .Values.source.endpoint }}"
-  DESTINATION_BUCKET: "{{ .Values.destination.bucket }}"
-  DESTINATION_ENDPOINT: "{{ .Values.destination.endpoint }}"
+  SOURCE_BUCKET: "{{ .Values.sourceBucket }}"
+  SOURCE_ENDPOINT: "{{ .Values.sourceEndpoint }}"
+  DESTINATION_BUCKET: "{{ .Values.destinationBucket }}"
+  DESTINATION_ENDPOINT: "{{ .Values.destinationEndpoint }}"
   MINIO_EXTRA_ARGS: "{{ .Values.minioExtraArgs }}"
