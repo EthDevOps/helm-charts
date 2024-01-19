@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-job
+spec:
+  schedule: "{{ .Values.backupSchedule }}"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Release.Name }}-minio-mirror
+            image: ghcr.io/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
+            envFrom:
+              - configMapRef:
+                  name: {{ .Release.Name }}-sync-config
+              - secretRef:
+                  name: {{ .Release.Name }}-sync-credentials
+
