@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}-minio-mirror
-        image: docker pull ghcr.io/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
+        image: ghcr.io/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-sync-config
