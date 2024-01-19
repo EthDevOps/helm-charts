@@ -23,5 +23,5 @@ spec:
           - configMapRef:
               name: {{ .Release.Name }}-sync-config
           - secretRef:
-              name: {{ .Release.Name }}-credentials
+              name: {{ .Release.Name }}-sync-credentials
 
