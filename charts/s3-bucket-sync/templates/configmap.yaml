@@ -8,3 +8,4 @@ data:
   DESTINATION_BUCKET: "{{ .Values.destinationBucket }}"
   DESTINATION_ENDPOINT: "{{ .Values.destinationEndpoint }}"
   MINIO_EXTRA_ARGS: "{{ .Values.minioExtraArgs }}"
+  HEALTHCHECK_URL: "{{ .Values.healthcheckUrl }}"
