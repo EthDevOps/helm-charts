@@ -4,6 +4,7 @@ metadata:
   name: {{ .Release.Name }}-job
 spec:
   schedule: "{{ .Values.backupSchedule }}"
+  timeZone: 'Etc/UTC'
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
