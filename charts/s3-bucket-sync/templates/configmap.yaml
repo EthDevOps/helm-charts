@@ -10,3 +10,4 @@ data:
   MINIO_EXTRA_OPTS: "{{ .Values.minioExtraArgs }}"
   HEALTHCHECK_URL: "{{ .Values.healthcheckUrl }}"
   MINIO_DEBUG: "{{ .Values.enableDebug }}"
+  MINIO_OVERWRITE: "{{ .Values.enableOverwrite }}"
