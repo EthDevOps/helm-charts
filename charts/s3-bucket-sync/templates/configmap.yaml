@@ -7,6 +7,6 @@ data:
   SOURCE_ENDPOINT: "{{ .Values.sourceEndpoint }}"
   DESTINATION_BUCKET: "{{ .Values.destinationBucket }}"
   DESTINATION_ENDPOINT: "{{ .Values.destinationEndpoint }}"
-  MINIO_EXTRA_ARGS: "{{ .Values.minioExtraArgs }}"
+  MINIO_EXTRA_OPTS: "{{ .Values.minioExtraArgs }}"
   HEALTHCHECK_URL: "{{ .Values.healthcheckUrl }}"
   MINIO_DEBUG: "{{ .Values.enableDebug }}"
