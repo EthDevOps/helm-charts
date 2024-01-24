@@ -3,10 +3,10 @@ name: s3-bucket-sync
 description: Keeps 2 s3 buckets in sync
 type: application
 
-version: 0.0.8
+version: 0.0.9
 
 # App metadata
-appVersion: "v0.9.0"
+appVersion: "v0.9.2"
 sources:
   - https://github.com/EthDevOps/s3-sync-docker
 maintainers:
