@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deploy
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Release.Name }}-sa
+      volumes:
+      - name: script
+        configMap:
+          name: {{ .Release.Name }}-config
+          defaultMode: 0777
+      containers:
+      - command:
+        - /bin/sh
+        - /script/run.sh
+        image: ubuntu
+        env:
+        - name: RANCHER_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-api-token
+              key: RANCHER_API_TOKEN
+        name: script
+        volumeMounts:
+          - mountPath: /script
+            name: script

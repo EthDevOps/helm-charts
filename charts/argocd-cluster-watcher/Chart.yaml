@@ -1,0 +1,11 @@
+apiVersion: v2
+name: argocd-cluster-watcher
+description: Adds clusters from Rancher to ArgoCD via CRD objects
+type: application
+
+version: 0.0.1
+
+# App metadata
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org

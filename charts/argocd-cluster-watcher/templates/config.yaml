@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: ${kubernetes_namespace.argocd.id}
+data:
+  run.sh: |
+    #!/bin/bash
+
+    # Exit when any command fails
+    set -e
+
+    RANCHER_HOST={{ .Values.rancherHost }}
+
+    apt-get update;
+    apt-get install -y jq;
+    apt-get install -y curl;
+    curl -LO https://dl.k8s.io/release/v1.25.0/bin/linux/amd64/kubectl;
+    chmod +x ./kubectl;
+    curl -LO https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd64;
+    chmod +x ./yq_linux_amd64;
+    mv ./yq_linux_amd64 yq;
+
+    if [ -z "$RANCHER_API_TOKEN" ]; then
+      echo "RANCHER_API_TOKEN is not set"
+      exit 1
+    fi
+
+    while true; do
+      mkdir -p clusters;
+      # rm clusters/*secret.yaml || true;
+      
+      # Get our list of clusters
+      CLUSTERS=$(curl -s -k -u $RANCHER_API_TOKEN $RANCHER_HOST/v3/clusters | jq -r '.data')
+
+      CLUSTERNAMES=$(echo $CLUSTERS | jq -r '.[].name')
+      echo "Found clusters: $CLUSTERNAMES"
+
+      # Loop through each cluster
+      for CLUSTERNAME in $CLUSTERNAMES; do
+        echo "Processing cluster: $CLUSTERNAME"
+        FULLCLUSTERNAME=$CLUSTERNAME
+        CLUSTERID=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .id')
+        CLUSTERCA=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .caCert')
+        CLUSTERLABELS=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | with_entries( select(.key|contains("ethpandaops.io/")))')
+        CLUSTERREALM=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | ."ethpandaops.io/realm"')
+        CLUSTERENVIRONMENT=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | ."ethpandaops.io/environment"')
+        
+        SHORTCLUSTERNAME=$(echo $CLUSTERS | jq -r --arg CLUSTERNAME "$CLUSTERNAME" '.[] | select(.name == $CLUSTERNAME) | .labels | ."ethpandaops.io/cluster_name"')
+
+        if [ $CLUSTERREALM != "platform" ]; then
+          echo "Skipping non-platform cluster" $FULLCLUSTERNAME
+
+          continue
+        fi
+
+        if [ $CLUSTERENVIRONMENT != "${local.workspace.environment_purpose}" ]; then
+          echo "Skipping non-${local.workspace.environment_purpose} cluster" $FULLCLUSTERNAME
+
+          continue
+        fi
+
+        echo "Creating secret for $FULLCLUSTERNAME"
+        # Create the secret
+        cat > clusters/$FULLCLUSTERNAME-secret.yaml <<EOF
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: argocd-$SHORTCLUSTERNAME-cluster
+      namespace: argocd
+      labels:
+        argocd.argoproj.io/secret-type: cluster
+        ethpandaops.io/full-cluster-name: $FULLCLUSTERNAME
+        ethpandaops.io/cluster-id: $CLUSTERID
+        ethpandaops.io/environment: $CLUSTERENVIRONMENT
+        cluster: $SHORTCLUSTERNAME
+        name: $SHORTCLUSTERNAME
+        environment: $CLUSTERENVIRONMENT
+    $(echo $CLUSTERLABELS | ./yq -P | sed 's/^/    /' | sed -e 's/{}//')
+    type: Opaque
+    stringData:
+      name: "$SHORTCLUSTERNAME"
+      server: "$RANCHER_HOST/k8s/clusters/$CLUSTERID"
+      config: |
+        {
+          "bearerToken": "$RANCHER_API_TOKEN",
+          "tlsClientConfig": {
+            "insecure": false
+          }
+        }
+    EOF
+      done;
+      ./kubectl apply -f clusters;
+
+      sleep 60;
+    done
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-api-token
+type: Opaque
+stringData:
+  RANCHER_API_TOKEN: {{ .Values.rancherApiToken }} 
