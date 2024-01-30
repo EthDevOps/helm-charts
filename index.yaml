@@ -2,6 +2,18 @@ apiVersion: v1
 entries:
   argocd-cluster-watcher:
   - apiVersion: v2
+    created: "2024-01-30T13:52:28.59481228Z"
+    description: Adds clusters from Rancher to ArgoCD via CRD objects
+    digest: b5e4cef2a22fb75d8410a11609fcf88d08a57afab4ee541cd416f2a92bd00029
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: argocd-cluster-watcher
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/argocd-cluster-watcher-0.0.4/argocd-cluster-watcher-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
     created: "2024-01-30T13:32:12.357641539Z"
     description: Adds clusters from Rancher to ArgoCD via CRD objects
     digest: fc064e28068ef9fe2649e300ced8e42cd0d16e383c190839128bcd44d4e9010b
@@ -340,4 +352,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-01-30T13:32:12.357719754Z"
+generated: "2024-01-30T13:52:28.594859879Z"
