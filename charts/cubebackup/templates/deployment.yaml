@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: cubebackup
+          image: cubebackup/cubebackup
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: vol-config
+              mountPath: /opt/{{ .Release.Name }}/etc
+            - name: vol-db
+              mountPath: /opt/{{ .Release.Name }}/db
+            - name: vol-logs
+              mountPath: /opt/{{ .Release.Name }}/logs
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+        - name: vol-config
+          persistentVolumeClain: 
+            claimName: {{ .Release.Name }}-config-pvc
+        - name: vol-index
+          persistentVolumeClain: 
+            claimName: {{ .Release.Name }}-index-pvc
+        - name: vol-logs
+          persistentVolumeClain: 
+            claimName: {{ .Release.Name }}-logs-pvc
+        - name: vol-db
+          persistentVolumeClain: 
+            claimName: {{ .Release.Name }}-db-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-index-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-logs-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-service
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Release.Name }}
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+
