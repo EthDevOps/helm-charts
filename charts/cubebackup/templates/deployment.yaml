@@ -15,7 +15,7 @@ spec:
       initContainers:
         - name: init-config
           image: cubebackup/cubebackup
-          command: ["/bin/sh", "-c", "cp -Rnv /etc/cubebackup/* /tmp/"]
+          command: ["/bin/sh", "-c", "cp -Rnv /opt/cubebackup/etc/* /tmp/"]
           volumeMounts:
           - name: vol-config
             mountPath: /tmp
@@ -26,11 +26,11 @@ spec:
             - containerPort: 80
           volumeMounts:
             - name: vol-config
-              mountPath: /opt/{{ .Release.Name }}/etc
+              mountPath: /opt/cubebackup/etc
             - name: vol-db
-              mountPath: /opt/{{ .Release.Name }}/db
+              mountPath: /opt/cubebackup/db
             - name: vol-logs
-              mountPath: /opt/{{ .Release.Name }}/logs
+              mountPath: /opt/cubebackup/logs
       nodeSelector:
         kubernetes.io/os: linux
       volumes:
