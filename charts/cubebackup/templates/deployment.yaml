@@ -12,6 +12,13 @@ spec:
       labels:
         app: {{ .Release.Name }}
     spec:
+      initContainers:
+        - name: init-config
+          image: cubebackup/cubebackup
+          command: ["/bin/sh", "-c", "cp -Rnv /etc/cubebackup/* /tmp/"]
+          volumeMounts:
+          - name: vol-config
+            mountPath: /tmp
       containers:
         - name: cubebackup
           image: cubebackup/cubebackup
