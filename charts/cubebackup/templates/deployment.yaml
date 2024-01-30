@@ -28,16 +28,16 @@ spec:
         kubernetes.io/os: linux
       volumes:
         - name: vol-config
-          persistentVolumeClain: 
+          persistentVolumeClaim: 
             claimName: {{ .Release.Name }}-config-pvc
         - name: vol-index
-          persistentVolumeClain: 
+          persistentVolumeClaim: 
             claimName: {{ .Release.Name }}-index-pvc
         - name: vol-logs
-          persistentVolumeClain: 
+          persistentVolumeClaim: 
             claimName: {{ .Release.Name }}-logs-pvc
         - name: vol-db
-          persistentVolumeClain: 
+          persistentVolumeClaim: 
             claimName: {{ .Release.Name }}-db-pvc
 ---
 apiVersion: v1
