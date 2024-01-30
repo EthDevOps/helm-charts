@@ -41,11 +41,11 @@ data:
         FULLCLUSTERNAME=$CLUSTERNAME
         CLUSTERID=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .id')
         CLUSTERCA=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .caCert')
-        CLUSTERLABELS=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | with_entries( select(.key|contains("ethpandaops.io/")))')
-        CLUSTERREALM=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | ."ethpandaops.io/realm"')
-        CLUSTERENVIRONMENT=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | ."ethpandaops.io/environment"')
+        CLUSTERLABELS=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | with_entries( select(.key|contains("{{ .Values.labelDomain }}/")))')
+        CLUSTERREALM=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | ."{{ .Values.labelDomain }}/realm"')
+        CLUSTERENVIRONMENT=$(echo $CLUSTERS | jq -r --arg FULLCLUSTERNAME "$FULLCLUSTERNAME" '.[] | select(.name == $FULLCLUSTERNAME) | .labels | ."{{ .Values.labelDomain }}/environment"')
         
-        SHORTCLUSTERNAME=$(echo $CLUSTERS | jq -r --arg CLUSTERNAME "$CLUSTERNAME" '.[] | select(.name == $CLUSTERNAME) | .labels | ."ethpandaops.io/cluster_name"')
+        SHORTCLUSTERNAME=$(echo $CLUSTERS | jq -r --arg CLUSTERNAME "$CLUSTERNAME" '.[] | select(.name == $CLUSTERNAME) | .labels | ."{{ .Values.labelDomain }}/cluster_name"')
 
         if [ $CLUSTERREALM != "platform" ]; then
           echo "Skipping non-platform cluster" $FULLCLUSTERNAME
@@ -69,9 +69,9 @@ data:
       namespace: argocd
       labels:
         argocd.argoproj.io/secret-type: cluster
-        ethpandaops.io/full-cluster-name: $FULLCLUSTERNAME
-        ethpandaops.io/cluster-id: $CLUSTERID
-        ethpandaops.io/environment: $CLUSTERENVIRONMENT
+        {{ .Values.labelDomain }}/full-cluster-name: $FULLCLUSTERNAME
+        {{ .Values.labelDomain }}/cluster-id: $CLUSTERID
+        {{ .Values.labelDomain }}/environment: $CLUSTERENVIRONMENT
         cluster: $SHORTCLUSTERNAME
         name: $SHORTCLUSTERNAME
         environment: $CLUSTERENVIRONMENT

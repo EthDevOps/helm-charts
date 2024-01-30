@@ -1,1 +1,4 @@
-rancherHost: ""
+rancherHost: "https://rancher.example.com"
+rancherApiToken: "token-name:token"
+labelDomain: "myTeam.io"
+

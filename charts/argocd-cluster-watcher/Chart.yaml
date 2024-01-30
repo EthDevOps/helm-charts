@@ -3,7 +3,7 @@ name: argocd-cluster-watcher
 description: Adds clusters from Rancher to ArgoCD via CRD objects
 type: application
 
-version: 0.0.2
+version: 0.0.3
 
 # App metadata
 maintainers:
