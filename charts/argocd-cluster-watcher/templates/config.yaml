@@ -47,14 +47,8 @@ data:
         
         SHORTCLUSTERNAME=$(echo $CLUSTERS | jq -r --arg CLUSTERNAME "$CLUSTERNAME" '.[] | select(.name == $CLUSTERNAME) | .labels | ."{{ .Values.labelDomain }}/cluster_name"')
 
-        if [ $CLUSTERREALM != "platform" ]; then
-          echo "Skipping non-platform cluster" $FULLCLUSTERNAME
-
-          continue
-        fi
-
-        if [ $CLUSTERENVIRONMENT != "${local.workspace.environment_purpose}" ]; then
-          echo "Skipping non-${local.workspace.environment_purpose} cluster" $FULLCLUSTERNAME
+        if [ $CLUSTERENVIRONMENT != "{{ .Values.targetEnvironment }}" ]; then
+          echo "Skipping non-{{ .Values.targetEnvironment }} cluster" $FULLCLUSTERNAME
 
           continue
         fi
