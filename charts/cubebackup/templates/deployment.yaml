@@ -31,6 +31,8 @@ spec:
               mountPath: /opt/cubebackup/db
             - name: vol-logs
               mountPath: /opt/cubebackup/logs
+            - name: vol-index
+              mountPath: /opt/cubebackup/index
       nodeSelector:
         kubernetes.io/os: linux
       volumes:
