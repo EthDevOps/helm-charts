@@ -4,7 +4,7 @@ db:
   password: mypassword
 imageTag: v3.0
 baseDomain: localhost
-httpSecret: 9d5df4c7e13abff82c766559f7c663734689743b613cca951b547c584b0baf78 
+secretKey: 1234567890abc 
 registrationEnabled: "True" 
 discord:
   clientId: 123
@@ -14,3 +14,4 @@ email:
   password: 1234
   user: mail
 siteName: EthChecks
+debugEnabled: "False"

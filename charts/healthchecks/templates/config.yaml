@@ -13,7 +13,7 @@ data:
   DB_SSLMODE: prefer
   DB_TARGET_SESSION_ATTRS: read-write
   DB_USER: {{ .Values.db.user }}
-  DEBUG: "False"
+  DEBUG: "{{ .Values.debugEnabled }}"
   DEFAULT_FROM_EMAIL: healthchecks@{{ .Values.baseDomain }}
   DISCORD_CLIENT_ID: "{{ .Values.discord.clientId }}"
   EMAIL_HOST: "{{ .Values.email.host }}"
