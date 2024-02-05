@@ -31,6 +31,7 @@ spec:
         volumeMounts:
           - name: db-data
             mountPath: /var/lib/postgresql/data
+            subPath: pg
         ports:
           - containerPort: 5432
         readinessProbe:
