@@ -50,5 +50,5 @@ spec:
           - "bash"
           - "-c"
           - |
-            while !</dev/tcp/{{ .Release.Name }}-db/5432; do sleep 1; done;
+            while !</dev/tcp/{{ .Release.Name }}-hc-db/5432; do sleep 1; done;
             uwsgi /opt/healthchecks/docker/uwsgi.ini
