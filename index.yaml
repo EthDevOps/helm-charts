@@ -246,6 +246,22 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/discord-backup-bot-0.1.1/discord-backup-bot-0.1.1.tgz
     version: 0.1.1
+  healthchecks:
+  - apiVersion: v2
+    appVersion: v3.0
+    created: "2024-02-05T07:47:13.625685334Z"
+    description: A Helm chart for hosting healthchecks.io
+    digest: 6dc9ccabb370bfd7c9a5165c3af6018aa576811f1f2b9e7ea07526d0a5ad2157
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: healthchecks
+    sources:
+    - https://healthchecks.io
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/healthchecks-0.0.1/healthchecks-0.0.1.tgz
+    version: 0.0.1
   s3-bucket-sync:
   - apiVersion: v2
     appVersion: v0.9.2
@@ -412,4 +428,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-01-30T17:37:35.031838931Z"
+generated: "2024-02-05T07:47:13.625761075Z"
