@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-web
+  name: {{ .Release.Name }}-hc-web
 spec:
   selector:
-    app: {{ .Release.Name }}-web
+    app: {{ .Release.Name }}-hc-web
   ports:
     - name: http
       port: 8000

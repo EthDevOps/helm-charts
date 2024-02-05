@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-db
+  name: {{ .Release.Name }}-hc-db
   labels:
-    app: {{ .Release.Name }}-db
+    app: {{ .Release.Name }}-hc-db
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-db
+      app: {{ .Release.Name }}-hc-db
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-db
+        app: {{ .Release.Name }}-hc-db
     spec:
       volumes:
         - name: db-data
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-db-data
+            claimName: {{ .Release.Name }}-hc-db-data
       containers:
       - name: db
         image: postgres:12
@@ -24,7 +24,10 @@ spec:
           - name: POSTGRES_DB
             value: {{ .Values.db.name }}
           - name: POSTGRES_PASSWORD
-            value: {{ .Values.db.password }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-hc-secrets
+                key: DB_PASSWORD
         volumeMounts:
           - name: db-data
             mountPath: /var/lib/postgresql/data
@@ -40,7 +43,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-db-data
+  name: {{ .Release.Name }}-hc-db-data
 spec:
   accessModes: 
     - ReadWriteOnce

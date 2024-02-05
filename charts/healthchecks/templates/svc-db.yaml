@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-db
+  name: {{ .Release.Name }}-hc-db
 spec:
   selector:
-    app: {{ .Release.Name }}-db
+    app: {{ .Release.Name }}-hc-db
   ports:
     - name: db
       port: 5432

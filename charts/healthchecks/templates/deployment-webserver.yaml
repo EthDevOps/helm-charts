@@ -1,44 +1,44 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-web
+  name: {{ .Release.Name }}-hc-web
   labels:
-    app: {{ .Release.Name }}-web
+    app: {{ .Release.Name }}-hc-web
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-web
+      app: {{ .Release.Name }}-hc-web
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-web
+        app: {{ .Release.Name }}-hc-web
     spec:
       containers:
       - name: web
         image: healthchecks/healthchecks:{{ .Values.imageTag }}
         envFrom:
           - configMapRef:
-              name: {{ .Release.Name }}-config
+              name: {{ .Release.Name }}-hc-config
         env:
           - name: DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-secrets
+                name: {{ .Release.Name }}-hc-secrets
                 key: DB_PASSWORD
           - name: DISCORD_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-secrets
+                name: {{ .Release.Name }}-hc-secrets
                 key: DISCORD_CLIENT_SECRET 
           - name: EMAIL_HOST_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-secrets
+                name: {{ .Release.Name }}-hc-secrets
                 key: EMAIL_HOST_PASSWORD
           - name: SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-secrets
+                name: {{ .Release.Name }}-hc-secrets
                 key: SECRET_KEY
 
         ports:
