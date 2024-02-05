@@ -249,6 +249,21 @@ entries:
   healthchecks:
   - apiVersion: v2
     appVersion: v3.0
+    created: "2024-02-05T17:34:09.297457732Z"
+    description: A Helm chart for hosting healthchecks.io
+    digest: 6ba40507a185912c449f920017db09b14f14342cc8d838343ccaa4c7b3e742de
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: healthchecks
+    sources:
+    - https://healthchecks.io
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/healthchecks-0.0.11/healthchecks-0.0.11.tgz
+    version: 0.0.11
+  - apiVersion: v2
+    appVersion: v3.0
     created: "2024-02-05T17:19:30.248989228Z"
     description: A Helm chart for hosting healthchecks.io
     digest: 5a6a0f4c44771566a95bd97d2ea8879ece606617b21558f5c5a142c5b843cb21
@@ -548,4 +563,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-02-05T17:19:30.249083304Z"
+generated: "2024-02-05T17:34:09.297553561Z"
