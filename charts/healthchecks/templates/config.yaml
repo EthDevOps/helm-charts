@@ -1,20 +1,20 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-config
+  name: {{ .Release.Name }}-hc-config
 data:
   ALLOWED_HOSTS: {{ .Values.baseDomain }}
   APPRISE_ENABLED: "False"
   DB: postgres
   DB_CONN_MAX_AGE: "0"
-  DB_HOST: {{ .Release.Name }}-db
+  DB_HOST: {{ .Release.Name }}-hc-db
   DB_NAME: {{ .Values.db.name }}
   DB_PORT: "5432"
   DB_SSLMODE: prefer
   DB_TARGET_SESSION_ATTRS: read-write
   DB_USER: {{ .Values.db.user }}
   DEBUG: "False"
-  DEFAULT_FROM_EMAIL: healthchecks@example.org
+  DEFAULT_FROM_EMAIL: healthchecks@{{ .Values.baseDomain }}
   DISCORD_CLIENT_ID: "{{ .Values.discord.clientId }}"
   EMAIL_HOST: "{{ .Values.email.host }}"
   EMAIL_HOST_USER: "{{ .Values.email.user }}"
@@ -44,7 +44,7 @@ data:
   PUSHOVER_EMERGENCY_EXPIRATION: "86400"
   PUSHOVER_EMERGENCY_RETRY_DELAY: "300"
   PUSHOVER_SUBSCRIPTION_URL: ""
-  REGISTRATION_OPEN: {{ .Values.registrationEnabled }}
+  REGISTRATION_OPEN: "{{ .Values.registrationEnabled }}"
   REMOTE_USER_HEADER: ""
   ROCKETCHAT_ENABLED: "True"
   RP_ID: ""
