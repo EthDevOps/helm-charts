@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web
+  labels:
+    app: {{ .Release.Name }}-web
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-web
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-web
+    spec:
+      containers:
+      - name: web
+        image: healthchecks/healthchecks:{{ .Values.imageTag }}
+        envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}-config
+        env:
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: DB_PASSWORD
+          - name: DISCORD_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: DISCORD_CLIENT_SECRET 
+          - name: EMAIL_HOST_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: EMAIL_HOST_PASSWORD
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: SECRET_KEY
+
+        ports:
+          - containerPort: 8000
+        # Uncomment the following lines to enable SMTP on port 2525
+        #- name: smtp
+        #  containerPort: 2525
+        command:
+          - "bash"
+          - "-c"
+          - |
+            while !</dev/tcp/{{ .Release.Name }}-db/5432; do sleep 1; done;
+            uwsgi /opt/healthchecks/docker/uwsgi.ini
