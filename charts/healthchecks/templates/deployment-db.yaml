@@ -32,7 +32,7 @@ spec:
           - name: db-data
             mountPath: /var/lib/postgresql/data
         ports:
-          - db: 5432
+          - containerPort: 5432
         readinessProbe:
           tcpSocket:
             port: 5432
