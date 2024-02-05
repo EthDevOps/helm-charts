@@ -14,7 +14,7 @@ data:
   DB_TARGET_SESSION_ATTRS: read-write
   DB_USER: {{ .Values.db.user }}
   DEBUG: "{{ .Values.debugEnabled }}"
-  DEFAULT_FROM_EMAIL: healthchecks@{{ .Values.baseDomain }}
+  DEFAULT_FROM_EMAIL: "{{ .Values.email.sender }}"
   DISCORD_CLIENT_ID: "{{ .Values.discord.clientId }}"
   EMAIL_HOST: "{{ .Values.email.host }}"
   EMAIL_HOST_USER: "{{ .Values.email.user }}"
@@ -59,7 +59,7 @@ data:
   SIGNAL_CLI_SOCKET: ""
   SITE_LOGO_URL: ""
   SITE_NAME: "{{ .Values.siteName }}"
-  SITE_ROOT: http://{{ .Values.baseDomain }}
+  SITE_ROOT: https://{{ .Values.baseDomain }}
   SLACK_CLIENT_ID: ""
   SLACK_CLIENT_SECRET: ""
   SLACK_ENABLED: "True"

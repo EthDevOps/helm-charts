@@ -3,7 +3,7 @@ name: healthchecks
 description: A Helm chart for hosting healthchecks.io
 type: application
 
-version: 0.0.8
+version: 0.0.9
 
 # App metadata
 appVersion: "v3.0"

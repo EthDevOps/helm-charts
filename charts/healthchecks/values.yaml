@@ -13,5 +13,6 @@ email:
   host: example.com
   password: 1234
   user: mail
+  sender: bob@example.com
 siteName: EthChecks
 debugEnabled: "False"
