@@ -36,7 +36,7 @@ data:
   PD_ENABLED: "True"
   PING_BODY_LIMIT: "10000"
   PING_EMAIL_DOMAIN: localhost
-  PING_ENDPOINT: http://localhost:8000/ping/
+  PING_ENDPOINT: https://{{ .Values.baseDomain }}/ping/
   PROMETHEUS_ENABLED: "True"
   PUSHBULLET_CLIENT_ID: ""
   PUSHBULLET_CLIENT_SECRET: ""
