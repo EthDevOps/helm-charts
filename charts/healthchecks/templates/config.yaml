@@ -57,7 +57,7 @@ data:
   S3_SECURE: "True"
   SHELL_ENABLED: "False"
   SIGNAL_CLI_SOCKET: ""
-  SITE_LOGO_URL: ""
+  SITE_LOGO_URL: "{{ .Values.siteLogo }}"
   SITE_NAME: "{{ .Values.siteName }}"
   SITE_ROOT: https://{{ .Values.baseDomain }}
   SLACK_CLIENT_ID: ""
