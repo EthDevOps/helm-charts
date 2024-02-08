@@ -30,7 +30,7 @@ spec:
             - name: vol-db
               mountPath: /opt/cubebackup/db
             - name: vol-logs
-              mountPath: /opt/cubebackup/logs
+              mountPath: /opt/cubebackup/log
             - name: vol-index
               mountPath: /opt/cubebackup/index
       nodeSelector:
