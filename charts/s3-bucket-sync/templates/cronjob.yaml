@@ -24,7 +24,7 @@ spec:
             volumeMounts:
             - name: custom-config-vol
               mountPath: "/config.tmpl"
-              subPAth: "template"
+              subPath: "template"
             {{- end }}
             envFrom:
               - configMapRef:
