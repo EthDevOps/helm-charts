@@ -23,8 +23,8 @@ spec:
             {{- if .Values.useCustomConfig }}
             volumeMounts:
             - name: custom-config-vol
-              mountPath: "/config.tmpl"
-              subPath: "template"
+              mountPath: "/opt/config.tmpl"
+              subPath: "config.tmpl"
             {{- end }}
             envFrom:
               - configMapRef:
