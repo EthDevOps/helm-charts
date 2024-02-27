@@ -13,7 +13,9 @@ destinationSecretKey: "my-secret-key"
 healthcheckUrl: "http://localhost"
 backupSchedule: "30 * * * *"
 minioExtraArgs: ""
-imageTag: "v0.11.0"
+imageTag: "v0.11.2"
 enableDebug: "0"
 enableOverwrite: "0"
 bandwidthLimit: "100M"
+useCustomConfig: true
+customConfig: test.config

@@ -12,4 +12,16 @@ data:
   MINIO_DEBUG: "{{ .Values.enableDebug }}"
   MINIO_OVERWRITE: "{{ .Values.enableOverwrite }}"
   BANDWIDTH_LIMIT: "{{ .Values.bandwidthLimit }}"
-
+  {{- if .Values.useCustomConfig }}
+  RCLONE_TMPL: "/config.tmpl"
+  {{- end }}
+---
+{{- if .Values.useCustomConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-custom-rclone-template
+data:
+  template: |
+{{ (.Files.Get .Values.customConfig) | indent 4 }}
+{{- end }}
