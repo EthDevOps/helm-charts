@@ -15,13 +15,3 @@ data:
   {{- if .Values.useCustomConfig }}
   RCLONE_TMPL: "/config.tmpl"
   {{- end }}
----
-{{- if .Values.useCustomConfig }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-custom-rclone-template
-data:
-  template: |
-{{ (.Files.Get .Values.customConfig) | indent 4 }}
-{{- end }}

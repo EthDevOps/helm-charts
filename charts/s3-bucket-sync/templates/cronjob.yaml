@@ -15,7 +15,7 @@ spec:
           volumes:
             - name: custom-config-vol
               configMap:
-                name: {{ .Release.Name }}-custom-rclone-template
+                name: {{ .Values.customConfig }}
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-minio-mirror
