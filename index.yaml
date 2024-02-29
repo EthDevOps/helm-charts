@@ -415,6 +415,32 @@ entries:
   netbox:
   - apiVersion: v2
     appVersion: v3.6.4
+    created: "2024-02-29T10:47:55.643007748Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: IP address management (IPAM) and data center infrastructure management
+      (DCIM) tool
+    digest: 703597088141929d29843639e3575249cf2a25837c88e7e4466ed66b92828a2e
+    home: https://github.com/bootc/netbox-chart
+    icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/docs/netbox_logo.png
+    kubeVersion: '>=1.25.0'
+    maintainers:
+    - email: bootc@boo.tc
+      name: Chris Boot
+      url: https://github.com/bootc
+    name: netbox
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/netbox-5.0.2/netbox-5.0.2.tgz
+    version: 5.0.2
+  - apiVersion: v2
+    appVersion: v3.6.4
     created: "2024-02-29T10:32:55.052119347Z"
     dependencies:
     - condition: postgresql.enabled
@@ -721,4 +747,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-02-29T10:32:55.052220556Z"
+generated: "2024-02-29T10:47:55.64310455Z"
