@@ -412,6 +412,33 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/healthchecks-0.0.1/healthchecks-0.0.1.tgz
     version: 0.0.1
+  netbox:
+  - apiVersion: v2
+    appVersion: v3.6.4
+    created: "2024-02-29T10:14:58.995852319Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: IP address management (IPAM) and data center infrastructure management
+      (DCIM) tool
+    digest: 5cd39b2988816ccf2c28c49aab1d07690ff542f7dc3ba8af344f0e69411c39f3
+    home: https://github.com/bootc/netbox-chart
+    icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/docs/netbox_logo.png
+    kubeVersion: '>=1.25.0'
+    maintainers:
+    - email: bootc@boo.tc
+      name: Chris Boot
+      url: https://github.com/bootc
+    name: netbox
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/netbox-5.0.0/netbox-5.0.0.tgz
+    version: 5.0.0
   s3-bucket-sync:
   - apiVersion: v2
     appVersion: v0.11.0
@@ -668,4 +695,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-02-27T18:40:29.9675277Z"
+generated: "2024-02-29T10:14:58.995927319Z"
