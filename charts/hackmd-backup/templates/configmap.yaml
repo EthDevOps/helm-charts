@@ -12,3 +12,4 @@ data:
   BACKUP_PATH: "/data/working"
   BACKUP_TAR_PATH: "/data/archive"
   CREDENTIAL_CACHE_PATH: "/data/credentials"
+  GPG_PUBKEY_FILE: "/var/keys/pubkey.asc"

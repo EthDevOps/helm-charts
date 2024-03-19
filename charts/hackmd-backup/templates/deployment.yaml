@@ -24,6 +24,9 @@ spec:
                   mountPath: /data/working
                 - name: archiveDir
                   mountPath: /data/archive
+                - name: pgp-key-vol
+                  mountPath: /var/keys
+                  readOnly: true
 
               envFrom:
                 - configMapRef:
@@ -53,6 +56,9 @@ spec:
               emptyDir:
                 medium: Memory
                 sizeLimit: 2Gi
+            - name: pgp-key-vol
+              secret:
+                secretName: {{ .Release.Name }}-pgp-key
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
