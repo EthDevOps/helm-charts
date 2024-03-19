@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: hackmd-backup
+          image: ghcr.io/ethdevops/hackmd-backup-tool:{{ .Values.imageTag }}
+          volumeMounts:
+            - name: credentialCache
+              mountPath: /data/credentials
+            - name: workingDir
+              mountPath: /data/working
+            - name: archiveDir
+              mountPath: /data/archive
+
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-secrets
+        - name: selenium-webdriver
+          image: selenium/standalone-chrome:{{ .Values.seleniumImageTag }}
+          ports:
+            - containerPort: 4444
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+        - name: credentialCache
+          persistentVolumeClaim: 
+            claimName: {{ .Release.Name }}-cred-cache
+        - name: workingDir
+          persistentVolumeClaim: 
+            claimName: {{ .Release.Name }}-working
+        - name: archiveDir
+          persistentVolumeClaim: 
+            claimName: {{ .Release.Name }}-archive
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-cred-cache
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 10Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-working
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-archive
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi

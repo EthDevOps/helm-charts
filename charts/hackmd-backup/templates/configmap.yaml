@@ -1,0 +1,13 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  GITHUB_USERNAME: "{{ .Values.github.username }}"
+  S3_HOST: "{{ .Values.s3.host }}"
+  S3_BUCKET: "{{ .Values.s3.bucket }}"
+  HEALTHCHECK_URL: "{{ .Values.healthcheckUrl }}"
+  BACKUP_PATH: "/data/working"
+  BACKUP_TAR_PATH: "/data/archive"
+  CREDENTIAL_CACHE_PATH: "/data/credentials"
