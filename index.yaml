@@ -264,6 +264,21 @@ entries:
   hackmd-backup:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2024-03-19T13:16:37.717320683Z"
+    description: Creates backups from a HackMD instance
+    digest: f3df1c50d2f72dbf0586123d6274b39d32f8bafc63a3e5236f05c6f4d9f02400
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: hackmd-backup
+    sources:
+    - https://github.com/EthDevOps/hackmd-backup-tool
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/hackmd-backup-0.0.3/hackmd-backup-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2024-03-19T13:05:33.294253761Z"
     description: Creates backups from a HackMD instance
     digest: 15477cc3ce3e1199c304a7384fdd216821fa69d473779f0fc84dce36e08b73e3
@@ -778,4 +793,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-03-19T13:05:33.294394481Z"
+generated: "2024-03-19T13:16:37.717454161Z"
