@@ -261,6 +261,22 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/discord-backup-bot-0.1.1/discord-backup-bot-0.1.1.tgz
     version: 0.1.1
+  hackmd-backup:
+  - apiVersion: v2
+    appVersion: v0.0.1
+    created: "2024-03-19T10:35:04.885862083Z"
+    description: Creates backups from a HackMD instance
+    digest: c987dcda9d33ca3283526a949e4e05f9fa8d17d5fb1e6d5efaa27e0a917671cd
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: hackmd-backup
+    sources:
+    - https://github.com/EthDevOps/hackmd-backup-tool
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/hackmd-backup-0.0.1/hackmd-backup-0.0.1.tgz
+    version: 0.0.1
   healthchecks:
   - apiVersion: v2
     appVersion: v3.0
@@ -747,4 +763,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-02-29T10:47:55.64310455Z"
+generated: "2024-03-19T10:35:04.885968392Z"
