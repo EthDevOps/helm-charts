@@ -10,7 +10,7 @@ data:
   HEALTHCHECK_URL: "{{ .Values.healthcheckUrl }}"
   HACKMD_HOST: "{{ .Values.hackmdHost }}"
   BACKUP_PATH: "/data/working"
-  BACKUP_TAR_PATH: "/data/archive"
+  BACKUP_TAR_PATH: "/data/archive/hackmd-backup.tar.gz"
   CREDENTIAL_CACHE_PATH: "/data/credentials"
   GPG_PUBKEY_FILE: "/var/keys/pubkey.asc"
   WEBDRIVER_URL: "http://localhost:4444"
