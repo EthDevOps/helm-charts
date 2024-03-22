@@ -13,4 +13,4 @@ data:
   BACKUP_TAR_PATH: "/data/archive/hackmd-backup.tar.gz"
   CREDENTIAL_CACHE_PATH: "/data/credentials"
   GPG_PUBKEY_FILE: "/var/keys/pubkey.asc"
-  WEBDRIVER_URL: "http://localhost:4444"
+  WEBDRIVER_URL: "http://{{ .Release.Name}}-selenium-webdriver:4444"

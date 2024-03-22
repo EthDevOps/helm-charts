@@ -1,97 +1,42 @@
-apiVersion: batch/v1
-kind: CronJob
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-job
+  name: {{ .Release.Name }}-selenium-webdriver
+  labels:
+    app: {{ .Release.Name }}-selenium-webdriver
 spec:
-  schedule: "{{ .Values.backupSchedule }}"
-  timeZone: 'Etc/UTC'
-  concurrencyPolicy: Forbid
-  jobTemplate:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-selenium-webdriver
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-selenium-webdriver
     spec:
-      template:
-        metadata:
-          labels:
-            app: {{ .Release.Name }}
-        spec:
-          restartPolicy: OnFailure
-          containers:
-            - name: hackmd-backup
-              image: ghcr.io/ethdevops/hackmd-backup-tool:{{ .Values.imageTag }}
-              volumeMounts:
-                - name: credential-cache
-                  mountPath: /data/credentials
-                - name: working-dir
-                  mountPath: /data/working
-                - name: archive-dir
-                  mountPath: /data/archive
-                - name: pgp-key-vol
-                  mountPath: /var/keys
-                  readOnly: true
-
-              envFrom:
-                - configMapRef:
-                    name: {{ .Release.Name }}-config
-                - secretRef:
-                    name: {{ .Release.Name }}-secret
-            - name: selenium-webdriver
-              image: selenium/standalone-chrome:{{ .Values.seleniumImageTag }}
-              ports:
-                - containerPort: 4444
-              volumeMounts:
-                - name: dshm
-                  mountPath: /dev/shm
-          nodeSelector:
-            kubernetes.io/os: linux
-          volumes:
-            - name: credential-cache
-              persistentVolumeClaim: 
-                claimName: {{ .Release.Name }}-cred-cache
-            - name: working-dir
-              persistentVolumeClaim: 
-                claimName: {{ .Release.Name }}-working
-            - name: archive-dir
-              persistentVolumeClaim: 
-                claimName: {{ .Release.Name }}-archive
+      containers:
+        - name: selenium-webdriver
+          image: selenium/standalone-chrome:{{ .Values.seleniumImageTag }}
+          ports:
+            - name: webdriver
+              containerPort: 4444
+          volumeMounts:
             - name: dshm
-              emptyDir:
-                medium: Memory
-                sizeLimit: 2Gi
-            - name: pgp-key-vol
-              secret:
-                secretName: {{ .Release.Name }}-pgp-key
+              mountPath: /dev/shm
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: Service
 metadata:
-  name: {{ .Release.Name }}-cred-cache
+  name: {{ .Release.Name }}-selenium-webdriver
 spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-path
-  resources:
-    requests:
-      storage: 10Mi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Release.Name }}-working
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-path
-  resources:
-    requests:
-      storage: 1Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Release.Name }}-archive
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-path
-  resources:
-    requests:
-      storage: 1Gi
+  selector:
+    app: {{ .Release.Name }}-selenium-webdriver
+  ports:
+    - name: webdriver
+      port: 4444
