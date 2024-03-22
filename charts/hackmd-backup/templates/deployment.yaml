@@ -18,11 +18,11 @@ spec:
             - name: hackmd-backup
               image: ghcr.io/ethdevops/hackmd-backup-tool:{{ .Values.imageTag }}
               volumeMounts:
-                - name: credentialCache
+                - name: credential-cache
                   mountPath: /data/credentials
-                - name: workingDir
+                - name: working-dir
                   mountPath: /data/working
-                - name: archiveDir
+                - name: archive-dir
                   mountPath: /data/archive
                 - name: pgp-key-vol
                   mountPath: /var/keys
@@ -43,13 +43,13 @@ spec:
           nodeSelector:
             kubernetes.io/os: linux
           volumes:
-            - name: credentialCache
+            - name: credential-cache
               persistentVolumeClaim: 
                 claimName: {{ .Release.Name }}-cred-cache
-            - name: workingDir
+            - name: working-dir
               persistentVolumeClaim: 
                 claimName: {{ .Release.Name }}-working
-            - name: archiveDir
+            - name: archive-dir
               persistentVolumeClaim: 
                 claimName: {{ .Release.Name }}-archive
             - name: dshm
