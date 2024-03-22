@@ -32,7 +32,7 @@ spec:
                 - configMapRef:
                     name: {{ .Release.Name }}-config
                 - secretRef:
-                    name: {{ .Release.Name }}-secrets
+                    name: {{ .Release.Name }}-secret
             - name: selenium-webdriver
               image: selenium/standalone-chrome:{{ .Values.seleniumImageTag }}
               ports:
