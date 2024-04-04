@@ -1,0 +1,14 @@
+apiVersion: v2
+name: notion-backup
+description: Creates backups from Notion
+type: application
+
+version: 0.1.0
+
+# App metadata
+appVersion: "v0.0.1"
+sources:
+  - https://github.com/EthDevOps/notion-backup-tool
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org

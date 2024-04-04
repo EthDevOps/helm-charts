@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-hackmd-job
+  name: {{ .Release.Name }}-notion-trigger
 spec:
-  schedule: "{{ .Values.backupSchedule }}"
+  schedule: "{{ .Values.triggerSchedule }}"
   timeZone: 'Etc/UTC'
   concurrencyPolicy: Forbid
   jobTemplate:
@@ -16,18 +16,19 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-            - name: hackmd-backup
-              image: ghcr.io/ethdevops/hackmd-backup-tool:{{ .Values.imageTag }}
+            - name: notion-backup
+              image: ghcr.io/ethdevops/notion-backup-tool:{{ .Values.imageTag }}
               volumeMounts:
                 - name: credential-cache
                   mountPath: /data/credentials
                 - name: working-dir
                   mountPath: /data/working
-                - name: archive-dir
-                  mountPath: /data/archive
                 - name: pgp-key-vol
                   mountPath: /var/keys
                   readOnly: true
+              env:
+                - name: MODE
+                  value: "trigger"
 
               envFrom:
                 - configMapRef:
@@ -43,9 +44,6 @@ spec:
             - name: working-dir
               persistentVolumeClaim: 
                 claimName: {{ .Release.Name }}-working
-            - name: archive-dir
-              persistentVolumeClaim: 
-                claimName: {{ .Release.Name }}-archive
             - name: pgp-key-vol
               secret:
                 secretName: {{ .Release.Name }}-pgp-key
@@ -72,16 +70,4 @@ spec:
   storageClassName: local-path
   resources:
     requests:
-      storage: 1Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Release.Name }}-archive
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-path
-  resources:
-    requests:
-      storage: 1Gi
+      storage: 15Gi

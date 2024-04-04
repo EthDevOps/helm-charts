@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-notion-download
+spec:
+  schedule: "{{ .Values.backupSchedule }}"
+  timeZone: 'Etc/UTC'
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      timezone: "Etc/UTC"
+      template:
+        metadata:
+          labels:
+            app: {{ .Release.Name }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: notion-backup
+              image: ghcr.io/ethdevops/notion-backup-tool:{{ .Values.imageTag }}
+              env:
+                - name: MODE
+                  value: "download"
+
+              envFrom:
+                - configMapRef:
+                    name: {{ .Release.Name }}-config
+                - secretRef:
+                    name: {{ .Release.Name }}-secret
+          nodeSelector:
+            kubernetes.io/os: linux
