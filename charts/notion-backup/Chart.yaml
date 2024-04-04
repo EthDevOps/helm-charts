@@ -3,7 +3,7 @@ name: notion-backup
 description: Creates backups from Notion
 type: application
 
-version: 0.1.0
+version: 0.1.1
 
 # App metadata
 appVersion: "v0.0.1"
