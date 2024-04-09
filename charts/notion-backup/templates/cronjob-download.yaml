@@ -18,6 +18,14 @@ spec:
           containers:
             - name: notion-backup
               image: ghcr.io/ethdevops/notion-backup-tool:{{ .Values.imageTag }}
+              volumeMounts:
+                - name: credential-cache
+                  mountPath: /data/credentials
+                - name: working-dir
+                  mountPath: /data/working
+                - name: pgp-key-vol
+                  mountPath: /var/keys
+                  readOnly: true
               env:
                 - name: MODE
                   value: "download"
@@ -29,3 +37,13 @@ spec:
                     name: {{ .Release.Name }}-secret
           nodeSelector:
             kubernetes.io/os: linux
+          volumes:
+            - name: credential-cache
+              persistentVolumeClaim: 
+                claimName: {{ .Release.Name }}-cred-cache
+            - name: working-dir
+              persistentVolumeClaim: 
+                claimName: {{ .Release.Name }}-working
+            - name: pgp-key-vol
+              secret:
+                secretName: {{ .Release.Name }}-pgp-key
