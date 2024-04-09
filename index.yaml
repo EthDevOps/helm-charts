@@ -630,6 +630,21 @@ entries:
   notion-backup:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2024-04-09T05:49:30.093644159Z"
+    description: Creates backups from Notion
+    digest: 2bcdcc82b79141cf1ad5398f64c8b068dc6679cf4644c9562228fec5ee91fb76
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: notion-backup
+    sources:
+    - https://github.com/EthDevOps/notion-backup-tool
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/notion-backup-0.1.2/notion-backup-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2024-04-04T15:51:07.580092281Z"
     description: Creates backups from Notion
     digest: 7d4e5a414aa9900db3025f9193ab55a14a1b6847b3471b022def62d580909123
@@ -899,4 +914,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-04-04T15:51:07.580206725Z"
+generated: "2024-04-09T05:49:30.09375215Z"
