@@ -14,7 +14,7 @@ spec:
           labels:
             app: {{ .Release.Name }}
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: notion-backup
               image: ghcr.io/ethdevops/notion-backup-tool:{{ .Values.imageTag }}
