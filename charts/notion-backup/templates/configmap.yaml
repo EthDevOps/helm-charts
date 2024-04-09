@@ -5,6 +5,7 @@ metadata:
   name: {{ .Release.Name }}-config
 data:
   NOTION_USERNAME: "{{ .Values.notion.username }}"
+  IMAP_HOST: "{{ .Values.imap.host }}"
   IMAP_USERNAME: "{{ .Values.imap.username }}"
   S3_HOST: "{{ .Values.s3.host }}"
   S3_BUCKET: "{{ .Values.s3.bucket }}"
