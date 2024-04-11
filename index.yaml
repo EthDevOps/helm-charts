@@ -264,6 +264,21 @@ entries:
   github-runner-manager:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2024-04-11T15:00:11.12567555Z"
+    description: Managed self-hosted runners for GitHub
+    digest: 515b4bdd6adabb094ab5c66b98bd2e9aff5b3ffb4c66c7dbbb7ddd597324b639
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: github-runner-manager
+    sources:
+    - https://github.com/EthDevOps/github-actions-autoscaler
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-0.0.9/github-runner-manager-0.0.9.tgz
+    version: 0.0.9
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2024-04-11T14:56:53.682031105Z"
     description: Managed self-hosted runners for GitHub
     digest: 486ce0a501d053335500e30d80b57b18f595d0972c5d13c6f7ee09aa6be0ed9d
@@ -1065,4 +1080,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-04-11T14:56:53.682185694Z"
+generated: "2024-04-11T15:00:11.126015022Z"
