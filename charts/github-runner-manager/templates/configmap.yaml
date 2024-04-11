@@ -5,5 +5,5 @@ metadata:
 type: Opaque
 stringData:
   config.json: |
-    {{- toJson .Values.scalerConfig | nindent 4 }}
+    {{- toJson .Values.scalerConfig | replace "\\u003c" "<" | replace "\\u003e" ">" | nindent 4 }}
 
