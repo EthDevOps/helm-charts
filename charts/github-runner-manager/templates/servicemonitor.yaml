@@ -3,11 +3,14 @@ kind: ServiceMonitor
 metadata:
   name: {{ .Release.Name }}-service-monitor
   labels:
-    release: {{ .Release.Name }}
+    release: prometheus-operator
 spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-github-autoscaler 
+      app.kubernetes.io/name: {{ .Release.Name }}-github-autoscaler 
   endpoints:
   - port: metrics
     interval: 15s
