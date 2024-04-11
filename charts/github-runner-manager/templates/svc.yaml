@@ -9,6 +9,6 @@ spec:
     app: {{ .Release.Name }}-github-autoscaler
   ports:
     - name: http
-      port: 5178
+      port: 8080
     - name: metrics
       port: 9000
