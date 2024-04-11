@@ -1,27 +1,2 @@
 imageTag: v0.2.0
 hostname: autoscaler.example.com
-scalerConfig:
-  HetznerToken: "token"
-  OrgConfigs:
-    - OrgName: "EthDevOps"
-      GitHubToken: "gh_token"
-      Pools:
-        - Size: "size-s"
-          NumRunners: 1
-  Sizes:
-    - Name: "size-xs"
-      Arch: "x64"
-      VmType: "cpx11"
-    - Name: "size-s"
-      Arch: "x64"
-      VmType: "cpx21"
-    - Name: "size-m"
-      Arch: "x64"
-      VmType: "cpx31"
-    - Name: "size-l"
-      Arch: "x64"
-      VmType: "cpx41"
-    - Name: "size-xl"
-      Arch: "x64"
-      VmType: "cpx51"
-
