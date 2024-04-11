@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-github-autoscaler
+  labels:
+    app: {{ .Release.Name }}-github-autoscaler
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-github-autoscaler
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-github-autoscaler
+    spec:
+      containers:
+        - name: github-autoscaler
+          image: ghcr.io/ethdevops/github-actions-autoscaler:{{ .Values.imageTag }}
+          ports:
+            - name: http
+              containerPort: 5178 
+            - name: metrics
+              containerPort: 9000 
+          env:
+          - name: PERSIST_DIR
+            value: "/data/persist"
+          - name: CONFIG_DIR
+            value: "/data/config"
+          volumeMounts:
+            - name: persist
+              mountPath: /data/persist
+            - name: config
+              mountPath: /data/config
+              readOnly: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+        - name: persist
+          persistentVolumeClaim: 
+            claimName: {{ .Release.Name }}-persistance
+        - name: config
+          secret:
+            secretName: {{ .Release.Name }}-config

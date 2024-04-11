@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-github-autoscaler
+spec:
+  selector:
+    app: {{ .Release.Name }}-github-autoscaler
+  ports:
+    - name: http
+      port: 5178
+    - name: metrics
+      port: 9000
