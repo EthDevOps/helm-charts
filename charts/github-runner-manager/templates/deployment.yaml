@@ -5,6 +5,8 @@ metadata:
   labels:
     app: {{ .Release.Name }}-github-autoscaler
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ .Release.Name }}-github-autoscaler
