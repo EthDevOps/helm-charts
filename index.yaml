@@ -261,6 +261,22 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/discord-backup-bot-0.1.1/discord-backup-bot-0.1.1.tgz
     version: 0.1.1
+  github-runner-manager:
+  - apiVersion: v2
+    appVersion: v0.0.1
+    created: "2024-04-11T09:29:38.376536865Z"
+    description: Managed self-hosted runners for GitHub
+    digest: 0f4e2160d510e9a63cc7f498f2146fe11db18ddba383f4d617f4bb885d0ad59b
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: github-runner-manager
+    sources:
+    - https://github.com/EthDevOps/github-actions-autoscaler
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-0.0.1/github-runner-manager-0.0.1.tgz
+    version: 0.0.1
   hackmd-backup:
   - apiVersion: v2
     appVersion: v0.0.1
@@ -944,4 +960,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-04-09T07:20:21.397000309Z"
+generated: "2024-04-11T09:29:38.376642503Z"
