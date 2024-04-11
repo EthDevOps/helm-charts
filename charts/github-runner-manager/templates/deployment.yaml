@@ -37,7 +37,7 @@ spec:
       volumes:
         - name: persist
           persistentVolumeClaim: 
-            claimName: {{ .Release.Name }}-persistance
+          claimName: {{ .Release.Name }}-persist
         - name: config
           secret:
             secretName: {{ .Release.Name }}-config
