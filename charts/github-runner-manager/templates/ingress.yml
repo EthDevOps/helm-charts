@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: github-autoscaler.ethquokkaops.io
+  - host: {{ .Values.hostname }} 
     http:
       paths:
       - pathType: Prefix
@@ -20,6 +20,6 @@ spec:
               name: http
   tls:
   - hosts:
-    - github-autoscaler.ethquokkaops.io
+    - {{ .Values.Hostname }}
     secretName: github-autoscaler-tls
 
