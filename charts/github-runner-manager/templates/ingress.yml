@@ -20,6 +20,6 @@ spec:
               name: http
   tls:
   - hosts:
-    - {{ .Values.Hostname }}
+    - {{ .Values.hostname }}
     secretName: github-autoscaler-tls
 
