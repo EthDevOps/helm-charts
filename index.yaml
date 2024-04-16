@@ -872,6 +872,21 @@ entries:
   s3-bucket-sync:
   - apiVersion: v2
     appVersion: v0.11.0
+    created: "2024-04-16T07:09:44.443976771Z"
+    description: Keeps 2 s3 buckets in sync
+    digest: 9bc1bfa884fde7144f9c2afbb02d70e1ef3b1082988e33ac9ef45abfdb3b8647
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: s3-bucket-sync
+    sources:
+    - https://github.com/EthDevOps/s3-sync-docker
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.18/s3-bucket-sync-0.0.18.tgz
+    version: 0.0.18
+  - apiVersion: v2
+    appVersion: v0.11.0
     created: "2024-02-27T18:40:29.967368636Z"
     description: Keeps 2 s3 buckets in sync
     digest: a9e3e13103655c3124a451b15136101f290d64826ce10377da4614ef56971dff
@@ -1125,4 +1140,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-04-11T18:39:07.325809303Z"
+generated: "2024-04-16T07:09:44.444162596Z"
