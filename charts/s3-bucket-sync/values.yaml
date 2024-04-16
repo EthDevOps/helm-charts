@@ -7,13 +7,15 @@ sourceSecretKey: "my-secret-key"
 # Destination
 destinationEndpoint: "http://localhost:9000"
 destinationBucket: "my-bucket"
+destinationTempBucket: "my-bucket-tmp"
 destinationAccessKey: "my-access-key"
 destinationSecretKey: "my-secret-key"
 
+useAtomic: false
 healthcheckUrl: "http://localhost"
 backupSchedule: "30 * * * *"
 minioExtraArgs: ""
-imageTag: "v0.11.2"
+imageTag: "v0.12.0"
 enableDebug: "0"
 enableOverwrite: "0"
 bandwidthLimit: "100M"
