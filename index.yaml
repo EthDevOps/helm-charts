@@ -52,6 +52,21 @@ entries:
   cubebackup:
   - apiVersion: v2
     appVersion: v1.0.0
+    created: "2024-05-13T12:33:20.891093704Z"
+    description: A Helm chart for cubebackup
+    digest: 9a1d3373354edef8312e12b0fd0943e58746060a1d8c9d41db83e330ef89369f
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cubebackup
+    sources:
+    - https://cubebackup.com
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cubebackup-0.0.7/cubebackup-0.0.7.tgz
+    version: 0.0.7
+  - apiVersion: v2
+    appVersion: v1.0.0
     created: "2024-02-08T11:04:18.767384445Z"
     description: A Helm chart for cubebackup
     digest: 46009926e84cfd7692418e4420fb53234e300366e8a7de757706e7da3cb245bc
@@ -1140,4 +1155,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-04-16T07:09:44.444162596Z"
+generated: "2024-05-13T12:33:20.891312754Z"
