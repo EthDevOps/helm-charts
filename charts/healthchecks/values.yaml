@@ -16,3 +16,7 @@ email:
   sender: bob@example.com
 siteName: EthChecks
 debugEnabled: "False"
+ingress:
+  ingressClassName: nginx
+  host: healthchecks.example.com
+  exposeToTeleport: true
