@@ -1,0 +1,18 @@
+imageTag: v0.0.1
+seleniumImageTag: latest
+healthcheckUrl: http://healthchecks.io/1234 
+hackmdHost: hackmd.org
+s3:
+  host: http://s3host
+  bucket: da-bucket
+  accessKey: foo
+  secretKey: bar
+
+github:
+  username: bob
+  password: baz
+  otpSecret: oof
+gpgPublicKey: |
+  pubkey
+
+

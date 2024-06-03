@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-selenium-webdriver
+  labels:
+    app: {{ .Release.Name }}-selenium-webdriver
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-selenium-webdriver
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-selenium-webdriver
+    spec:
+      containers:
+        - name: selenium-webdriver
+          image: selenium/standalone-chrome:{{ .Values.seleniumImageTag }}
+          ports:
+            - name: webdriver
+              containerPort: 4444
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-selenium-webdriver
+spec:
+  selector:
+    app: {{ .Release.Name }}-selenium-webdriver
+  ports:
+    - name: webdriver
+      port: 4444

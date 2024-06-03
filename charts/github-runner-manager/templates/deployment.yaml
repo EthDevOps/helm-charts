@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-github-autoscaler
+  labels:
+    app: {{ .Release.Name }}-github-autoscaler
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-github-autoscaler
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-github-autoscaler
+    spec:
+      initContainers:
+        - name: volume-mount-hack
+          image: busybox
+          command: ["sh", "-c", "chmod -R 777 /mnt/myvolume"]
+          volumeMounts:
+          - name: persist
+            mountPath: /mnt/myvolume
+      containers:
+        - name: github-autoscaler
+          image: ghcr.io/ethdevops/github-actions-autoscaler:{{ .Values.imageTag }}
+          ports:
+            - name: http
+              containerPort: 8080 
+            - name: metrics
+              containerPort: 9000 
+          env:
+          - name: PERSIST_DIR
+            value: "/data/persist"
+          - name: CONFIG_DIR
+            value: "/data/config"
+          volumeMounts:
+            - name: persist
+              mountPath: /data/persist
+            - name: config
+              mountPath: /data/config
+              readOnly: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      volumes:
+        - name: persist
+          persistentVolumeClaim: 
+            claimName: {{ .Release.Name }}-persist
+        - name: config
+          secret:
+            secretName: {{ .Release.Name }}-config

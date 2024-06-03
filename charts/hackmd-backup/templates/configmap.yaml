@@ -1,0 +1,16 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  GITHUB_USERNAME: "{{ .Values.github.username }}"
+  S3_HOST: "{{ .Values.s3.host }}"
+  S3_BUCKET: "{{ .Values.s3.bucket }}"
+  HEALTHCHECK_URL: "{{ .Values.healthcheckUrl }}"
+  HACKMD_HOST: "{{ .Values.hackmdHost }}"
+  BACKUP_PATH: "/data/working"
+  BACKUP_TAR_PATH: "/data/archive/hackmd-backup.tar.gz"
+  CREDENTIAL_CACHE_PATH: "/data/credentials"
+  GPG_PUBKEY_FILE: "/var/keys/pubkey.asc"
+  WEBDRIVER_URL: "http://{{ .Release.Name}}-selenium-webdriver:4444"

@@ -6,8 +6,16 @@ data:
   SOURCE_BUCKET: "{{ .Values.sourceBucket }}"
   SOURCE_ENDPOINT: "{{ .Values.sourceEndpoint }}"
   DESTINATION_BUCKET: "{{ .Values.destinationBucket }}"
+  DESTINATION_TMP_BUCKET: "{{ .Values.destinationTempBucket }}"
   DESTINATION_ENDPOINT: "{{ .Values.destinationEndpoint }}"
   MINIO_EXTRA_OPTS: "{{ .Values.minioExtraArgs }}"
   HEALTHCHECK_URL: "{{ .Values.healthcheckUrl }}"
   MINIO_DEBUG: "{{ .Values.enableDebug }}"
   MINIO_OVERWRITE: "{{ .Values.enableOverwrite }}"
+  BANDWIDTH_LIMIT: "{{ .Values.bandwidthLimit }}"
+  {{- if .Values.useCustomConfig }}
+  RCLONE_TMPL: "/opt/config.tmpl"
+  {{- end }}
+  {{- if .Values.useAtomic }}
+  DO_ATOMIC: "true"
+  {{- end }}

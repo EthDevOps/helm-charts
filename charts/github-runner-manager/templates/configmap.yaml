@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-config
+type: Opaque
+stringData:
+  config.json: |
+    {{- toJson .Values.scalerConfig | replace "\\u003c" "<" | replace "\\u003e" ">" | nindent 4 }}
+

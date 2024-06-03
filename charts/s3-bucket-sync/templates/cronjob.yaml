@@ -11,9 +11,21 @@ spec:
       template:
         spec:
           restartPolicy: OnFailure
+          {{- if .Values.useCustomConfig }}
+          volumes:
+            - name: custom-config-vol
+              configMap:
+                name: {{ .Values.customConfig }}
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-minio-mirror
             image: ghcr.io/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
+            {{- if .Values.useCustomConfig }}
+            volumeMounts:
+            - name: custom-config-vol
+              mountPath: "/opt/config.tmpl"
+              subPath: "config.tmpl"
+            {{- end }}
             envFrom:
               - configMapRef:
                   name: {{ .Release.Name }}-sync-config
