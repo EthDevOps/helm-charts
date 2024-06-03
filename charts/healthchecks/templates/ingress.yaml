@@ -4,9 +4,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   labels:
-{{- if .Values.ingress.exposeToTeleport -}}
     ethquokkaops.io/expose-to-teleport: "true"
-{{ end }}
   name: {{ .Release.Name }}-ingress
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
