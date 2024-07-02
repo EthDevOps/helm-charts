@@ -52,6 +52,19 @@ entries:
   cryptpad:
   - apiVersion: v2
     appVersion: 2024.3.1
+    created: "2024-07-02T13:35:44.084766222Z"
+    description: A Helm chart for cryptpad
+    digest: f96665fd5917f07fb99beb8d184753a0107ba92f94e6a98b6076cbb0fac68cf4
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cryptpad
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cryptpad-0.0.9/cryptpad-0.0.9.tgz
+    version: 0.0.9
+  - apiVersion: v2
+    appVersion: 2024.3.1
     created: "2024-07-02T13:27:52.327414942Z"
     description: A Helm chart for cryptpad
     digest: 1441618b75c64518a7d29864d6f290447abbf8df9f50b1b72eebcbc533e47a72
@@ -1320,4 +1333,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-07-02T13:27:52.327619395Z"
+generated: "2024-07-02T13:35:44.085020819Z"
