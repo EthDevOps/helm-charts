@@ -31,10 +31,16 @@ spec:
       initContainers:
         - name: init-pvc-permissions
           image: cubebackup/cubebackup
-          command: ["/bin/sh", "-c", "chown 4001:4001 /cryptpad/data && chown 4001:4001 /cryptpad/blob && chown 4001:4001 /cryptpad/block && chown 4001:4001 /cryptpad/datastore"]
+          command: ["/bin/sh", "-c", "chown 4001:4001 /data && chown 4001:4001 /blob && chown 4001:4001 /block && chown 4001:4001 /datastore"]
           volumeMounts:
-          - name: vol-config
-            mountPath: /tmp
+          - name: blob
+            mountPath: /blob
+          - name: block
+            mountPath: /block
+          - name: datastore
+            mountPath: /data
+          - name: files
+            mountPath: /datastore
       containers:
       - name: {{ .Release.Name }}-cryptpad
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
