@@ -14,15 +14,11 @@ metadata:
   {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
-  {{- with .Values.ingress.tls }}
   tls:
-  {{- range . }}
   - hosts:
     - {{ .Values.baseDomain }}
     - {{ .Values.sandboxDomain }}
-    secretName: {{ .secretName }}
-  {{- end }}
-  {{- end }}
+    secretName: {{ .Values.tls.secretName }}
   rules:
   - host: {{ .Values.baseDomain }}
     http:
