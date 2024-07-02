@@ -3,7 +3,7 @@ name: cryptpad
 description: A Helm chart for cryptpad
 type: application
 
-version: 0.0.6
+version: 0.0.7
 
 # App metadata
 appVersion: "2024.3.1"

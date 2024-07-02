@@ -28,6 +28,13 @@ spec:
       {{- with .Values.extraInitContainers }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
+      initContainers:
+        - name: init-pvc-permissions
+          image: cubebackup/cubebackup
+          command: ["/bin/sh", "-c", "chown 4001:4001 /cryptpad/data && chown 4001:4001 /cryptpad/blob && chown 4001:4001 /cryptpad/block && chown 4001:4001 /cryptpad/datastore"]
+          volumeMounts:
+          - name: vol-config
+            mountPath: /tmp
       containers:
       - name: {{ .Release.Name }}-cryptpad
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
