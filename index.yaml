@@ -49,6 +49,20 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/argocd-cluster-watcher-0.0.1/argocd-cluster-watcher-0.0.1.tgz
     version: 0.0.1
+  cryptpad:
+  - apiVersion: v2
+    appVersion: 2024.3.1
+    created: "2024-07-02T10:39:24.213905144Z"
+    description: A Helm chart for cryptpad
+    digest: 42f224fabd6533689fe6ad075cebf60c938c3c47cb30f9711a3095a94fe84a1b
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cryptpad
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cryptpad-0.0.1/cryptpad-0.0.1.tgz
+    version: 0.0.1
   cubebackup:
   - apiVersion: v2
     appVersion: v1.0.0
@@ -1215,4 +1229,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-06-20T18:12:28.510808967Z"
+generated: "2024-07-02T10:39:24.214084838Z"
