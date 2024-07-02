@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  config.js: |-
+    // SPDX-FileCopyrightText: 2023 XWiki CryptPad Team <contact@cryptpad.org> and contributors
+    //
+    // SPDX-License-Identifier: AGPL-3.0-or-later
+    // THIS FILE IS MAINLY WITHOUT COMMENTS TO KEEP IT SMALL. CHECK THE EXAMPLE CONFIG FOR EXPLAINATIONS.
+    module.exports = {
+      httpUnsafeOrigin: "https://{{ .Values.baseDomain }}",
+      httpSafeOrigin: "https://{{ .Values.sandboxDomain }}",
+      httpAddress: '0.0.0.0',
+      httpPort: 3000,
+      websocketPort: 3003,
+      maxWorkers: 8,
+      //otpSessionExpiration: 7*24, // hours
+      enforceMFA: true,
+
+      /* =====================
+      *       Privacy
+      * ===================== */
+
+      //logIP: false,
+
+      /* =====================
+      *         Admin
+      * ===================== */
+
+      adminKeys: [
+      {{ range .Values.admins }}
+        "[{{ .username}}/{{ .pubkey }}]",
+      {{- end}}
+      ],
+
+      /* =====================
+      *        STORAGE
+      * ===================== */
+
+      //inactiveTime: 90, // days
+      //archiveRetentionTime: 15,
+      //accountRetentionTime: 365,
+      //disableIntegratedEviction: true,
+      maxUploadSize: {{ .Values.maxUploadSize }} * 1024 * 1024,
+      //premiumUploadSize: {{ .Values.maxPremiumUploadSize }} * 1024 * 1024,
+
+      /* =====================
+      *   DATABASE VOLUMES
+      * ===================== */
+
+      filePath: './datastore/',
+      archivePath: './data/archive',
+      pinPath: './data/pins',
+      taskPath: './data/tasks',
+      blockPath: './block',
+      blobPath: './blob',
+      blobStagingPath: './data/blobstage',
+      decreePath: './data/decrees',
+      logPath: './data/logs',
+
+      /* =====================
+      *       Debugging
+      * ===================== */
+
+      logToStdout: true,
+      logLevel: 'info',
+      logFeedback: false,
+      verbose: false,
+      installMethod: 'docker',
+    };
+  application_config.js: |-
+    define(['/common/application_config_internal.js'], function (AppConfig) {
+
+      // Example: If you want to remove the survey link in the menu:
+      // AppConfig.surveyURL = "";
+
+      // To inform users of the support ticket panel which languages your admins speak:
+      AppConfig.supportLanguages = [ 'en', 'de' ];
+      AppConfig.loginSalt = '{{ .Values.loginSalt }}'
+      
+      return AppConfig;
+    });

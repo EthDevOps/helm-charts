@@ -1,0 +1,28 @@
+commonAnnotations: {}
+
+baseDomain: pad.example.com
+sandboxDomain: sandbox.example.com
+admins: []
+maxUploadSize: 1
+maxPremiumUploadSize: 100 
+loginSalt: "abcdefg"
+
+
+podAnnotations: {}
+podLabels: {}
+extraInitContainers: {}
+resources: {}
+image:
+  repository: ghcr.io/ethdevops/cryptpad-docker
+  tag: ""
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local

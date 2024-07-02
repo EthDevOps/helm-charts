@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-cryptpad
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/component: cryptpad
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: cryptpad
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/component: cryptpad
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.extraInitContainers }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+      - name: {{ .Release.Name }}-cryptpad
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        env:
+        - name: CPAD_MAIN_DOMAIN
+          value: {{ .Values.baseDomain | quote }}
+        - name: CPAD_SANDBOX_DOMAIN
+          value: {{ .Values.sandboxDomain | quote }}
+        - name: CPAD_CONF
+          value: "/cryptpad/config/config.js"
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        - name: websocket
+          containerPort: 3003
+          protocol: TCP
+        volumeMounts:
+        - name: config
+          readOnly: true
+          mountPath: /cryptpad/config
+          subPath: config.js
+        - name: config
+          readOnly: true
+          mountPath: /cryptpad/customize
+          subPath: application_config.js
+        - name: blob
+          mountPath: /cryptpad/blob
+        - name: block
+          mountPath: /cryptpad/block
+        - name: datastore
+          mountPath: /cryptpad/data
+        - name: files
+          mountPath: /cryptpad/datastore
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .Release.Name }}-config
+      - name: blob
+        persistentVolumeClaim: 
+          claimName: {{ .Release.Name }}-blob
+      - name: block
+        persistentVolumeClaim: 
+          claimName: {{ .Release.Name }}-block
+      - name: datastore
+        persistentVolumeClaim: 
+          claimName: {{ .Release.Name }}-datastore
+      - name: files
+        persistentVolumeClaim: 
+          claimName: {{ .Release.Name }}-files

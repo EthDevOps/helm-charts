@@ -1,0 +1,12 @@
+apiVersion: v2
+name: cryptpad
+description: A Helm chart for cryptpad
+type: application
+
+version: 0.0.1
+
+# App metadata
+appVersion: "2024.3.1"
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org
