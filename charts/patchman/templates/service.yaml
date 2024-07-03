@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-svc
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}-patchman
+spec:
+  selector:
+    app: {{ .Release.Name }}-patchman
+  ports:
+    - name: http
+      port: 80

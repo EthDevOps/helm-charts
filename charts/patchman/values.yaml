@@ -1,0 +1,13 @@
+baseDomain: patchman.example.com
+image:
+  repository: docker pull ghcr.io/ethdevops/patchman-docker
+  tag: main
+commonAnnotations: {}
+podAnnotations: {}
+extraInitContainers: {}
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  tls:
+    secretName: ""

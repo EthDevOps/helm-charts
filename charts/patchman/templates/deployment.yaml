@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-patchman
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app: {{ .Release.Name }}-patchman
+    app.kubernetes.io/component: patchman
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: patchman
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app: {{ .Release.Name }}-patchman
+        app.kubernetes.io/component: patchman
+    spec:
+      {{- with .Values.extraInitContainers }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+      - name: {{ .Release.Name }}-patchman
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        volumeMounts:
+        - name: sqlite
+          mountPath: /var/lib/patchman/db
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: sqlite
+        persistentVolumeClaim: 
+          claimName: {{ .Release.Name }}-sqlite
