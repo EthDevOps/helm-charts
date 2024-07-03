@@ -1065,6 +1065,19 @@ entries:
   patchman:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2024-07-03T17:40:33.372081678Z"
+    description: A Helm chart for patchman
+    digest: 502ecc50bbc1ff781131c329f7fd554f6c1e2b0b1a56dbcb38529a2c6bab8ccc
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: patchman
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/patchman-0.0.2/patchman-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2024-07-03T17:38:21.750495214Z"
     description: A Helm chart for patchman
     digest: 997f1663e6222ec269db24179f73341dc14fa63e620ae8eb0a2cee010b2cadeb
@@ -1347,4 +1360,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-07-03T17:38:21.750716379Z"
+generated: "2024-07-03T17:40:33.372296489Z"
