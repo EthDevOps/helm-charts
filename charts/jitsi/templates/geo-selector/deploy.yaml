@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-geoselector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-geoselector
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-geoselector
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-geoselector
+        image: ghcr.io/ethdevops/jitsi-geo-selector:{{ .Values.geoselector.imageTag }}
+        ports:
+        - containerPort: 3000
+        resources:
+          {{- toYaml .Values.geoselector.resources | nindent 12 }}

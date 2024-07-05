@@ -1,0 +1,14 @@
+{{- if .Values.transcription.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-vosk-server-svc
+spec:
+  selector:
+    app: {{ .Release.Name }}-vosk-server
+  ports:
+    - protocol: TCP
+      port: 2700
+      targetPort: 2700
+  type: ClusterIP
+{{- end }}

@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.jicofo.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.jicofo.labels" . | nindent 4 }}
+  {{- with .Values.jicofo.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.jicofo.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.jicofo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.jicofo.selectorLabels" . | nindent 8 }}
+      {{- range $label, $value := mergeOverwrite .Values.global.podLabels .Values.jicofo.podLabels }}
+        {{ $label }}: {{ $value }}
+      {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/jicofo/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/jicofo/xmpp-secret.yaml") . | sha256sum }}
+      {{- range $annotation, $value := mergeOverwrite .Values.global.podAnnotations .Values.jicofo.podAnnotations }}
+        {{ $annotation }}: {{ $value|quote }}
+      {{- end }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "jitsi-meet.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.jicofo.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: config
+        emptyDir: {}
+      - name: custom-cont-inits
+        configMap:
+          defaultMode: 493
+          name: {{ include "jitsi-meet.jicofo.fullname" . }}-cont-inits
+          items:
+            - key: 10-config
+              path: 10-config
+      - name: custom-defaults
+        configMap:
+          name: {{ include "jitsi-meet.jicofo.fullname" . }}-defaults
+          items:
+            - key: jicofo.conf
+              path: jicofo.conf
+            - key: logging.properties
+              path: logging.properties
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.jicofo.securityContext | nindent 12 }}
+          image: "{{ .Values.jicofo.image.repository }}:{{ default .Chart.AppVersion .Values.jicofo.image.tag }}"
+          imagePullPolicy: {{ pluck "pullPolicy" .Values.jicofo.image .Values.image | first }}
+          envFrom:
+          - secretRef:
+              name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-jicofo
+          - configMapRef:
+              name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-common
+          - configMapRef:
+              name: {{ include "jitsi-meet.jicofo.fullname" . }}
+          {{- if .Values.global.releaseSecretsOverride.enabled }}
+          {{- range .Values.global.releaseSecretsOverride.extraEnvFrom }}
+          - {{ tpl (toYaml . ) $ | indent 12 | trim }}
+          {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          {{- with .Values.jicofo.livenessProbe }}
+          livenessProbe:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.jicofo.readinessProbe }}
+          readinessProbe:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.jicofo.resources | nindent 12 }}
+          volumeMounts:
+          # to support readOnlyRootFilesystem
+          - name: config
+            mountPath: /config
+          {{- if .Values.jicofo.custom.contInit._10_config }}
+          - name: custom-cont-inits
+            mountPath: /etc/cont-init.d/10-config
+            subPath: 10-config
+          {{- end }}
+          {{- if .Values.jicofo.custom.defaults._jicofo_conf }}
+          - name: custom-defaults
+            mountPath: /defaults/jicofo.conf
+            subPath: jicofo.conf
+          {{- end }}
+          {{- if .Values.jicofo.custom.defaults._logging_properties }}
+          - name: custom-defaults
+            mountPath: /defaults/logging.properties
+            subPath: logging.properties
+          {{- end }}
+      {{- with .Values.jicofo.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.jicofo.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.jicofo.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

@@ -1,0 +1,35 @@
+{{- if .Values.transcription.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-vosk-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-vosk-server
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-vosk-server
+    spec:
+      tolerations:
+      - key: "ethquokkaops.io/jitsi"
+        operator: "Equal"
+        value: "transcription"
+        effect: "NoSchedule"
+      containers:
+      - name: {{ .Release.Name }}-vosk-server
+        image: alphacep/kaldi-en:latest
+        resources:
+          {{- toYaml .Values.transcription.resources | nindent 12 }}
+        ports:
+        - containerPort: 2700
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "250m"
+          limits:
+            memory: "12Gi"
+            cpu: "2"
+{{- end }}

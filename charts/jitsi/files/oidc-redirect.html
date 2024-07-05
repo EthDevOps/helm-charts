@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Ethereum Foundation Jitsi - Authentication</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #131519;
+            color: white;
+            margin: 0;
+            background: url('https://i.imgur.com/0dYtoDi.jpeg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        
+        .container {
+            padding-bottom: 30px;
+            padding-top: 20px;
+            background-blend-mode: lighten;
+            background-color: #4e0adb73;
+            width: 100vw;
+            text-align: center;
+        }
+        
+        .button {
+            border: 0;
+            font-size: 14px;
+            background: #0074e0;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+        		padding: 16px 20px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ethereum Foundation Jitsi - Authentication</h1>
+
+        <p>
+        Authenticate to start a meeting or become a <b>moderator</b>.<br/>
+        To simply join a call you can continue as <b>guest</b>
+
+        </p>
+        
+        
+        <button class="button" onclick="login()">Login with EF Google account</button>
+        <button class="button" onclick="guest()">Continue as guest</button>
+
+        <p>
+        <i>Note: Some rooms might only allow moderator rights to certain individuals.</i><br>
+        Contact EF DevOps for setting up moderator allow-lists for your room.
+        </p> 
+
+        <h3 id="redirect" style="display:none;">Redirecting...</h3>
+    </div>
+
+    <script>
+        function login() {
+            document.getElementById("redirect").style.display = "block";
+            const path = encodeURIComponent(window.location.pathname);
+            const search = encodeURIComponent(window.location.search.substring(1));
+            const hash = encodeURIComponent(window.location.hash.substring(1));
+
+            window.location = '/oidc/redirect' +
+              `?path=${path}&search=${search}&hash=${hash}`;
+
+        }
+
+        function guest() {
+            document.getElementById("redirect").style.display = "block";
+            window.location = window.location + '?oidc=unauthorized'
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,11 @@
+{{- $bgContent := .Files.Get "files/eth_space.jpg" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-keycloak-additions
+data:
+{{ (.Files.Glob "files/meet.conf").AsConfig | indent 2}}
+{{ (.Files.Glob "files/body.html").AsConfig | indent 2}}
+{{ (.Files.Glob "files/oidc-adapter.html").AsConfig | indent 2}}
+{{ (.Files.Glob "files/oidc-redirect.html").AsConfig | indent 2}}
+  

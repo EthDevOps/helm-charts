@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-keycloak-adapter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-keycloak-adapter
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-keycloak-adapter
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-keycloak-adapter
+        image: ghcr.io/ethdevops/jitsi-keycloak-adapter:{{ .Values.keycloak_adapter.imageTag }}
+        ports:
+        - containerPort: 9000
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-keycloak-adapter-config
+        env:
+        - name: PERMISSIONS_FILE
+          value: "/config-permissions/permissions.json"
+        volumeMounts:
+        - name: permissions
+          mountPath: /config-permissions
+        resources:
+          {{- toYaml .Values.keycloak_adapter.resources | nindent 12 }}
+
+      volumes:
+      - name: permissions
+        configMap:
+          name: {{ .Release.Name }}-keycloak-adapter-permissions

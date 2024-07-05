@@ -1,0 +1,179 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsi-meet.web.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.web.labels" . | nindent 4 }}
+  {{- with .Values.web.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "jitsi-meet.web.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jitsi-meet.web.selectorLabels" . | nindent 8 }}
+      {{- range $label, $value := mergeOverwrite .Values.global.podLabels .Values.web.podLabels }}
+        {{ $label }}: {{ $value }}
+      {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/web/configmap.yaml") . | sha256sum }}
+        checksum/additional-config: {{ include (print $.Template.BasePath "/keycloak-adapter/cm-html.yaml") . | sha256sum }}
+      {{- range $annotation, $value := mergeOverwrite .Values.global.podAnnotations .Values.web.podAnnotations }}
+        {{ $annotation }}: {{ $value|quote }}
+      {{- end }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "jitsi-meet.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.web.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.web.securityContext | nindent 12 }}
+          image: "{{ .Values.web.image.repository }}:{{ default .Chart.AppVersion .Values.web.image.tag }}"
+          imagePullPolicy: {{ pluck "pullPolicy" .Values.web.image .Values.image | first }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "jitsi-meet.web.fullname" . }}
+          - configMapRef:
+              name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-common
+          {{- if .Values.global.releaseSecretsOverride.enabled }}
+          {{- range .Values.global.releaseSecretsOverride.extraEnvFrom }}
+          - {{ tpl (toYaml . ) $ | indent 12 | trim }}
+          {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          {{- with .Values.web.livenessProbe }}
+          livenessProbe:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.web.readinessProbe }}
+          readinessProbe:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}
+          volumeMounts:
+          - name: config
+            mountPath: /config
+          {{- if .Values.web.custom.contInit._10_config }}
+          - name: custom-cont-inits
+            mountPath: /etc/cont-init.d/10-config
+            subPath: 10-config
+          {{- end }}
+          {{- if .Values.web.custom.defaults._default }}
+          - name: custom-defaults
+            mountPath: /defaults/default
+            subPath: default
+          {{- end }}
+          {{- if .Values.web.custom.defaults._ffdhe2048_txt }}
+          - name: custom-defaults
+            mountPath: /defaults/ffdhe2048.txt
+            subPath: ffdhe2048.txt
+          {{- end }}
+          {{- if .Values.web.custom.defaults._interface_config_js }}
+          - name: custom-defaults
+            mountPath: /defaults/interface_config.js
+            subPath: interface_config.js
+          {{- end }}
+          {{- if .Values.web.custom.defaults._meet_conf }}
+          - name: custom-defaults
+            mountPath: /defaults/meet.conf
+            subPath: meet.conf
+          {{- end }}
+          {{- if .Values.web.custom.defaults._nginx_conf }}
+          - name: custom-defaults
+            mountPath: /defaults/nginx.conf
+            subPath: nginx.conf
+          {{- end }}
+          - name: custom-defaults
+            mountPath: /defaults/settings-config.js
+            subPath: settings-config.js
+          {{- if .Values.web.custom.defaults._ssl_conf }}
+          - name: custom-defaults
+            mountPath: /defaults/ssl.conf
+            subPath: ssl.conf
+          {{- end }}
+          {{- if .Values.web.custom.defaults._system_config_js }}
+          - name: custom-defaults
+            mountPath: /defaults/system-config.js
+            subPath: system-config.js
+          {{- end }}
+          - name: adapter-additions
+            mountPath: /defaults/meet.conf
+            subPath: meet.conf
+          - name: adapter-additions
+            mountPath: /usr/share/jitsi-meet/body.html
+            subPath: body.html
+          - name: adapter-additions
+            mountPath: /usr/share/jitsi-meet/static/oidc-adapter.html
+            subPath: oidc-adapter.html
+          - name: adapter-additions
+            mountPath: /usr/share/jitsi-meet/static/oidc-redirect.html
+            subPath: oidc-redirect.html
+          {{- with .Values.web.extraVolumeMounts }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+
+      {{- with .Values.web.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.web.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.web.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: adapter-additions
+        configMap:
+          name: {{ .Release.Name }}-keycloak-additions
+      - name: config
+        emptyDir: {}
+      - name: custom-cont-inits
+        configMap:
+          defaultMode: 493
+          name: {{ include "jitsi-meet.web.fullname" . }}-cont-inits
+          items:
+            - key: 10-config
+              path: 10-config
+      - name: custom-defaults
+        configMap:
+          name: {{ include "jitsi-meet.web.fullname" . }}-defaults
+          items:
+            - key: default
+              path: default
+            - key: ffdhe2048.txt
+              path: ffdhe2048.txt
+            - key: interface_config.js
+              path: interface_config.js
+            - key: meet.conf
+              path: meet.conf
+            - key: nginx.conf
+              path: nginx.conf
+            - key: settings-config.js
+              path: settings-config.js
+            - key: ssl.conf
+              path: ssl.conf
+            - key: system-config.js
+              path: system-config.js
+    {{- with .Values.web.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
