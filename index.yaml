@@ -922,6 +922,22 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/healthchecks-0.0.1/healthchecks-0.0.1.tgz
     version: 0.0.1
+  jitsi-meet:
+  - apiVersion: v2
+    appVersion: stable-9457-2
+    created: "2024-07-05T11:19:19.730769445Z"
+    dependencies:
+    - condition: prosody.enabled
+      name: prosody
+      repository: ""
+      version: 1.4.0
+    description: Jitsi Meet packaged for Kubernetes
+    digest: 3e878edea08b54f142c6161fc50cad92aadf791a3bc81e3c9ffa47a8cced577d
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-meet-1.4.0/jitsi-meet-1.4.0.tgz
+    version: 1.4.0
   netbox:
   - apiVersion: v2
     appVersion: v3.6.4
@@ -1360,4 +1376,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-07-03T17:40:33.372296489Z"
+generated: "2024-07-05T11:19:19.730939462Z"
