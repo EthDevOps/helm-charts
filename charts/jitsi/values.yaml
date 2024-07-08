@@ -62,6 +62,7 @@ websockets:
     enabled: true
 
 web:
+  jitsiDomain: meet.example.com
   replicaCount: 1
   image:
     repository: jitsi/web
