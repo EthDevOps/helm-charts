@@ -17,5 +17,9 @@ spec:
         image: ghcr.io/ethdevops/jitsi-geo-selector:{{ .Values.geoselector.imageTag }}
         ports:
         - containerPort: 3000
+        env:
+        - name: JITSI_DOMAIN
+          value: {{ .Values.geoselector.domain }} 
+
         resources:
           {{- toYaml .Values.geoselector.resources | nindent 12 }}
