@@ -39,7 +39,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="checkForRecorder()">
     <div class="container">
         <h1>Ethereum Foundation Jitsi - Authentication</h1>
 
@@ -62,6 +62,24 @@
     </div>
 
     <script>
+        function checkForRecorder() {
+          const hash = window.location.hash;
+          if (hash.includes('config.iAmRecorder=true')) {
+            console.log('The Recorder tries to connect');
+            guest();
+          }
+
+        }
+        function addQueryParam(url, key, value) {
+          // Create a URL object based on the input URL
+          const urlObj = new URL(url);
+
+          // Add the query parameter
+          urlObj.searchParams.append(key, value);
+
+          // Return the modified URL string
+          return urlObj.toString();
+        }
         function login() {
             document.getElementById("redirect").style.display = "block";
             const path = encodeURIComponent(window.location.pathname);
@@ -75,8 +93,10 @@
 
         function guest() {
             document.getElementById("redirect").style.display = "block";
-            window.location = window.location + '?oidc=unauthorized'
+            window.location = addQueryParam(window.location,'oidc','unauthorized');
         }
+
+
     </script>
 </body>
 </html>
