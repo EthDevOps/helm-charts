@@ -925,6 +925,16 @@ entries:
   jitsi-meet:
   - apiVersion: v2
     appVersion: stable-9457-2
+    created: "2024-07-08T11:04:31.236280029Z"
+    description: Jitsi Meet packaged for Kubernetes
+    digest: d0369012ecc356143a88aafd45b61f2c239c47fcf74163fbc67ce6bb13fc1cc4
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-meet-1.4.3/jitsi-meet-1.4.3.tgz
+    version: 1.4.3
+  - apiVersion: v2
+    appVersion: stable-9457-2
     created: "2024-07-08T10:10:13.896382517Z"
     description: Jitsi Meet packaged for Kubernetes
     digest: 76e2a5069432b2d5a7b5888ebc7fca4fb5da3e7f9f0359460f13a93257793fff
@@ -1407,4 +1417,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-07-08T10:10:13.896536566Z"
+generated: "2024-07-08T11:04:31.23645228Z"
