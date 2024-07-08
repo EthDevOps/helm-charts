@@ -925,6 +925,16 @@ entries:
   jitsi-meet:
   - apiVersion: v2
     appVersion: stable-9457-2
+    created: "2024-07-08T09:51:10.21972816Z"
+    description: Jitsi Meet packaged for Kubernetes
+    digest: 9e337e34d60dc407e14eb13d50ddc6857b5596b94c1262102d55c114f603fd33
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-meet-1.4.1/jitsi-meet-1.4.1.tgz
+    version: 1.4.1
+  - apiVersion: v2
+    appVersion: stable-9457-2
     created: "2024-07-05T11:19:19.730769445Z"
     dependencies:
     - condition: prosody.enabled
@@ -1105,6 +1115,17 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/patchman-0.0.1/patchman-0.0.1.tgz
     version: 0.0.1
+  prosody:
+  - apiVersion: v2
+    appVersion: stable-9111
+    created: "2024-07-08T09:51:10.373903783Z"
+    description: Prosody XMPP server for Jitsi Meet on Kubernetes
+    digest: 367ccbbc6573bee032bb7dddc313673d7216b1e8307955cff03780e586cf0ee9
+    name: prosody
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/prosody-1.4.1/prosody-1.4.1.tgz
+    version: 1.4.1
   s3-bucket-sync:
   - apiVersion: v2
     appVersion: v0.11.0
@@ -1376,4 +1397,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-07-05T11:19:19.730939462Z"
+generated: "2024-07-08T09:51:10.37413253Z"
