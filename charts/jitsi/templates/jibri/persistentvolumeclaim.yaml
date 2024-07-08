@@ -9,7 +9,6 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-    - ReadWriteMany
   resources:
     requests:
       storage: {{ .Values.jibri.persistence.size | quote }}
