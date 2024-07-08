@@ -20,7 +20,3 @@ version: 1.4.0
 # incremented each time you make changes to the application.
 appVersion: stable-9457-2
 
-dependencies:
-  - name: prosody
-    condition: prosody.enabled
-    version: 1.4.0
