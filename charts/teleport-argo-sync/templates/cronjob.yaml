@@ -12,7 +12,7 @@ spec:
         spec:
           restartPolicy: OnFailure
           volumes:
-            - name: teleport
+            - name: teleport-persist
               persistentVolumeClaim:
                 claimName: {{ .Release.Name }}-teleport
             - name: clusters-config
