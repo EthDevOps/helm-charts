@@ -34,6 +34,16 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
         spec:
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: "app.kubernetes.io/component"
+                        operator: In
+                        values:
+                        - netbox
+          topologyKey: "kubernetes.io/hostname"
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
           {{- toYaml . | nindent 10 }}
