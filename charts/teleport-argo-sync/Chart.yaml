@@ -1,0 +1,12 @@
+apiVersion: v2
+name: teleport-argo-sync
+description: A Helm chart for teleport-argo-sync
+type: application
+
+version: 0.0.1
+
+# App metadata
+appVersion: "1.0.0"
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org

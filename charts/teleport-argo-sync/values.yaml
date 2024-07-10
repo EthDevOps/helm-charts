@@ -1,0 +1,22 @@
+image:
+  tag: v0.0.1
+
+teleport:
+  domain: teleport.example.com
+  token: abcdef122344
+
+argocd:
+  domain: argocd.example.com
+  username: foo
+  password: bar
+
+clusters:
+  - name: my-cluster
+    labels:
+      test: foo
+      bar: baz
+  - name: another-cluster
+    labels:
+      hello: world
+
+

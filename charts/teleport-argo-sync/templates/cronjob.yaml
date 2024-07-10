@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-sync
+spec:
+  schedule: "*/10 * * * *"
+  timeZone: 'Etc/UTC'
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: teleport
+              persistentVolumeClaim:
+                claimName: {{ .Release.Name }}-teleport
+            - name: clusters-config
+              configMap:
+                name: {{ .Release.Name }}-clusters
+          containers:
+          - name: {{ .Release.Name }}-sync
+            image: ghcr.io/ethdevops/teleport-argocd-sync:{{ .Values.image.tag }}
+            volumeMounts:
+            - name: clusters-config
+              mountPath: "/config"
+            - name: teleport-persist
+              mountPath: "/var/lib/teleport"
+            envFrom:
+              - secretRef:
+                  name: {{ .Release.Name }}-config
+

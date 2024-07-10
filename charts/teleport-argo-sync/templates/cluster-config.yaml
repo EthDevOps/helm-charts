@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-clusters
+data:
+  clusters.yaml: |
+    clusters:
+    {{- toYaml .Values.clusters | nindent 4 }}
