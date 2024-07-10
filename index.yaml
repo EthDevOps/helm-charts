@@ -1011,6 +1011,32 @@ entries:
   netbox:
   - apiVersion: v2
     appVersion: v3.6.4
+    created: "2024-07-10T09:57:06.79347991Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: IP address management (IPAM) and data center infrastructure management
+      (DCIM) tool
+    digest: 2d58b17012fc2842ebe0668dcc1cfb5164714306b7b393a20de67f4016c3094a
+    home: https://github.com/bootc/netbox-chart
+    icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/docs/netbox_logo.png
+    kubeVersion: '>=1.25.0'
+    maintainers:
+    - email: bootc@boo.tc
+      name: Chris Boot
+      url: https://github.com/bootc
+    name: netbox
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/netbox-5.0.3/netbox-5.0.3.tgz
+    version: 5.0.3
+  - apiVersion: v2
+    appVersion: v3.6.4
     created: "2024-02-29T10:47:55.643007748Z"
     dependencies:
     - condition: postgresql.enabled
@@ -1484,4 +1510,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-07-10T08:50:43.18580695Z"
+generated: "2024-07-10T09:57:06.793648215Z"
