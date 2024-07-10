@@ -43,7 +43,7 @@ spec:
                         operator: In
                         values:
                         - netbox
-          topologyKey: "kubernetes.io/hostname"
+                  topologyKey: "kubernetes.io/hostname"
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
           {{- toYaml . | nindent 10 }}
