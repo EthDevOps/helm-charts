@@ -1457,4 +1457,18 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-07-08T15:15:39.635771551Z"
+  teleport-argo-sync:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2024-07-10T08:09:30.356656139Z"
+    description: A Helm chart for teleport-argo-sync
+    digest: 5e600ef2f38c80b57041304e7b8899f5df9cf85370e2c794665ae7d67fcbcd1a
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: teleport-argo-sync
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
+    version: 0.0.1
+generated: "2024-07-10T08:09:30.356831547Z"
