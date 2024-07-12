@@ -6,7 +6,7 @@
 {{ $ENABLE_IPV6 := .Env.ENABLE_IPV6 | default "true" | toBool -}}
 {{ $ENABLE_LIPSYNC := .Env.ENABLE_LIPSYNC | default "false" | toBool -}}
 {{ $ENABLE_NO_AUDIO_DETECTION := .Env.ENABLE_NO_AUDIO_DETECTION | default "true" | toBool -}}
-{{ $ENABLE_P2P := .Env.ENABLE_P2P | default "true" | toBool -}}
+{{ $ENABLE_P2P := .Env.ENABLE_P2P | default "false" | toBool -}}
 {{ $ENABLE_PREJOIN_PAGE := .Env.ENABLE_PREJOIN_PAGE | default "true" | toBool -}}
 {{ $ENABLE_WELCOME_PAGE := .Env.ENABLE_WELCOME_PAGE | default "true" | toBool -}}
 {{ $ENABLE_CLOSE_PAGE := .Env.ENABLE_CLOSE_PAGE | default "false" | toBool -}}
