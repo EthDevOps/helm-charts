@@ -52,11 +52,18 @@
         
         <button class="button" onclick="login()">Login with EF Google account</button>
         <button class="button" onclick="guest()">Continue as guest</button>
+        <button class="button" onclick="make_it_yolo()">Create open call</button>
 
         <p>
         <i>Note: Some rooms might only allow moderator rights to certain individuals.</i><br>
         Contact EF DevOps for setting up moderator allow-lists for your room.
         </p> 
+
+        <p>
+          <h4>Regarding open calls</h4>
+          They will allow **everyone** to start calls and be a moderator without authentication.
+          The room name will be altered by this.
+        </p>
 
         <h3 id="redirect" style="display:none;">Redirecting...</h3>
     </div>
@@ -69,7 +76,25 @@
             guest();
           }
 
+          // check for yolo call
+
+          const path = encodeURIComponent(window.location.pathname);
+          if (path.startsWith('yolo_')) {
+            make_it_yolo();
+          }
+
         }
+
+        function make_it_yolo() {
+            // A yolo call. Send to JWT gen directly
+            const search = encodeURIComponent(window.location.search.substring(1));
+            const hash = encodeURIComponent(window.location.hash.substring(1));
+
+            window.location = '/oidc/yolo' +
+              `?path=${path}&search=${search}&hash=${hash}`;
+
+        }
+
         function addQueryParam(url, key, value) {
           // Create a URL object based on the input URL
           const urlObj = new URL(url);
