@@ -89,6 +89,7 @@
             // A yolo call. Send to JWT gen directly
             const search = encodeURIComponent(window.location.search.substring(1));
             const hash = encodeURIComponent(window.location.hash.substring(1));
+            const path = encodeURIComponent(window.location.pathname);
 
             window.location = '/oidc/yolo' +
               `?path=${path}&search=${search}&hash=${hash}`;
