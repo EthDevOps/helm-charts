@@ -78,7 +78,7 @@
 
           // check for yolo call
 
-          const path = encodeURIComponent(window.location.pathname);
+          const path = window.location.pathname;
           if (path.startsWith('/yolo_')) {
             activate_yolo(path.slice(1));
           }
@@ -89,18 +89,17 @@
             // A yolo call. Send to JWT gen directly
             const search = encodeURIComponent(window.location.search.substring(1));
             const hash = encodeURIComponent(window.location.hash.substring(1));
-            const path = encodeURIComponent(window.location.pathname);
+            const path = window.location.pathname;
 
             window.location = '/oidc/yolo' +
               `?path=yolo_${path.slice(1)}&search=${search}&hash=${hash}`;
 
         }
         
-        function activate_yolo() {
+        function activate_yolo(path) {
             // A yolo call. Send to JWT gen directly
             const search = encodeURIComponent(window.location.search.substring(1));
             const hash = encodeURIComponent(window.location.hash.substring(1));
-            const path = encodeURIComponent(window.location.pathname);
 
             window.location = '/oidc/yolo' +
               `?path=${path}&search=${search}&hash=${hash}`;
