@@ -4,6 +4,8 @@ metadata:
   name: {{ .Release.Name }}-github-autoscaler-ui
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}-github-autoscaler-ui
+    ethquokkaops.io/expose-to-teleport: true
+  annotations:
     teleport.dev/name: github-runners
 spec:
   selector:
