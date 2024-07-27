@@ -3,12 +3,20 @@ name: github-runner-manager
 description: Managed self-hosted runners for GitHub
 type: application
 
-version: 0.0.14
+version: 1.0.0
 
 # App metadata
 appVersion: "v0.0.1"
+
+dependencies:
+- name: postgresql
+  version: 16.x.x
+  repository: oci://registry-1.docker.io/bitnamicharts
+  condition: postgresql.enabled
+
 sources:
   - https://github.com/EthDevOps/github-actions-autoscaler
 maintainers:
   - name: elasticroentgen
     email: markus.keil@ethereum.org
+

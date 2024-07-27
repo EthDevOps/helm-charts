@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-github-autoscaler-ui
+  labels:
+    app: {{ .Release.Name }}-github-autoscaler-ui
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-github-autoscaler-ui
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-github-autoscaler-ui
+    spec:
+      containers:
+        - name: github-autoscaler
+          image: ghcr.io/ethdevops/github-actions-autoscaler-ui:{{ .Values.uiImageTag }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 80 
+      nodeSelector:
+        kubernetes.io/os: linux

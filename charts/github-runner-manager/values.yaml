@@ -1,3 +1,11 @@
 imageTag: v0.2.0
 hostname: autoscaler.example.com
 resources: {}
+postgresql:
+  enabled: true
+  auth:
+    username: runners
+    database: runners
+    password: runners
+    postgresPassword: runners
+
