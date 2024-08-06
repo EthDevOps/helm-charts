@@ -12,10 +12,6 @@ spec:
       app: {{ .Release.Name }}-github-autoscaler-ui
   template:
     metadata:
-      annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/path: '/metrics'
-        prometheus.io/port: '9000'
       labels:
         app: {{ .Release.Name }}-github-autoscaler-ui
     spec:
