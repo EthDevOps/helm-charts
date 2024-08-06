@@ -3,7 +3,7 @@ name: github-runner-manager
 description: Managed self-hosted runners for GitHub
 type: application
 
-version: 1.0.2
+version: 1.0.3
 
 # App metadata
 appVersion: "v0.0.1"
