@@ -1024,6 +1024,16 @@ entries:
     version: 0.0.1
   jitsi-meet:
   - apiVersion: v2
+    appVersion: stable-9646
+    created: "2024-08-24T06:02:53.407768897Z"
+    description: Jitsi Meet packaged for Kubernetes
+    digest: 120764edddf694fa5f8f3bed5c32e5de0d6cb431661d82c35b4fd120b5786feb
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-meet-1.5.4/jitsi-meet-1.5.4.tgz
+    version: 1.5.4
+  - apiVersion: v2
     appVersion: stable-9457-2
     created: "2024-07-19T10:18:03.343169696Z"
     description: Jitsi Meet packaged for Kubernetes
@@ -1686,4 +1696,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-08-06T09:15:14.686324827Z"
+generated: "2024-08-24T06:02:53.407975226Z"
