@@ -708,6 +708,21 @@ entries:
   hackmd-backup:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2024-08-26T11:08:47.134321504Z"
+    description: Creates backups from a HackMD instance
+    digest: a34b6e9b94cb819abf5345801b67c4c7329b31dc88a9a8934363bfacf8ddbdaa
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: hackmd-backup
+    sources:
+    - https://github.com/EthDevOps/hackmd-backup-tool
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/hackmd-backup-0.1.2/hackmd-backup-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2024-04-04T15:51:07.386659579Z"
     description: Creates backups from a HackMD instance
     digest: bcba43e008959c0ede79fc9f23f12216ef87a72ee7d1b756744d5caeb35f4ef1
@@ -1696,4 +1711,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-08-24T06:02:53.407975226Z"
+generated: "2024-08-26T11:08:47.134547388Z"
