@@ -12,6 +12,12 @@ github:
   username: bob
   password: baz
   otpSecret: oof
+
+cookie:
+  csrf: ""
+  sessionid: ""
+  userid: ""
+
 gpgPublicKey: |
   pubkey
 
