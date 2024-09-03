@@ -1317,6 +1317,21 @@ entries:
   notion-backup:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2024-09-03T11:36:28.208707481Z"
+    description: Creates backups from Notion
+    digest: 645fd5e95a92bbe5b5859a8360f312ad64b428ebd503780bc06611dce131eeda
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: notion-backup
+    sources:
+    - https://github.com/EthDevOps/notion-backup-tool
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/notion-backup-0.1.6/notion-backup-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2024-09-03T10:17:26.735161647Z"
     description: Creates backups from Notion
     digest: adc6260eea48c8f6129a8546c4e3f16cd143efac7416eb05cdd779261e9b72de
@@ -1726,4 +1741,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-09-03T10:17:26.735432892Z"
+generated: "2024-09-03T11:36:28.208976868Z"
