@@ -397,6 +397,26 @@ entries:
   github-runner-manager:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2024-09-24T08:53:24.766378234Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    description: Managed self-hosted runners for GitHub
+    digest: 588aef3a4aa2d5b7784e5bd49f0246684e255d2de8df7569e4467a68bc95aff8
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: github-runner-manager
+    sources:
+    - https://github.com/EthDevOps/github-actions-autoscaler
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-1.0.5/github-runner-manager-1.0.5.tgz
+    version: 1.0.5
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2024-08-06T09:15:14.686029024Z"
     dependencies:
     - condition: postgresql.enabled
@@ -1741,4 +1761,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-09-03T11:36:28.208976868Z"
+generated: "2024-09-24T08:53:24.766647731Z"
