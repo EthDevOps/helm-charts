@@ -1,6 +1,7 @@
 imageTag: v0.2.0
 hostname: autoscaler.example.com
 resources: {}
+ingressClassName: haproxy
 postgresql:
   enabled: true
   auth:
