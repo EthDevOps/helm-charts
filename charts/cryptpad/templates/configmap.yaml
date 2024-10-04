@@ -84,7 +84,6 @@ data:
       AppConfig.loginSalt = '{{ .Values.loginSalt }}'
       
       // a bit security by obscurity
-      AppConfig.registeredOnlyTypes = AppConfig.availablePadTypes;
       AppConfig.disableAnonymousStore = false;
       AppConfig.disableAnonymousPadCreation = false;
 
