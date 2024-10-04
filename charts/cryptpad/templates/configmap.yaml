@@ -84,8 +84,8 @@ data:
       AppConfig.loginSalt = '{{ .Values.loginSalt }}'
       
       // a bit security by obscurity
-      AppConfig.disableAnonymousStore = false;
-      AppConfig.disableAnonymousPadCreation = false;
+      AppConfig.disableAnonymousStore = true;
+      AppConfig.disableAnonymousPadCreation = true;
 
       return AppConfig;
     });
