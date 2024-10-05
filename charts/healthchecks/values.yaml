@@ -3,6 +3,7 @@ db:
   user: dbuser
   password: mypassword
 imageTag: v3.0
+useExistingSecret: false
 baseDomain: localhost
 secretKey: 1234567890abc 
 registrationEnabled: "True" 
