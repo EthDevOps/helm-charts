@@ -938,6 +938,21 @@ entries:
   healthchecks:
   - apiVersion: v2
     appVersion: v3.0
+    created: "2024-10-05T06:42:49.655267122Z"
+    description: A Helm chart for hosting healthchecks.io
+    digest: 77f1f367813587f40cc9436b17f35fe52997d9d2721f5bd0f7d5e58a39d4a41f
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: healthchecks
+    sources:
+    - https://healthchecks.io
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/healthchecks-0.1.0/healthchecks-0.1.0.tgz
+    version: 0.1.0
+  - apiVersion: v2
+    appVersion: v3.0
     created: "2024-06-03T14:26:49.080575458Z"
     description: A Helm chart for hosting healthchecks.io
     digest: 8e2673739bcc08eb0f849c60caa20dc193abb9ff20d02d701c49d0e1eddd190c
@@ -1830,4 +1845,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-10-04T08:16:21.18777317Z"
+generated: "2024-10-05T06:42:49.655705652Z"
