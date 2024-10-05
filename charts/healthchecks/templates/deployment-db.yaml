@@ -19,7 +19,7 @@ spec:
             claimName: {{ .Release.Name }}-hc-db-data
       containers:
       - name: db
-        image: postgres:12
+        image: postgres:13
         env:
           - name: POSTGRES_DB
             value: {{ .Values.db.name }}
