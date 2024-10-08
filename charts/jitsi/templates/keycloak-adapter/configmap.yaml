@@ -8,6 +8,7 @@ data:
   KEYCLOAK_CLIENT_ID: "{{ .Values.keycloak_adapter.keycloak_client_id }}"
   JWT_APP_ID: "{{ .Values.auth.jwtAppId }}"
   JWT_APP_SECRET: "{{ .Values.auth.jwtAppSecret }}"
+  JWT_EXP_SECOND: "{{ .Values.auth.jwtExpSeconds }}"
   ALLOW_UNSECURE_CERT: "true"
   DEBUG: "{{ .Values.keycloak_adapter.enableDebug }}"
 ---

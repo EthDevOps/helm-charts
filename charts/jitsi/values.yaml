@@ -40,6 +40,9 @@ publicURL: "https://meet.ethquokkaops.io"
 
 tz: Europe/Berlin
 
+auth:
+  jwtExpSeconds: 3600
+
 image:
   pullPolicy: IfNotPresent
 
