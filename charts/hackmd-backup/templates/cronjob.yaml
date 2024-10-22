@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: hackmd-backup
-              image: ghcr.io/ethdevops/hackmd-backup-tool:{{ .Values.imageTag }}
+              image: docker.ethquokkaops.io/ethquokkaops/ethdevops/hackmd-backup-tool:{{ .Values.imageTag }}
               volumeMounts:
                 - name: credential-cache
                   mountPath: /data/credentials

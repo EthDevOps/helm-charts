@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: netboxcommunity/netbox
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/netbox-docker
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -664,7 +664,7 @@ readinessProbe:
 
 init:
   image:
-    repository: busybox
+    repository: docker.ethquokkaops.io/dh/busybox
     tag: 1.36.1
     pullPolicy: IfNotPresent
 
@@ -681,7 +681,7 @@ init:
 
 test:
   image:
-    repository: busybox
+    repository: docker.ethquokkaops.io/dh/busybox
     tag: 1.36.1
     pullPolicy: IfNotPresent
 

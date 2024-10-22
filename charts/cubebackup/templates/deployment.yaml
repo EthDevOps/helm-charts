@@ -14,14 +14,14 @@ spec:
     spec:
       initContainers:
         - name: init-config
-          image: cubebackup/cubebackup
+          image: docker.ethquokkaops.io/dh/cubebackup/cubebackup
           command: ["/bin/sh", "-c", "cp -Rnv /opt/cubebackup/etc/* /tmp/"]
           volumeMounts:
           - name: vol-config
             mountPath: /tmp
       containers:
         - name: cubebackup
-          image: cubebackup/cubebackup
+          image: docker.ethquokkaops.io/dh/cubebackup/cubebackup
           ports:
             - containerPort: 80
               name: http

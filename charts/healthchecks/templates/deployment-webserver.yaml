@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: healthchecks/healthchecks:{{ .Values.imageTag }}
+        image: docker.ethquokkaops.io/dh/healthchecks/healthchecks:{{ .Values.imageTag }}
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-hc-config

@@ -1,6 +1,6 @@
 baseDomain: patchman.example.com
 image:
-  repository: ghcr.io/ethdevops/patchman-docker
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/patchman-docker
   tag: main
 commonAnnotations: {}
 podAnnotations: {}

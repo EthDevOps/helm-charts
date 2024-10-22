@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: selenium-webdriver
-          image: selenium/standalone-chrome:{{ .Values.seleniumImageTag }}
+          image: docker.ethquokkaops.io/dh/selenium/standalone-chrome:{{ .Values.seleniumImageTag }}
           ports:
             - name: webdriver
               containerPort: 4444

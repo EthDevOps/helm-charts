@@ -20,7 +20,7 @@ spec:
                 name: {{ .Release.Name }}-clusters
           containers:
           - name: {{ .Release.Name }}-sync
-            image: ghcr.io/ethdevops/teleport-argocd-sync:{{ .Values.image.tag }}
+            image: docker.ethquokkaops.io/ethquokkaops/ethdevops/teleport-argocd-sync:{{ .Values.image.tag }}
             volumeMounts:
             - name: clusters-config
               mountPath: "/config"

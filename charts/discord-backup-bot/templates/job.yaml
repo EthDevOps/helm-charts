@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: {{ .Release.Name }}-bot
-              image: ghcr.io/ethdevops/efdiscordbackupbot:{{ .Values.imageTag }}
+              image: docker.ethquokkaops.io/ethquokkaops/ethdevops/efdiscordbackupbot:{{ .Values.imageTag }}
               volumeMounts:
                 - name: {{ .Release.Name }}-sign-secret-vol
                   mountPath: /var/sign-secret

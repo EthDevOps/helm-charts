@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: github-autoscaler
-          image: ghcr.io/ethdevops/github-actions-autoscaler-ui:{{ .Values.uiImageTag }}
+          image: docker.ethquokkaops.io/ethquokkaops/ethdevops/github-actions-autoscaler-ui:{{ .Values.uiImageTag }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           ports:

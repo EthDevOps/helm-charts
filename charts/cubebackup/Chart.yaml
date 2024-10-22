@@ -3,7 +3,7 @@ name: cubebackup
 description: A Helm chart for cubebackup
 type: application
 
-version: 0.0.7
+version: 0.0.8
 
 # App metadata
 appVersion: "v1.0.0"

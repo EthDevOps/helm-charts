@@ -13,8 +13,8 @@ podLabels: {}
 extraInitContainers: {}
 resources: {}
 image:
-  repository: ghcr.io/ethdevops/cryptpad-docker
-  tag: ""
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/cryptpad-docker
+  tag: main
 
 ingress:
   enabled: true

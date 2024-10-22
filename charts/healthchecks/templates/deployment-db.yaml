@@ -19,7 +19,7 @@ spec:
             claimName: {{ .Release.Name }}-hc-db-data
       containers:
       - name: db
-        image: postgres:16
+        image: docker.ethquokkaops.io/dh/postgres:16
         env:
           - name: POSTGRES_DB
             value: {{ .Values.db.name }}

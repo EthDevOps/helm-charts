@@ -16,7 +16,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: notion-backup
-              image: ghcr.io/ethdevops/notion-backup-tool:{{ .Values.imageTag }}
+              image: docker.ethquokkaops.io/ethquokkaops/ethdevops/notion-backup-tool:{{ .Values.imageTag }}
               volumeMounts:
                 - name: credential-cache
                   mountPath: /data/credentials

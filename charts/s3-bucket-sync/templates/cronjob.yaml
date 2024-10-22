@@ -19,7 +19,7 @@ spec:
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-minio-mirror
-            image: ghcr.io/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
+            image: docker.ethquokkaops.io/ethquokkaops/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
             {{- if .Values.useCustomConfig }}
             volumeMounts:
             - name: custom-config-vol
