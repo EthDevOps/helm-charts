@@ -1423,6 +1423,21 @@ entries:
   jitsi-monitor:
   - apiVersion: v2
     appVersion: v0.1.3
+    created: "2024-10-25T05:02:22.484320084Z"
+    description: Monitors the health of Jitsi Meet instances and bridges
+    digest: 7b8d814ff7a26769f971db42a57b6a33a9488fbd2b21269bcbb80a89cdd634ab
+    maintainers:
+    - email: george.cordalis@ethereum.org
+      name: gcordalis
+    name: jitsi-monitor
+    sources:
+    - https://github.com/EthDevOps/jitsi-monitor-docker
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-monitor-0.1.4/jitsi-monitor-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: v0.1.3
     created: "2024-10-25T04:36:25.173530594Z"
     description: Monitors the health of Jitsi Meet instances and bridges
     digest: 4cb3d4b1b9f9158ee7370edea87723c94218fa2893ddee57cd34944043bf3d4f
@@ -2121,4 +2136,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-10-25T04:36:25.173767345Z"
+generated: "2024-10-25T05:02:22.484734123Z"
