@@ -6,7 +6,7 @@ type: application
 version: 0.1.2
 
 # App metadata
-appVersion: "v0.1.0"
+appVersion: "v0.1.1"
 sources:
   - https://github.com/EthDevOps/jitsi-monitor-docker
 maintainers:
