@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  JITSI_URL: "{{ .Values.config.jitsiUrl }}"
+  BRIDGE_REGIONS: "{{ .Values.config.bridgeRegions }}"
+  RUNTIME: "{{ .Values.config.runtime }}"
+  MEDIA_OPTION: "{{ .Values.config.mediaOption }}"
+  TAKE_SCREENSHOTS: "{{ .Values.config.takeScreenshots }}"
