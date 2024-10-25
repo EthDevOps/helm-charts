@@ -15,4 +15,5 @@ cronJob:
 service:
   type: ClusterIP
   port: 8000
-  annotations: {}
+
+podAnnotations: {}
