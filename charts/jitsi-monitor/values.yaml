@@ -1,6 +1,7 @@
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-monitor-docker
-  tag: v0.1.0
+  tag: latest
+  pullPolicy: IfNotPresent
 config:
   jitsiUrl: "https://jitsihost"
   bridgeRegions: "au,eu,us"
@@ -14,3 +15,4 @@ cronJob:
 service:
   type: ClusterIP
   port: 8000
+  annotations: {}
