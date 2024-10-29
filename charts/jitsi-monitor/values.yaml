@@ -1,6 +1,6 @@
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-monitor-docker
-  tag: latest
+  tag: v0.1.4
   pullPolicy: IfNotPresent
 config:
   jitsiUrl: "https://jitsihost"
@@ -8,8 +8,6 @@ config:
   runtime: "60"
   mediaOption: "1"
   takeScreenshots: "false"
-cronJob:
-  schedule: "15 * * * *"
 
 # Service configuration
 service:

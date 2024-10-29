@@ -8,3 +8,4 @@ data:
   RUNTIME: "{{ .Values.config.runtime }}"
   MEDIA_OPTION: "{{ .Values.config.mediaOption }}"
   TAKE_SCREENSHOTS: "{{ .Values.config.takeScreenshots }}"
+  CONTINUOUS_MODE: "true"
