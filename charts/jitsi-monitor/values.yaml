@@ -1,6 +1,6 @@
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-monitor-docker
-  tag: v0.1.4
+  tag: v0.1.5
   pullPolicy: IfNotPresent
 config:
   jitsiUrl: "https://jitsihost"

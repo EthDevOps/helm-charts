@@ -3,7 +3,7 @@ name: jitsi-monitor
 description: Monitors the health of Jitsi Meet instances and bridges
 type: application
 
-version: 0.1.5
+version: 0.1.6
 
 # App metadata
 appVersion: "v0.1.3"
