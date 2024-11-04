@@ -22,6 +22,9 @@ spec:
         - name: jitsi-monitor
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: http
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config
