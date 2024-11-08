@@ -6,7 +6,7 @@ admins: []
 maxUploadSize: 1
 maxPremiumUploadSize: 100 
 loginSalt: "abcdefg"
-installOffice: false
+installOffice: no
 
 podAnnotations: {}
 podLabels: {}
