@@ -54,7 +54,7 @@ spec:
         - name: CPAD_CONF
           value: "/cryptpad/config/config.js"
         - name: CPAD_INSTALL_ONLYOFFICE
-          value: {{ .Values.installOffice }}
+          value: "yes" 
         ports:
         - name: http
           containerPort: 3000
