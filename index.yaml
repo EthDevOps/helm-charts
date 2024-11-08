@@ -52,6 +52,19 @@ entries:
   cryptpad:
   - apiVersion: v2
     appVersion: 2024.3.1
+    created: "2024-11-08T10:03:32.981904475Z"
+    description: A Helm chart for cryptpad
+    digest: 235a2b7d141e9ac9cf239eb926c5346b16fa56e42b30aa570308f0e020c46623
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cryptpad
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cryptpad-0.0.15/cryptpad-0.0.15.tgz
+    version: 0.0.15
+  - apiVersion: v2
+    appVersion: 2024.3.1
     created: "2024-11-08T09:46:30.179703508Z"
     description: A Helm chart for cryptpad
     digest: 93c18944ca3ea06599379db2b63160c04b9a24b062d2a6acb98d4a8e7cf57fc0
@@ -2209,4 +2222,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2024-11-08T09:46:30.180066618Z"
+generated: "2024-11-08T10:03:32.982188114Z"
