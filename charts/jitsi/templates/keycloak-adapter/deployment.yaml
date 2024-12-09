@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}-keycloak-adapter
-        image: ghcr.io/ethdevops/jitsi-keycloak-adapter:{{ .Values.keycloak_adapter.imageTag }}
+        image: "{{ .Values.keycloak_adapter.imageRepository }}:{{ .Values.keycloak_adapter.imageTag }}"ß"
         ports:
         - containerPort: 9000
         envFrom:
