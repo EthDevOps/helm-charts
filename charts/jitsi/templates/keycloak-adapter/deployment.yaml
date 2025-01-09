@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: {{ .Release.Name }}-keycloak-adapter
-        image: "{{ .Values.keycloak_adapter.imageRepository }}:{{ .Values.keycloak_adapter.imageTag }}"ß"
+        image: "{{ .Values.keycloak_adapter.imageRepository }}:{{ .Values.keycloak_adapter.imageTag }}"
         ports:
         - containerPort: 9000
         envFrom:
