@@ -2225,6 +2225,20 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
+  simple-website:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-01-16T07:55:52.864184672Z"
+    description: A Helm chart for simple websites
+    digest: 0a46404f890d9903509b2a55301515d0223bd76e47254f55c0e626d23056e1a7
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: simple-website
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/simple-website-0.0.1/simple-website-0.0.1.tgz
+    version: 0.0.1
   teleport-argo-sync:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -2265,4 +2279,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2025-01-12T20:10:59.661793257Z"
+generated: "2025-01-16T07:55:52.864479584Z"
