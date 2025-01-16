@@ -1,6 +1,7 @@
 baseDomain: example.com
 containerPort: 3000
 imageRepository: docker.ethquokkaops.io/example
+imageVersion: latest
 ingress:
   enabled: true
   className: haproxy
