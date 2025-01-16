@@ -1,0 +1,10 @@
+baseDomain: example.com
+containerPort: 3000
+imageRepository: docker.ethquokkaops.io/example
+ingress:
+  enabled: true
+  className: haproxy
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+

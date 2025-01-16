@@ -1,0 +1,12 @@
+apiVersion: v2
+name: simple-website
+description: A Helm chart for simple websites
+type: application
+
+version: 0.0.1
+
+# App metadata
+appVersion: "1.0.0"
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org
