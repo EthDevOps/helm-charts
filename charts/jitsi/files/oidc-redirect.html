@@ -14,8 +14,7 @@
         margin: 0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Oxygen, Ubuntu, Cantarell, sans-serif;
-        background: url("./EF-website-landscape-landing-03-12000px.jpg")
-          no-repeat center center fixed;
+        background: url("./oidc-redirect-bg.jpg") no-repeat center center fixed;
         background-size: 220%;
         color: #1a1f36;
       }
@@ -213,13 +212,7 @@
           fill="#58B36F"
         ></path>
       </svg>
-      <!-- <img
-        src="./ETH-logo.png"
-        alt="Ethereum Foundation"
-        class="ef-logo"
-        style="max-width: 80%; height: auto"
-      /> -->
-      <h1>Sign in to Jitsi</h1>
+      <h1 id="heading">Sign in to Jitsi</h1>
 
       <button class="button" onclick="loginEF()">
         <img
@@ -230,14 +223,14 @@
         <span>EF Account</span>
       </button>
 
-      <button class="button" onclick="loginPSE()">
+      <!-- <button class="button" onclick="loginPSE()">
         <img
           src="https://www.google.com/favicon.ico"
           alt="Google"
           class="google-icon"
         />
         <span>PSE Account</span>
-      </button>
+      </button> -->
 
       <div class="divider">
         <span>OR</span>
@@ -252,8 +245,6 @@
         individuals.<br />
         Contact EF DevOps for setting up moderator allow-lists for your room.
       </p>
-
-      <h3 id="redirect" style="display: none">Redirecting...</h3>
     </div>
 
     <script>
@@ -277,7 +268,7 @@
       }
 
       function loginEF() {
-        document.getElementById("redirect").style.display = "block";
+        document.getElementById("heading").textContent = "Redirecting...";
         const path = encodeURIComponent(window.location.pathname);
         const search = encodeURIComponent(window.location.search.substring(1));
         const hash = encodeURIComponent(window.location.hash.substring(1));
@@ -287,18 +278,17 @@
       }
 
       function loginPSE() {
-        document.getElementById("redirect").style.display = "block";
+        document.getElementById("heading").textContent = "Redirecting...";
         const path = encodeURIComponent(window.location.pathname);
         const search = encodeURIComponent(window.location.search.substring(1));
         const hash = encodeURIComponent(window.location.hash.substring(1));
 
-        // Note: You'll need to update this endpoint to handle PSE authentication
         window.location =
           "/oidc/redirect-pse" + `?path=${path}&search=${search}&hash=${hash}`;
       }
 
       function guest() {
-        document.getElementById("redirect").style.display = "block";
+        document.getElementById("heading").textContent = "Redirecting...";
         window.location = addQueryParam(
           window.location,
           "oidc",
