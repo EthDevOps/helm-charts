@@ -1,4 +1,4 @@
-{{- $bgContent := .Files.Get "files/eth_space.jpg" }}
+{{- $bgContent := .Files.Get "files/oidc-redirect-bg.jpg" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
