@@ -8,4 +8,5 @@ data:
 {{ (.Files.Glob "files/body.html").AsConfig | indent 2}}
 {{ (.Files.Glob "files/oidc-adapter.html").AsConfig | indent 2}}
 {{ (.Files.Glob "files/oidc-redirect.html").AsConfig | indent 2}}
-{{ (.Files.Glob "files/oidc-redirect-bg.jpg").AsConfig | indent 2}}
+binaryData:
+  oidc-redirect-bg.jpg: {{ .Files.Get "files/oidc-redirect-bg.jpg" | b64enc | quote }}
