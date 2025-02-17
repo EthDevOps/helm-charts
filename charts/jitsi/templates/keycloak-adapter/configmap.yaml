@@ -11,6 +11,7 @@ data:
   JWT_EXP_SECOND: "{{ .Values.auth.jwtExpSeconds }}"
   ALLOW_UNSECURE_CERT: "true"
   DEBUG: "{{ .Values.keycloak_adapter.enableDebug }}"
+  ALLOWED_DOMAINS: "{{ .Values.keycloak_adapter.allowedDomains | join "," }}"
 ---
 apiVersion: v1
 kind: ConfigMap
