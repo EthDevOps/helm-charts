@@ -1,0 +1,26 @@
+replicaCount: 1
+appDomain: docmost.example.com
+image:
+  repository: docmost/docmost
+  tag: latest
+  pullPolicy: IfNotPresent
+
+postgresql:
+  enabled: true
+  auth:
+    username: docmost
+    password: docmost
+
+redis:
+  enabled: true
+  architecture: standalone
+
+persistence:
+  size: 1Gi
+
+ingress:
+  enabled: true
+  annotations: {}
+  tls:
+    secretName: docmost-tls
+

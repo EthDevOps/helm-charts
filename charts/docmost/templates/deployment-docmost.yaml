@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-docmost
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-docmost
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-docmost
+    spec:
+      containers:
+        - name: docmost
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          env:
+            - name: APP_URL
+              value: "https://{{ .Values.appUrl }}"
+            - name: APP_SECRET
+              value: "{{ .Values.appSecret }}"
+            - name: DATABASE_URL
+              value: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:{{ .Values.postgresql.auth.password }}@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql}}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}?schema=public"
+            - name: REDIS_URL
+              value: "redis://{{ printf "%s-master" (include "common.names.fullname" .Subcharts.redis) }}:{{ .Values.redis.master.service.ports.redis }}"
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: docmost-storage
+              mountPath: /app/data/storage
+      volumes:
+        - name: docmost-storage
+          persistentVolumeClaim:
+            claimName: {{.Release.Name}}-docmost-pvc
+
