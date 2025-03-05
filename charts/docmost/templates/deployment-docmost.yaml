@@ -17,7 +17,7 @@ spec:
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           env:
             - name: APP_URL
-              value: "https://{{ .Values.appUrl }}"
+              value: "https://{{ .Values.appDomain }}"
             - name: APP_SECRET
               value: "{{ .Values.appSecret }}"
             - name: DATABASE_URL
