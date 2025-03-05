@@ -3,9 +3,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-docmost-app
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   type: ClusterIP
   ports:
-    - port: 3000
+    - name: http
+      port: 3000
       targetPort: 3000
   selector:
     app: {{ .Release.Name }}-docmost
