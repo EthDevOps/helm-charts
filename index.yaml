@@ -515,6 +515,29 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/discord-backup-bot-0.1.1/discord-backup-bot-0.1.1.tgz
     version: 0.1.1
+  docmost:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-03-05T17:22:08.714968838Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: OpenSource alternative for Notion
+    digest: 1968760719a407ea1bb7c6b36947c64d412cf69cb3342dfa3a6d96d76922c543
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: docmost
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/docmost-0.0.16/docmost-0.0.16.tgz
+    version: 0.0.16
   github-runner-manager:
   - apiVersion: v2
     appVersion: v0.0.1
@@ -2362,4 +2385,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2025-02-17T02:23:58.793682845Z"
+generated: "2025-03-05T17:22:08.715244945Z"
