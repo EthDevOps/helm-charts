@@ -2050,6 +2050,28 @@ entries:
   outline:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-03-06T14:46:09.428429363Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: OpenSource alternative for Notion
+    digest: a57f86e04acfee8011fbfb3abffedbaac5a6f4722fa520289e2212ebc7cbcfad
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: outline
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/outline-0.0.3/outline-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-03-06T14:20:51.234024138Z"
     dependencies:
     - condition: postgresql.enabled
@@ -2474,4 +2496,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2025-03-06T14:20:51.234306399Z"
+generated: "2025-03-06T14:46:09.428698906Z"
