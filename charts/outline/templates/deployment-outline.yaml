@@ -15,6 +15,9 @@ spec:
       containers:
         - name: outline
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          env:
+            - name: PGSSLMODE
+              value: disable
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config
