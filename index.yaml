@@ -2047,6 +2047,29 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/notion-backup-0.1.1/notion-backup-0.1.1.tgz
     version: 0.1.1
+  outline:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-03-06T14:20:51.234024138Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: OpenSource alternative for Notion
+    digest: 1ca84fc45c27049dfd61778a1a65f33a20d40bb8933a1a6172af5dcd43ce432b
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: outline
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/outline-0.0.2/outline-0.0.2.tgz
+    version: 0.0.2
   patchman:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -2451,4 +2474,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2025-03-05T18:05:47.522326623Z"
+generated: "2025-03-06T14:20:51.234306399Z"
