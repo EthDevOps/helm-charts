@@ -1,0 +1,112 @@
+secretKey: "947f6c8871b9e176bd4cbf90c9b6ef365094781a7b70781afc73d2eaa0b04872"
+utilsSecret: "947f6c8871b9e176bd4cbf90c9b6ef365094781a7b70781afc73d2eaa0b04872"
+databaseUrl: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:{{ .Values.postgresql.auth.password }}@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql}}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}?schema=public"
+databaseConnectionPoolMin: ""
+databaseConnectionPoolMax: ""
+redisUrl: "redis://{{ printf "%s-master" (include "common.names.fullname" .Subcharts.redis) }}:{{ .Values.redis.master.service.ports.redis }}"
+url: ""
+port: 3000
+collaborationUrl: ""
+fileStorage: "local"
+fileStorageLocalRootDir: "/var/lib/outline/data"
+fileStorageUploadMaxSize: 262144000
+fileStorageImportMaxSize: ""
+fileStorageWorkspaceImportMaxSize: ""
+awsAccessKeyId: "get_a_key_from_aws"
+awsSecretAccessKey: "get_the_secret_of_above_key"
+awsRegion: "xx-xxxx-x"
+awsS3AccelerateUrl: ""
+awsS3UploadBucketUrl: "http://s3:4569"
+awsS3UploadBucketName: "bucket_name_here"
+awsS3ForcePathStyle: true
+awsS3Acl: "private"
+slackClientId: "get_a_key_from_slack"
+slackClientSecret: "get_the_secret_of_above_key"
+googleClientId: ""
+googleClientSecret: ""
+azureClientId: ""
+azureClientSecret: ""
+azureResourceAppId: ""
+oidcClientId: ""
+oidcClientSecret: ""
+oidcAuthUri: ""
+oidcTokenUri: ""
+oidcUserinfoUri: ""
+oidcLogoutUri: ""
+oidcUsernameClaim: "preferred_username"
+oidcDisplayName: "OpenID Connect"
+oidcScopes: "openid profile email"
+githubClientId: ""
+githubClientSecret: ""
+githubAppName: ""
+githubAppId: ""
+githubAppPrivateKey: ""
+discordClientId: ""
+discordClientSecret: ""
+discordServerId: ""
+discordServerRoles: ""
+sslKey: ""
+sslCert: ""
+cdnUrl: ""
+forceHttps: true
+enableUpdates: true
+webConcurrency: 1
+debug: "http"
+logLevel: "info"
+slackVerificationToken: "your_token"
+slackAppId: "A0XXXXXXX"
+slackMessageActions: true
+dropboxAppKey: ""
+sentryDsn: ""
+sentryTunnel: ""
+smtpHost: ""
+smtpPort: ""
+smtpUsername: ""
+smtpPassword: ""
+smtpFromEmail: ""
+smtpReplyEmail: ""
+smtpTlsCiphers: ""
+smtpSecure: true
+defaultLanguage: "en_US"
+rateLimiterEnabled: true
+rateLimiterRequests: 1000
+rateLimiterDurationWindow: 60
+iframelyUrl: ""
+iframelyApiKey: ""
+
+
+
+
+
+
+
+
+
+
+
+replicaCount: 1
+appDomain: docmost.example.com
+image:
+  repository: docmost/docmost
+  tag: latest
+  pullPolicy: IfNotPresent
+
+postgresql:
+  enabled: true
+  auth:
+    username: docmost
+    password: docmost
+
+redis:
+  enabled: true
+  architecture: standalone
+
+persistence:
+  size: 1Gi
+
+ingress:
+  enabled: true
+  annotations: {}
+  tls:
+    secretName: docmost-tls
+

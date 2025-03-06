@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-outline
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-outline
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-outline
+    spec:
+      containers:
+        - name: outline
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: outline-storage
+              mountPath: /var/lib/outline/data
+      volumes:
+        - name: outline-storage
+          persistentVolumeClaim:
+            claimName: {{.Release.Name}}-outline-pvc
+

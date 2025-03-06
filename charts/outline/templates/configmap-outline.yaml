@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  NODE_ENV: production
+  SECRET_KEY: {{ .Values.secretKey | quote }}
+  UTILS_SECRET: {{ .Values.utilsSecret | quote }}
+  DATABASE_URL: {{ .Values.databaseUrl | quote }}
+  DATABASE_CONNECTION_POOL_MIN: {{ .Values.databaseConnectionPoolMin | quote }}
+  DATABASE_CONNECTION_POOL_MAX: {{ .Values.databaseConnectionPoolMax | quote }}
+  REDIS_URL: {{ .Values.redisUrl | quote }}
+  URL: {{ .Values.url | quote }}
+  PORT: {{ .Values.port | quote }}
+  COLLABORATION_URL: {{ .Values.collaborationUrl | quote }}
+  FILE_STORAGE: {{ .Values.fileStorage | quote }}
+  FILE_STORAGE_LOCAL_ROOT_DIR: {{ .Values.fileStorageLocalRootDir | quote }}
+  FILE_STORAGE_UPLOAD_MAX_SIZE: {{ .Values.fileStorageUploadMaxSize | quote }}
+  FILE_STORAGE_IMPORT_MAX_SIZE: {{ .Values.fileStorageImportMaxSize | quote }}
+  FILE_STORAGE_WORKSPACE_IMPORT_MAX_SIZE: {{ .Values.fileStorageWorkspaceImportMaxSize | quote }}
+  AWS_ACCESS_KEY_ID: {{ .Values.awsAccessKeyId | quote }}
+  AWS_SECRET_ACCESS_KEY: {{ .Values.awsSecretAccessKey | quote }}
+  AWS_REGION: {{ .Values.awsRegion | quote }}
+  AWS_S3_ACCELERATE_URL: {{ .Values.awsS3AccelerateUrl | quote }}
+  AWS_S3_UPLOAD_BUCKET_URL: {{ .Values.awsS3UploadBucketUrl | quote }}
+  AWS_S3_UPLOAD_BUCKET_NAME: {{ .Values.awsS3UploadBucketName | quote }}
+  AWS_S3_FORCE_PATH_STYLE: {{ .Values.awsS3ForcePathStyle | quote }}
+  AWS_S3_ACL: {{ .Values.awsS3Acl | quote }}
+  SLACK_CLIENT_ID: {{ .Values.slackClientId | quote }}
+  SLACK_CLIENT_SECRET: {{ .Values.slackClientSecret | quote }}
+  GOOGLE_CLIENT_ID: {{ .Values.googleClientId | quote }}
+  GOOGLE_CLIENT_SECRET: {{ .Values.googleClientSecret | quote }}
+  AZURE_CLIENT_ID: {{ .Values.azureClientId | quote }}
+  AZURE_CLIENT_SECRET: {{ .Values.azureClientSecret | quote }}
+  AZURE_RESOURCE_APP_ID: {{ .Values.azureResourceAppId | quote }}
+  OIDC_CLIENT_ID: {{ .Values.oidcClientId | quote }}
+  OIDC_CLIENT_SECRET: {{ .Values.oidcClientSecret | quote }}
+  OIDC_AUTH_URI: {{ .Values.oidcAuthUri | quote }}
+  OIDC_TOKEN_URI: {{ .Values.oidcTokenUri | quote }}
+  OIDC_USERINFO_URI: {{ .Values.oidcUserinfoUri | quote }}
+  OIDC_LOGOUT_URI: {{ .Values.oidcLogoutUri | quote }}
+  OIDC_USERNAME_CLAIM: {{ .Values.oidcUsernameClaim | quote }}
+  OIDC_DISPLAY_NAME: {{ .Values.oidcDisplayName | quote }}
+  OIDC_SCOPES: {{ .Values.oidcScopes | quote }}
+  GITHUB_CLIENT_ID: {{ .Values.githubClientId | quote }}
+  GITHUB_CLIENT_SECRET: {{ .Values.githubClientSecret | quote }}
+  GITHUB_APP_NAME: {{ .Values.githubAppName | quote }}
+  GITHUB_APP_ID: {{ .Values.githubAppId | quote }}
+  GITHUB_APP_PRIVATE_KEY: {{ .Values.githubAppPrivateKey | quote }}
+  DISCORD_CLIENT_ID: {{ .Values.discordClientId | quote }}
+  DISCORD_CLIENT_SECRET: {{ .Values.discordClientSecret | quote }}
+  DISCORD_SERVER_ID: {{ .Values.discordServerId | quote }}
+  DISCORD_SERVER_ROLES: {{ .Values.discordServerRoles | quote }}
+  SSL_KEY: {{ .Values.sslKey | quote }}
+  SSL_CERT: {{ .Values.sslCert | quote }}
+  CDN_URL: {{ .Values.cdnUrl | quote }}
+  FORCE_HTTPS: {{ .Values.forceHttps | quote }}
+  ENABLE_UPDATES: {{ .Values.enableUpdates | quote }}
+  WEB_CONCURRENCY: {{ .Values.webConcurrency | quote }}
+  DEBUG: {{ .Values.debug | quote }}
+  LOG_LEVEL: {{ .Values.logLevel | quote }}
+  SLACK_VERIFICATION_TOKEN: {{ .Values.slackVerificationToken | quote }}
+  SLACK_APP_ID: {{ .Values.slackAppId | quote }}
+  SLACK_MESSAGE_ACTIONS: {{ .Values.slackMessageActions | quote }}
+  DROPBOX_APP_KEY: {{ .Values.dropboxAppKey | quote }}
+  SENTRY_DSN: {{ .Values.sentryDsn | quote }}
+  SENTRY_TUNNEL: {{ .Values.sentryTunnel | quote }}
+  SMTP_HOST: {{ .Values.smtpHost | quote }}
+  SMTP_PORT: {{ .Values.smtpPort | quote }}
+  SMTP_USERNAME: {{ .Values.smtpUsername | quote }}
+  SMTP_PASSWORD: {{ .Values.smtpPassword | quote }}
+  SMTP_FROM_EMAIL: {{ .Values.smtpFromEmail | quote }}
+  SMTP_REPLY_EMAIL: {{ .Values.smtpReplyEmail | quote }}
+  SMTP_TLS_CIPHERS: {{ .Values.smtpTlsCiphers | quote }}
+  SMTP_SECURE: {{ .Values.smtpSecure | quote }}
+  DEFAULT_LANGUAGE: {{ .Values.defaultLanguage | quote }}
+  RATE_LIMITER_ENABLED: {{ .Values.rateLimiterEnabled | quote }}
+  RATE_LIMITER_REQUESTS: {{ .Values.rateLimiterRequests | quote }}
+  RATE_LIMITER_DURATION_WINDOW: {{ .Values.rateLimiterDurationWindow | quote }}
+  IFRAMELY_URL: {{ .Values.iframelyUrl | quote }}
+  IFRAMELY_API_KEY: {{ .Values.iframelyApiKey | quote }}
+

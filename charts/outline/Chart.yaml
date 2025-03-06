@@ -1,0 +1,21 @@
+apiVersion: v2
+name: outline
+description: OpenSource alternative for Notion
+type: application
+
+version: 0.0.1
+
+# App metadata
+appVersion: "1.0.0"
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org
+dependencies:
+- name: postgresql
+  version: 16.x.x
+  repository: oci://registry-1.docker.io/bitnamicharts
+  condition: postgresql.enabled
+- name: redis
+  version: 18.x.x
+  repository: oci://registry-1.docker.io/bitnamicharts
+  condition: redis.enabled
