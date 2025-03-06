@@ -1,9 +1,9 @@
 secretKey: "947f6c8871b9e176bd4cbf90c9b6ef365094781a7b70781afc73d2eaa0b04872"
 utilsSecret: "947f6c8871b9e176bd4cbf90c9b6ef365094781a7b70781afc73d2eaa0b04872"
-databaseUrl: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:{{ .Values.postgresql.auth.password }}@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql}}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}?schema=public"
+databaseUrl: "postgresql://postgres:postgres@db:5432/postgres?schema=public"
 databaseConnectionPoolMin: ""
 databaseConnectionPoolMax: ""
-redisUrl: "redis://{{ printf "%s-master" (include "common.names.fullname" .Subcharts.redis) }}:{{ .Values.redis.master.service.ports.redis }}"
+redisUrl: "redis://redis:6379"
 url: ""
 port: 3000
 collaborationUrl: ""
