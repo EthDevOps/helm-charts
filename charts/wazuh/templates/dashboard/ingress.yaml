@@ -8,6 +8,7 @@ metadata:
   annotations:
     {{- toYaml .Values.dashboard.ingress.annotations | nindent 4 }}
 spec:
+  ingressClassName: {{ .Values.dashboard.ingress.className }}
   {{- with .Values.dashboard.ingress.tls }}
   tls:
     {{- range . }}
