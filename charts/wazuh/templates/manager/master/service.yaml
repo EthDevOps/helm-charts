@@ -20,3 +20,23 @@ spec:
     app: {{ include "wazuh.fullname" . }}-manager
     node-type: master
   type: {{ .Values.wazuh.master.service.type }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # Name is only "wazuh" because of Certicates commonName
+  name: {{ include "wazuh.fullname" . }}-manager-master
+  labels:
+    app: {{ include "wazuh.fullname" . }}-manager
+    node-type: master
+  annotations:
+    {{- toYaml .Values.wazuh.master.service.annotations | nindent 4 }}
+spec:
+  ports:
+    - name: cluster
+      port: {{ .Values.wazuh.service.port }}
+      targetPort: {{ .Values.wazuh.service.port }}
+  selector:
+    app: {{ include "wazuh.fullname" . }}-manager
+    node-type: master
+  type: {{ .Values.wazuh.master.service.type }}

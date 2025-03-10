@@ -706,7 +706,7 @@ uiSettings.overrides.defaultRoute: /app/wz-home
     <bind_addr>0.0.0.0</bind_addr>
     <nodes>
         <!-- Kubernetes Service Pointing to Master node -->
-        <node>{{ include "wazuh.fullname" . }}-manager-master-0</node>
+        <node>{{ include "wazuh.fullname" . }}-manager-master</node>
     </nodes>
     <hidden>no</hidden>
     <disabled>no</disabled>
