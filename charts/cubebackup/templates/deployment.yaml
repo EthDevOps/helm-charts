@@ -14,7 +14,7 @@ spec:
     spec:
       initContainers:
         - name: init-config
-          image: docker.ethquokkaops.io/dh/cubebackup/cubebackup
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           command: ["/bin/sh", "-c", "cp -Rnv /opt/cubebackup/etc/* /tmp/"]
           volumeMounts:
           - name: vol-config
