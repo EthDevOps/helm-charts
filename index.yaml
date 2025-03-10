@@ -261,6 +261,21 @@ entries:
   cubebackup:
   - apiVersion: v2
     appVersion: v1.0.0
+    created: "2025-03-10T06:41:38.283459536Z"
+    description: A Helm chart for cubebackup
+    digest: 53141746d0175776048f5463f7728f07f9316032b9abc7926336ff15beef2e69
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cubebackup
+    sources:
+    - https://cubebackup.com
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cubebackup-0.1.0/cubebackup-0.1.0.tgz
+    version: 0.1.0
+  - apiVersion: v2
+    appVersion: v1.0.0
     created: "2024-10-22T09:03:39.577777307Z"
     description: A Helm chart for cubebackup
     digest: 51d14bf34b89758e5a48161dc2b6e1b241f8d28c541ed8e47109284fd83d64df
@@ -2518,4 +2533,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2025-03-06T17:04:20.401587627Z"
+generated: "2025-03-10T06:41:38.284078217Z"
