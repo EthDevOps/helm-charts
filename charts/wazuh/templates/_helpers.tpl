@@ -359,7 +359,7 @@ uiSettings.overrides.defaultRoute: /app/wz-home
     <port>{{ .Values.wazuh.service.port }}</port>
     <bind_addr>0.0.0.0</bind_addr>
     <nodes>
-        <node>wazuh-manager-master-0.wazuh-manager-cluster</node>
+        <node>{{ include "wazuh.fullname" . }}-manager-master-0</node>
     </nodes>
     <hidden>no</hidden>
     <disabled>no</disabled>
@@ -706,7 +706,7 @@ uiSettings.overrides.defaultRoute: /app/wz-home
     <bind_addr>0.0.0.0</bind_addr>
     <nodes>
         <!-- Kubernetes Service Pointing to Master node -->
-        <node>wazuh-manager-master-0.wazuh-manager-cluster</node>
+        <node>{{ include "wazuh.fullname" . }}-manager-master-0</node>
     </nodes>
     <hidden>no</hidden>
     <disabled>no</disabled>
