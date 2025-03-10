@@ -1,0 +1,7 @@
+file: shapes/00-sec-envs-sec-default.yaml
+custom:
+  confMapName: wazuh-api-cred
+secretenvs:
+  # Please encode your password to base64 to exclude some problems
+  password: xxxxxxx==
+  username: admin-api
