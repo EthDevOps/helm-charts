@@ -2558,6 +2558,67 @@ entries:
           url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/threat-hunting.png
     apiVersion: v2
     appVersion: 4.10.1
+    created: "2025-03-10T17:43:49.571108821Z"
+    dependencies:
+    - condition: reloader.enabled
+      name: reloader
+      repository: https://stakater.github.io/stakater-charts
+      version: 1.2.1
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.16.3
+    description: Wazuh is a free and open source security platform that unifies XDR
+      and SIEM protection for endpoints and cloud workloads.
+    digest: 8bb9f8094c558099e243626eb30e61e81ce6335e1b38fe2f4786d8fa8606f1b7
+    home: https://wazuh.com/
+    icon: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/icon.png
+    keywords:
+    - security
+    - information
+    - threat
+    - management
+    - kubernetes
+    - wazuh
+    - opendistro
+    - elasticsearch
+    maintainers:
+    - email: andre.gomes@promptlyhealth.com
+      name: Dani
+      url: https://github.com/Ca-moes
+    - name: Morgoved
+      url: https://github.com/morgoved
+    name: wazuh
+    sources:
+    - https://github.com/morgoved/wazuh-helm
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.8/wazuh-0.0.8.tgz
+    version: 0.0.8
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/changes: |
+        - kind: added
+          description: "Add support for cert-manager"
+        - kind: changed
+          description: "Refactor whole chart"
+        - kind: changed
+          description: "Bump wazuh-manager to 4.10.1"
+      artifacthub.io/links: |
+        - name: application source
+          url: https://github.com/wazuh/wazuh
+        - name: kustomize source
+          url: https://github.com/wazuh/wazuh-kubernetes
+      artifacthub.io/prerelease: "true"
+      artifacthub.io/screenshots: |
+        - title: Home Page
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/dashboard.png
+        - title: Agent Deployment
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/agent-deploy.png
+        - title: Threat Hunting
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/threat-hunting.png
+    apiVersion: v2
+    appVersion: 4.10.1
     created: "2025-03-10T11:18:17.41317255Z"
     dependencies:
     - condition: reloader.enabled
@@ -2900,4 +2961,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-03-10T11:18:17.413497567Z"
+generated: "2025-03-10T17:43:49.571397488Z"
