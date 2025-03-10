@@ -2533,4 +2533,66 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
-generated: "2025-03-10T06:41:38.284078217Z"
+  wazuh:
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/changes: |
+        - kind: added
+          description: "Add support for cert-manager"
+        - kind: changed
+          description: "Refactor whole chart"
+        - kind: changed
+          description: "Bump wazuh-manager to 4.10.1"
+      artifacthub.io/links: |
+        - name: application source
+          url: https://github.com/wazuh/wazuh
+        - name: kustomize source
+          url: https://github.com/wazuh/wazuh-kubernetes
+      artifacthub.io/prerelease: "true"
+      artifacthub.io/screenshots: |-
+        - title: Home Page
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/dashboard.png
+        - title: Agent Deployment
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/agent-deploy.png
+        - title: Threat Hunting
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/threat-hunting.png
+    apiVersion: v2
+    appVersion: 4.10.1
+    created: "2025-03-10T07:05:51.04899349Z"
+    dependencies:
+    - condition: reloader.enabled
+      name: reloader
+      repository: https://stakater.github.io/stakater-charts
+      version: 1.2.1
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.16.3
+    description: Wazuh is a free and open source security platform that unifies XDR
+      and SIEM protection for endpoints and cloud workloads.
+    digest: db578a724ff70fe56f2498208aa0ee020be1e2e36c685e03c299e8aa7e9b8761
+    home: https://wazuh.com/
+    icon: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/icon.png
+    keywords:
+    - security
+    - information
+    - threat
+    - management
+    - kubernetes
+    - wazuh
+    - opendistro
+    - elasticsearch
+    maintainers:
+    - email: andre.gomes@promptlyhealth.com
+      name: Dani
+      url: https://github.com/Ca-moes
+    - name: Morgoved
+      url: https://github.com/morgoved
+    name: wazuh
+    sources:
+    - https://github.com/morgoved/wazuh-helm
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
+    version: 0.0.2
+generated: "2025-03-10T07:05:51.049289121Z"
