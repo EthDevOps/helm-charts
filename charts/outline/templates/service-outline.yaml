@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-outline-app
 spec:
-  ingressClassName: {{ .Values.ingress.className }}
   type: ClusterIP
   ports:
     - name: http
