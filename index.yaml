@@ -2087,6 +2087,28 @@ entries:
   outline:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-03-15T08:36:16.668485559Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: OpenSource alternative for Notion
+    digest: 25d661323e5a20385c61a3658f0c13f7486a61c8a534b0a11b2fa982da48eb2a
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: outline
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/outline-0.0.5/outline-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-03-06T17:04:20.401228375Z"
     dependencies:
     - condition: postgresql.enabled
@@ -2983,4 +3005,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-03-15T08:35:57.309023566Z"
+generated: "2025-03-15T08:36:16.668794506Z"
