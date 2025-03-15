@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-docmost-app
 spec:
-  ingressClassName: {{ .Values.ingress.className }}
   type: ClusterIP
   ports:
     - name: http
