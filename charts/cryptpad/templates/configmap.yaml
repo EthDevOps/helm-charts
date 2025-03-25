@@ -72,6 +72,14 @@ data:
       logFeedback: false,
       verbose: false,
       installMethod: 'docker',
+
+      /* =====================
+      *       SSO
+      * ===================== */
+      sso: {
+        enabled: true,
+        configPath: "./config/sso.js",
+      },
     };
   application_config.js: |-
     define(['/common/application_config_internal.js'], function (AppConfig) {
