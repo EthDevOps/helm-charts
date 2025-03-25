@@ -89,3 +89,25 @@ data:
 
       return AppConfig;
     });
+  sso.js: |-
+    module.exports = {
+      // Enable SSO login on this instance
+      enabled: true,
+      // Block registration for non-SSO users on this instance
+      enforced: false,
+      // Allow users to add an additional CryptPad password to their SSO account
+      cpPassword: false,
+      // You can also force your SSO users to add a CryptPad password
+      forceCpPassword: false,
+
+      list: [
+        {
+          name: "google",
+          type: "oidc",
+          url: "https://accounts.google.com",
+          client_id: "{{ .Values.sso.client_id }}",
+          client_secret: "{{ .Values.sso.client_secret }}",
+          jwt_alg: "RS256",
+        },
+      ],
+    };

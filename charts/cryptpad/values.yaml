@@ -4,9 +4,12 @@ baseDomain: pad.example.com
 sandboxDomain: sandbox.example.com
 admins: []
 maxUploadSize: 1
-maxPremiumUploadSize: 100 
+maxPremiumUploadSize: 100
 loginSalt: "abcdefg"
 installOffice: no
+sso:
+  client_id: "abcdefg"
+  client_secret: "abcdefg"
 
 podAnnotations: {}
 podLabels: {}
@@ -19,7 +22,8 @@ image:
 ingress:
   enabled: true
   className: ""
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   tls:
