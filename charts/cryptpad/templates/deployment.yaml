@@ -54,7 +54,17 @@ spec:
         - name: CPAD_CONF
           value: "/cryptpad/config/config.js"
         - name: CPAD_INSTALL_ONLYOFFICE
-          value: "yes" 
+          value: "yes"
+        - name: SSO_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-sso
+              key: client_id
+        - name: SSO_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-sso
+              key: client_secret
         ports:
         - name: http
           containerPort: 3000
