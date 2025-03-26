@@ -55,16 +55,18 @@ spec:
           value: "/cryptpad/config/config.js"
         - name: CPAD_INSTALL_ONLYOFFICE
           value: "yes"
+        {{- if .Values.sso.existingSecret }}
         - name: SSO_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-sso
-              key: client_id
+              name: {{ .Values.sso.existingSecret }}
+              key: {{ .Values.sso.secretKeys.client_id }}
         - name: SSO_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-sso
-              key: client_secret
+              name: {{ .Values.sso.existingSecret }}
+              key: {{ .Values.sso.secretKeys.client_secret }}
+        {{- end }}
         ports:
         - name: http
           containerPort: 3000

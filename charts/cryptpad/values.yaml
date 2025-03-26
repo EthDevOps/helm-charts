@@ -8,8 +8,10 @@ maxPremiumUploadSize: 100
 loginSalt: "abcdefg"
 installOffice: no
 sso:
-  client_id: "abcdefg"
-  client_secret: "abcdefg"
+  existingSecret: "" # Name of the Kubernetes secret containing SSO credentials
+  secretKeys:
+    client_id: "client_id" # Key in the secret for client ID
+    client_secret: "client_secret" # Key in the secret for client secret
 
 podAnnotations: {}
 podLabels: {}
