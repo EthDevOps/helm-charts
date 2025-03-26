@@ -87,11 +87,6 @@ spec:
           readOnly: true
           mountPath: /cryptpad/config/sso.js
           subPath: sso.js
-        {{- if .Values.sso.existingSecret }}
-        - name: sso-secret
-          readOnly: true
-          mountPath: /cryptpad/config/sso-secret
-        {{- end }}
         - name: blob
           mountPath: /cryptpad/blob
         - name: block
