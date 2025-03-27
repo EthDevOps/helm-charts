@@ -20,7 +20,7 @@ data:
       websocketPort: 3003,
       maxWorkers: 8,
       //otpSessionExpiration: 7*24, // hours
-      enforceMFA: true,
+      enforceMFA: false,
 
       /* =====================
       *       Privacy
@@ -104,9 +104,9 @@ data:
       // Block registration for non-SSO users on this instance
       enforced: false,
       // Allow users to add an additional CryptPad password to their SSO account
-      cpPassword: true,
+      cpPassword: false,
       // You can also force your SSO users to add a CryptPad password
-      forceCpPassword: true,
+      forceCpPassword: false,
 
       list: [
         {
