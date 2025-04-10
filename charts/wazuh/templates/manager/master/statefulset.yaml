@@ -1,3 +1,6 @@
+# Add init container to git clone https://github.com/avanwouwe/wazuh-gworkspace.git and copy the wodle dir into /var/ossec/wodles/gworkspac
+
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -43,7 +46,35 @@ spec:
             secretName: {{ .Values.wazuh.authd.existingSecret | default "wazuh-authd-pass" }} 
         - emptyDir: {}
           name: result-config
+        - name: scripts-volume
+          emptyDir: {}
+
       initContainers:
+        - name: install-wodle-gworkspace
+          image: alpine
+          volumeMounts:
+            - name: {{ include "wazuh.fullname" . }}-manager-master
+              mountPath: /var/ossec/wodles
+              subPath: wazuh/var/ossec/wodles
+            - name: scripts-volume
+              mountPath: /scripts
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /scripts
+              cat > /scripts/install-google-api.sh << 'EOF'
+              #!/bin/bash
+              echo "Installing google-api-python-client..."
+              /var/ossec/framework/python/bin/python3 -m pip install google-api-python-client
+              EOF
+              chmod +x /scripts/install-google-api.sh
+              apk add --no-cache git
+              cd /tmp
+              git clone https://github.com/avanwouwe/wazuh-gworkspace.git
+              # Copy only the wodle directory to the shared volume
+              mkdir -p /var/ossec/wodles/gworkspace
+              cp -r /tmp/wazuh-gworkspace/wodle/* /var/ossec/wodles/gworkspace/
+
         - name: update-index
           image: alpine
           command: 
@@ -75,6 +106,8 @@ spec:
             # Wazuh Config
             - mountPath: /wazuh-config-mount/etc/
               name: result-config
+            - name: scripts-volume
+              mountPath: /entrypoint-scripts
             # Certs
             - mountPath: /etc/ssl/root-ca.pem
               name: filebeat-certs
