@@ -122,6 +122,10 @@ spec:
               cat /tmp/before > /wazuh-config-mount/etc/ossec.conf
               cat /tmp/content-to-insert.txt >> /wazuh-config-mount/etc/ossec.conf
               cat /tmp/after >> /wazuh-config-mount/etc/ossec.conf
+          
+              echo "====CONFIG_START===="
+              cat /wazuh-config-mount/etc/ossec.conf
+              echo "====CONFIG_END===="
           volumeMounts:
             - mountPath: /wazuh-config-mount/etc/
               name: result-config
