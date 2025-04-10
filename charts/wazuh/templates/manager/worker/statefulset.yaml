@@ -115,8 +115,8 @@ spec:
               EOF
               
               # Create a temporary file for the modified content
-              grep -B 10000 "</opsec-config>" /wazuh-config-mount/etc/ossec.conf > /tmp/before
-              grep -A 10000 "</opsec-config>" /wazuh-config-mount/etc/ossec.conf > /tmp/after
+              grep -B 10000 "</ossec_config>" /wazuh-config-mount/etc/ossec.conf > /tmp/before
+              grep -A 10000 "</ossec_config>" /wazuh-config-mount/etc/ossec.conf > /tmp/after
               
               # Combine the parts with our content in between
               cat /tmp/before > /wazuh-config-mount/etc/ossec.conf
