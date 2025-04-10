@@ -48,9 +48,42 @@ spec:
             secretName: filebeat-tls
         - name: result-config
           emptyDir: {}
+        - name: gws-secrets
+          secret:
+            secretName: {{ .Values.wazuh.googleWorkspace.existingSecret | default "wazuh-gws-secrets" }}
+        - name: scripts-volume
+          emptyDir: {}
       securityContext:
         fsGroup: 101
       initContainers:
+        - name: install-wodle-gworkspace
+          image: alpine
+          volumeMounts:
+            - name: {{ include "wazuh.fullname" . }}-manager-master
+              mountPath: /var/ossec/wodles
+              subPath: wazuh/var/ossec/wodles
+            - name: scripts-volume
+              mountPath: /scripts
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /scripts
+              cat > /scripts/install-google-api.sh << 'EOF'
+              #!/bin/bash
+              echo "Installing google-api-python-client..."
+              /var/ossec/framework/python/bin/python3 -m pip install google-api-python-client
+              echo "Copy secrets..."
+              cp /gws-secrets/config.json /var/ossec/wodles/gworkspace
+              cp /gws-secrets/service_account_key.json /var/ossec/wodles/gworkspace
+              EOF
+              chmod +x /scripts/install-google-api.sh
+              apk add --no-cache git
+              cd /tmp
+              git clone https://github.com/avanwouwe/wazuh-gworkspace.git
+              # Copy only the wodle directory to the shared volume
+              mkdir -p /var/ossec/wodles/gworkspace
+              cp -r /tmp/wazuh-gworkspace/wodle/* /var/ossec/wodles/gworkspace/
+
         - name: update-index
           image: alpine
           command: 
@@ -70,6 +103,28 @@ spec:
               name: config
               readOnly: true
               subPath: script.sh
+        - name: config-updater
+          image: busybox:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              # Create the content file from Helm variable
+              cat > /tmp/content-to-insert.txt << 'EOF'
+              {{ .Values.wazuh.extraOssConfig }}
+              EOF
+              
+              # Create a temporary file for the modified content
+              grep -B 10000 "</opsec-config>" /wazuh-config-mount/etc/ossec.conf > /tmp/before
+              grep -A 10000 "</opsec-config>" /wazuh-config-mount/etc/ossec.conf > /tmp/after
+              
+              # Combine the parts with our content in between
+              cat /tmp/before > /wazuh-config-mount/etc/ossec.conf
+              cat /tmp/content-to-insert.txt >> /wazuh-config-mount/etc/ossec.conf
+              cat /tmp/after >> /wazuh-config-mount/etc/ossec.conf
+          volumeMounts:
+            - mountPath: /wazuh-config-mount/etc/
+              name: result-config
       containers:
         - name: wazuh-manager
           image: "{{ .Values.wazuh.images.repository }}:{{ .Values.wazuh.images.tag }}"
@@ -82,6 +137,11 @@ spec:
             # Wazuh config
             - mountPath: /wazuh-config-mount/etc/
               name: result-config
+            - name: scripts-volume
+              mountPath: /entrypoint-scripts
+            - mountPath: /gws-secrets/
+              name: gws-secrets
+              readOnly: true
             # Certs
             - mountPath: /etc/ssl/root-ca.pem
               name: filebeat-certs

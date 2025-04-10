@@ -41,6 +41,9 @@ spec:
         - name: filebeat-certs
           secret:
             secretName: filebeat-tls
+        - name: gws-secrets
+          secret:
+            secretName: {{ .Values.wazuh.googleWorkspace.existingSecret | default "wazuh-gws-secrets" }}
         - name: wazuh-authd-pass
           secret:
             secretName: {{ .Values.wazuh.authd.existingSecret | default "wazuh-authd-pass" }} 
@@ -66,6 +69,9 @@ spec:
               #!/bin/bash
               echo "Installing google-api-python-client..."
               /var/ossec/framework/python/bin/python3 -m pip install google-api-python-client
+              echo "Copy secrets..."
+              cp /gws-secrets/config.json /var/ossec/wodles/gworkspace
+              cp /gws-secrets/service_account_key.json /var/ossec/wodles/gworkspace
               EOF
               chmod +x /scripts/install-google-api.sh
               apk add --no-cache git
@@ -94,6 +100,29 @@ spec:
               name: config
               readOnly: true
               subPath: script.sh
+
+        - name: config-updater
+          image: busybox:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              # Create the content file from Helm variable
+              cat > /tmp/content-to-insert.txt << 'EOF'
+              {{ .Values.wazuh.extraOssConfig }}
+              EOF
+              
+              # Create a temporary file for the modified content
+              grep -B 10000 "</opsec-config>" /wazuh-config-mount/etc/ossec.conf > /tmp/before
+              grep -A 10000 "</opsec-config>" /wazuh-config-mount/etc/ossec.conf > /tmp/after
+              
+              # Combine the parts with our content in between
+              cat /tmp/before > /wazuh-config-mount/etc/ossec.conf
+              cat /tmp/content-to-insert.txt >> /wazuh-config-mount/etc/ossec.conf
+              cat /tmp/after >> /wazuh-config-mount/etc/ossec.conf
+          volumeMounts:
+            - mountPath: /wazuh-config-mount/etc/
+              name: result-config
       containers:
         - name: wazuh-manager
           image: "{{ .Values.wazuh.images.repository }}:{{ .Values.wazuh.images.tag }}"
@@ -108,6 +137,9 @@ spec:
               name: result-config
             - name: scripts-volume
               mountPath: /entrypoint-scripts
+            - mountPath: /gws-secrets/
+              name: gws-secrets
+              readOnly: true
             # Certs
             - mountPath: /etc/ssl/root-ca.pem
               name: filebeat-certs

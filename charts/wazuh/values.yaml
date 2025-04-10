@@ -128,6 +128,11 @@ wazuh:
     tag: "4.10.1"
     pullSecret: regcred
 
+  extraOssConfig: ""
+
+  googleWorkspace:
+    existingSecret: ""
+
   env:
     FILEBEAT_SSL_VERIFICATION_MODE: full
 
