@@ -109,7 +109,7 @@ spec:
             - |
               # Create the content file from Helm variable
               cat > /tmp/content-to-insert.txt << 'EOF'
-              {{ .Values.wazuh.extraOssConfig }}
+              {{ .Values.wazuh.extraOssConfig | nindent 2 }}
               EOF
               
               # Create a temporary file for the modified content
