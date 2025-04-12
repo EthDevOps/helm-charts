@@ -59,7 +59,7 @@ spec:
         - name: install-wodle-gworkspace
           image: alpine
           volumeMounts:
-            - name: {{ include "wazuh.fullname" . }}-manager-master
+            - name: {{ include "wazuh.fullname" . }}-manager-worker
               mountPath: /var/ossec/wodles
               subPath: wazuh/var/ossec/wodles
             - name: scripts-volume
