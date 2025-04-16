@@ -3,7 +3,7 @@ name: ceph-csi
 description: A Helm chart for Ceph as CSI
 type: application
 
-version: 0.0.6
+version: 0.0.7
 
 # App metadata
 appVersion: "1.0.0"
