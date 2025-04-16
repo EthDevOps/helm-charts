@@ -39,8 +39,6 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: rbd-csi-nodeplugin
-    # replace with non-default namespace name
-    namespace: default
 roleRef:
   kind: ClusterRole
   name: rbd-csi-nodeplugin
