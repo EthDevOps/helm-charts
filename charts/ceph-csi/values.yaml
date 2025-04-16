@@ -1,0 +1,11 @@
+clusterId: 08b71cc9-5ef7-44f2-8040-4b2dd66c5111
+pool: k8s
+monitors:
+  - 192.168.1.0:6789
+  - 192.168.1.1:6789
+  - 192.168.1.2:6789
+auth:
+  user: kubernetes
+  key: some-key
+
+

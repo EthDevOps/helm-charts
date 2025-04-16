@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+data:
+  config.json: |-
+    [
+      {
+        "clusterID": "{{ .Values.clusterId }}",
+        "monitors": {{ .Values.monitors | toJson }}
+      }
+    ]
+metadata:
+  name: ceph-csi-config
