@@ -3,8 +3,6 @@ kind: Service
 apiVersion: v1
 metadata:
   name: csi-rbdplugin-provisioner
-  # replace with non-default namespace name
-  namespace: default
   labels:
     app: csi-metrics
 spec:
@@ -21,8 +19,6 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: csi-rbdplugin-provisioner
-  # replace with non-default namespace name
-  namespace: default
 spec:
   replicas: 3
   selector:

@@ -3,8 +3,6 @@ kind: DaemonSet
 apiVersion: apps/v1
 metadata:
   name: csi-rbdplugin
-  # replace with non-default namespace name
-  namespace: default
 spec:
   selector:
     matchLabels:
