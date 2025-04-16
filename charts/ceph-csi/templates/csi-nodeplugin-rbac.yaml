@@ -39,6 +39,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: rbd-csi-nodeplugin
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: rbd-csi-nodeplugin

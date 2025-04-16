@@ -87,6 +87,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: rbd-csi-provisioner
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
   name: rbd-external-provisioner-runner
@@ -113,6 +114,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: rbd-csi-provisioner
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: rbd-external-provisioner-cfg
