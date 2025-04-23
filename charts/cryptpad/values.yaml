@@ -21,6 +21,10 @@ image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/cryptpad-docker
   tag: main
 
+service:
+  type: ClusterIP
+  annotations: {}
+
 ingress:
   enabled: true
   className: ""

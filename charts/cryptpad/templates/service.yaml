@@ -2,9 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-svc
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}-cryptpad
 spec:
+  type: {{ .Values.service.type }}
   selector:
     app: {{ .Release.Name }}-cryptpad
   ports:
