@@ -9,4 +9,8 @@ postgresql:
     database: runners
     password: runners
     postgresPassword: runners
-
+ingress:
+  enabled: true
+service:
+  type: ClusterIP
+  annotations: {}
