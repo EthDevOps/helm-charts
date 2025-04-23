@@ -52,6 +52,19 @@ entries:
   ceph-csi:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-04-23T15:38:58.268050448Z"
+    description: A Helm chart for Ceph as CSI
+    digest: f0cf06146abe1d8d12f15a98e54e3c9a528c940007a65d233405927bf5b5845d
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: ceph-csi
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/ceph-csi-0.0.9/ceph-csi-0.0.9.tgz
+    version: 0.0.9
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-04-16T13:25:01.160223292Z"
     description: A Helm chart for Ceph as CSI
     digest: aee14ca42fc421bdfc328551c13b65e65f5721f532b8fc261f9229e3d48147b0
@@ -3900,4 +3913,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-04-23T14:23:43.453604909Z"
+generated: "2025-04-23T15:38:58.268655002Z"
