@@ -1,10 +1,17 @@
+{{- if .Values.ingress.enable }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   labels:
     ethquokkaops.io/expose-to-teleport: "true"
+    {{- with .Values.ingress.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   name: {{ .Release.Name }}-ingress
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
@@ -23,4 +30,5 @@ spec:
   - hosts:
     - {{ .Values.ingress.host }}
     secretName: {{ .Release.Name }}-tls
+{{- end }}
 

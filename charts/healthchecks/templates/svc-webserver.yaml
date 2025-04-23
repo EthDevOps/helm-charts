@@ -2,13 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-hc-web
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
   selector:
     app: {{ .Release.Name }}-hc-web
   ports:
     - name: http
       port: 8000
-  # Uncomment the following lines to enable SMTP on port 2525
-  #- name: smtp
-  #  port: 2525
-
