@@ -157,6 +157,19 @@ entries:
   cryptpad:
   - apiVersion: v2
     appVersion: 2024.12.0
+    created: "2025-04-23T14:23:43.300657313Z"
+    description: A Helm chart for cryptpad
+    digest: 6e22f0ef2f9c3aba931d79e200a982b8488f4ee279a061a4cd808cad4b3ec0d1
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cryptpad
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cryptpad-0.0.26/cryptpad-0.0.26.tgz
+    version: 0.0.26
+  - apiVersion: v2
+    appVersion: 2024.12.0
     created: "2025-03-27T01:13:40.352285778Z"
     description: A Helm chart for cryptpad
     digest: 7a2b9bf8f6fb3961fbc8b827415f98b71ca9c481685f430e8739b78836f2c998
@@ -864,6 +877,26 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/docmost-0.0.16/docmost-0.0.16.tgz
     version: 0.0.16
   github-runner-manager:
+  - apiVersion: v2
+    appVersion: v0.0.1
+    created: "2025-04-23T14:23:43.453132533Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    description: Managed self-hosted runners for GitHub
+    digest: a4d1f2fbb1a6a1a34ba092d2bf8d7fca4ee7d8fcb14464cc6b40c11319b80d58
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: github-runner-manager
+    sources:
+    - https://github.com/EthDevOps/github-actions-autoscaler
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-1.0.8/github-runner-manager-1.0.8.tgz
+    version: 1.0.8
   - apiVersion: v2
     appVersion: v0.0.1
     created: "2024-10-22T09:03:39.79205526Z"
@@ -3867,4 +3900,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-04-23T13:05:12.525378577Z"
+generated: "2025-04-23T14:23:43.453604909Z"
