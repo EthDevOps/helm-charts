@@ -33,7 +33,7 @@ spec:
       initContainers:
         - name: init-pvc-permissions
           image: cubebackup/cubebackup
-          command: ["/bin/sh", "-c", "chown 4001:4001 /data && chown 4001:4001 /blob && chown 4001:4001 /block && chown 4001:4001 /datastore"]
+          command: ["/bin/sh", "-c", "chown -R 4001:4001 /data && chown -R 4001:4001 /blob && chown -R 4001:4001 /block && chown -R 4001:4001 /datastore"]
           volumeMounts:
           - name: blob
             mountPath: /blob
