@@ -3,7 +3,7 @@ name: outline
 description: OpenSource alternative for Notion
 type: application
 
-version: 0.0.5
+version: 0.0.6
 
 # App metadata
 appVersion: "1.0.0"
