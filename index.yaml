@@ -794,6 +794,28 @@ entries:
   docmost:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-04-24T13:27:58.268913324Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: OpenSource alternative for Notion
+    digest: 6e3f7d0600abe49367ffdb2653adc396706c5f337b320ffdece551a53b1442b4
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: docmost
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/docmost-0.1.4/docmost-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-03-15T08:35:57.30873127Z"
     dependencies:
     - condition: postgresql.enabled
@@ -2398,6 +2420,28 @@ entries:
   outline:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-04-24T13:27:58.454169426Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: OpenSource alternative for Notion
+    digest: 0bc933c41649bc7ef0b5e97214da7f607d61754bc36d58e96fe8e6927158b1e2
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: outline
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/outline-0.0.6/outline-0.0.6.tgz
+    version: 0.0.6
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-03-15T08:36:16.668485559Z"
     dependencies:
     - condition: postgresql.enabled
@@ -3926,4 +3970,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-04-23T19:58:49.743311172Z"
+generated: "2025-04-24T13:27:58.454594018Z"
