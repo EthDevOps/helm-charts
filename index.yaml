@@ -2531,6 +2531,19 @@ entries:
   patchman:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-04-25T08:24:19.535589099Z"
+    description: A Helm chart for patchman
+    digest: 372e8a079601c9d044e58098788f6e8f0202522c554b2b41b4bdf5e92f4f104e
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: patchman
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/patchman-0.0.4/patchman-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2024-10-22T09:03:40.43995225Z"
     description: A Helm chart for patchman
     digest: 4533fcae800d2523f5d88f74101217f6310bc40defa7750ba6ec66b873b1269a
@@ -3970,4 +3983,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-04-24T13:27:58.454594018Z"
+generated: "2025-04-25T08:24:19.536103249Z"
