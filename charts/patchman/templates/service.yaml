@@ -4,7 +4,12 @@ metadata:
   name: {{ .Release.Name }}-svc
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}-patchman
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
   selector:
     app: {{ .Release.Name }}-patchman
   ports:
