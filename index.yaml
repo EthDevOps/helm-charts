@@ -2901,6 +2901,19 @@ entries:
   simple-website:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-04-28T12:12:05.22965028Z"
+    description: A Helm chart for simple websites
+    digest: ac368462d259766b544fbe0c10acff0f83b2c0888675d05658d4e575dac89d33
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: simple-website
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/simple-website-0.0.3/simple-website-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-01-16T08:26:06.552665824Z"
     description: A Helm chart for simple websites
     digest: 3f8b68cbe5ac7e1799d8aff97669f1f8f5c238f25cc8090cfa99f7478b9cc895
@@ -4003,4 +4016,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-04-25T12:11:53.391767993Z"
+generated: "2025-04-28T12:12:05.230081013Z"
