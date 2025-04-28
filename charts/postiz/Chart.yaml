@@ -16,10 +16,6 @@ keywords:
   - marketing
   - scheduling
   - queue
-home: https://postiz.com
-sources:
-  - https://github.com/gitroomhq/postiz-app
-  - https://github.com/gitroomhq/postiz-helmchart
 dependencies:
   - name: postgresql
     version: 15.5.28
