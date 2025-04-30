@@ -2184,6 +2184,18 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-monitor-0.1.0/jitsi-monitor-0.1.0.tgz
     version: 0.1.0
+  listmonk:
+  - apiVersion: v2
+    appVersion: 4.1.0
+    created: "2025-04-30T02:50:20.448574109Z"
+    description: High performance, self-hosted, newsletter and mailing list manager
+      with a modern dashboard.
+    digest: 27d5c84f9fff1e8279b3fb9a56de62974e0ed562d8bdaf35f0254d7987d46485
+    name: listmonk
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/listmonk-0.1.0/listmonk-0.1.0.tgz
+    version: 0.1.0
   netbox:
   - apiVersion: v2
     appVersion: v3.6.4
@@ -4068,4 +4080,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-04-28T15:48:43.696721361Z"
+generated: "2025-04-30T02:50:20.449072851Z"
