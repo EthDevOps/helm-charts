@@ -1,0 +1,173 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-listmonk
+  labels:
+    app: {{ .Release.Name }}-listmonk
+    app.kubernetes.io/component: listmonk
+spec:
+  replicas: {{ .Values.listmonk.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: listmonk
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app: {{ .Release.Name }}-listmonk
+        app.kubernetes.io/component: listmonk
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      initContainers:
+      {{- with .Values.extraInitContainers }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      - name: wait-for-postgres
+        image: postgres:16-alpine
+        command: ['/bin/sh', '-c']
+        args:
+          - |
+            until pg_isready -h {{ .Release.Name }}-postgres -p 5432 -U {{ .Values.postgres.user }} -d {{ .Values.postgres.database }}; do
+              echo "Waiting for PostgreSQL to be ready..."
+              sleep 2
+            done
+            echo "PostgreSQL is ready"
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgres-secret
+              key: postgres-password
+        - name: PGSSLMODE
+          value: "disable"
+      - name: check-db-tables
+        image: postgres:16-alpine
+        command: ['/bin/sh', '-c']
+        args:
+          - |
+            # Check if the users table exists
+            PGPASSWORD=$PGPASSWORD psql -h {{ .Release.Name }}-postgres -U {{ .Values.postgres.user }} -d {{ .Values.postgres.database }} -t -c "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users')" | grep -q 't'
+            if [ $? -eq 0 ]; then
+              echo "Database is already initialized"
+              touch /tmp/db-initialized
+            else
+              echo "Database needs initialization"
+            fi
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgres-secret
+              key: postgres-password
+        - name: PGSSLMODE
+          value: "disable"
+        volumeMounts:
+        - name: init-flag
+          mountPath: /tmp
+      - name: db-init
+        image: "{{ .Values.listmonk.image.repository }}:{{ .Values.listmonk.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            if [ -f /tmp/db-initialized ]; then
+              echo "Database is already initialized, skipping setup"
+            else
+              echo "Running database initialization..."
+              ./listmonk --install --yes
+            fi
+        env:
+        {{- if .Values.postgres.enabled }}
+        - name: LISTMONK_db__host
+          value: "{{ .Release.Name }}-postgres"
+        {{- else }}
+        - name: LISTMONK_db__host
+          value: "{{ .Values.postgres.hostname }}"
+        {{- end }}
+        - name: LISTMONK_db__port
+          value: "5432"
+        - name: LISTMONK_db__user
+          value: "{{ .Values.postgres.user }}"
+        - name: LISTMONK_db__password
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgres-secret
+              key: postgres-password
+        - name: LISTMONK_db__database
+          value: "{{ .Values.postgres.database }}"
+        - name: LISTMONK_db__ssl_mode
+          value: "disable"
+        volumeMounts:
+        - name: init-flag
+          mountPath: /tmp
+      containers:
+      - name: {{ .Release.Name }}-listmonk
+        image: "{{ .Values.listmonk.image.repository }}:{{ .Values.listmonk.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        command: ["./listmonk", "--config", "/listmonk/config/app-config.toml"]
+        env:
+        - name: LISTMONK_app__address
+          value: "0.0.0.0:9000"
+        {{- if .Values.postgres.enabled }}
+        - name: LISTMONK_db__host
+          value: "{{ .Release.Name }}-postgres"
+        {{- else }}
+        - name: LISTMONK_db__host
+          value: "{{ .Values.postgres.hostname }}"
+        {{- end }}
+        - name: LISTMONK_db__port
+          value: "5432"
+        - name: LISTMONK_db__user
+          value: "{{ .Values.postgres.user }}"
+        - name: LISTMONK_db__password
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgres-secret
+              key: postgres-password
+        - name: LISTMONK_db__database
+          value: "{{ .Values.postgres.database }}"
+        - name: LISTMONK_db__ssl_mode
+          value: "disable"
+        ports:
+        - name: http
+          containerPort: 9000
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        volumeMounts:
+        - name: uploads
+          mountPath: /listmonk/uploads
+        - name: static
+          mountPath: /listmonk/static
+        - name: config
+          mountPath: /listmonk/config
+        resources:
+          {{- toYaml .Values.listmonk.resources | nindent 10 }}
+      volumes:
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-uploads
+      - name: static
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-static
+      - name: config
+        configMap:
+          name: {{ .Release.Name }}-config
+      - name: init-flag
+        emptyDir: {} 

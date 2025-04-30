@@ -1,0 +1,60 @@
+commonAnnotations: {}
+podAnnotations: {}
+podLabels: {}
+extraInitContainers: {}
+
+ingress:
+  # -- annotations for the ingress
+  annotations: {} # @schema additionalProperties: true
+  # -- ingress class name
+  className: ""
+  # -- enable the ingress
+  enabled: false
+  # -- host for the ingress
+  host: listmonk.local
+  # -- tls configuration for the ingress
+  tls: []
+
+listmonk:
+  # -- The listmonk image configuration
+  image:
+    # -- the listmonk image repository
+    repository: listmonk/listmonk
+    # -- the listmonk image tag
+    tag: v4.1.0
+
+  # -- the number of listmonk deployment replicas
+  replicas: 1
+
+  # -- resources for the listmonk deployment
+  resources: {}
+
+  # -- Storage configuration for listmonk
+  storage:
+    uploadsSize: "5Gi"
+    staticSize: "1Gi"
+
+postgres:
+  # -- the postgres database name
+  database: listmonk
+  # -- enable postgres
+  enabled: true
+  # -- when not enabled, the external postgres service hostname is required
+  hostname: ""
+  # -- existing secret name containing postgres password
+  existingSecret: ""
+  # -- the postgres password
+  password: "listmonk"
+  # -- the postgres username
+  user: "listmonk"
+  # -- the postgres image configuration
+  image:
+    # -- the postgres image repository
+    repository: postgres
+    # -- the postgres image tag
+    tag: 16-alpine
+  # -- resources configuration for the postgres statefulset
+  resources: {} # @schema $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.31.6/resourcerequirements.json ; skipProperties: true
+  # -- storage configuration for postgres
+  storage:
+    size: "10Gi"
