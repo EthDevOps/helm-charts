@@ -32,6 +32,9 @@ spec:
           env:
           - name: CONFIG_DIR
             value: "/data/config"
+          envFrom:
+          - secretRef:
+              name: {{ .Values.envFromSecret }}
           volumeMounts:
             - name: config
               mountPath: /data/config
