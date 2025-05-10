@@ -116,6 +116,7 @@ spec:
               {{- end }}
               popd >/dev/null || exit 1
               cp -nr --preserve=mode /opt/bitnami/discourse/plugins/* /plugins
+              chmod -R 777 /plugins
           {{- if .Values.discourse.extraEnvVars }}
           env:
             {{- include "common.tplvalues.render" (dict "value" .Values.discourse.extraEnvVars "context" $) | nindent 12 }}
