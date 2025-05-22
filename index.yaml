@@ -2301,6 +2301,17 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-monitor-0.1.0/jitsi-monitor-0.1.0.tgz
     version: 0.1.0
+  k8s-service-trigger:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2025-05-22T13:08:01.42584841Z"
+    description: Triggers webhooks on service changes
+    digest: 483878332d6b28c1d7dfed78466ceb9e2ff90cce26f45d33447ff5210b2f45d9
+    name: k8s-service-trigger
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/k8s-service-trigger-0.0.1/k8s-service-trigger-0.0.1.tgz
+    version: 0.0.1
   listmonk:
   - apiVersion: v2
     appVersion: 4.1.0
@@ -4208,4 +4219,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-05-10T10:45:58.850105843Z"
+generated: "2025-05-22T13:08:01.426466532Z"
