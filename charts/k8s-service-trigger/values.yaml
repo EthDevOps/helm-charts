@@ -1,13 +1,11 @@
 secretName: my-secret
 secretKey: GITHUB_TOKEN
 
-# Environment configuration
-env:
-  # GitHub repository in format owner/repo
-  githubRepo: ""
-  # Workflow file name to trigger
-  workflowFile: ""
-  # Tenant identifier
-  tenant: ""
-  # Project identifier
-  project: ""
+# GitHub repository in format owner/repo
+githubRepo: ""
+# Workflow file name to trigger
+workflowFile: ""
+# Tenant identifier
+tenant: ""
+# Project identifier
+project: ""

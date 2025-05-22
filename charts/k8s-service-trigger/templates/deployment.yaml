@@ -29,22 +29,22 @@ spec:
         - name: GITHUB_REPO
           valueFrom:
             configMapKeyRef:
-              name: {{ include "k8s-service-trigger.fullname" . }}-config
+              name: {{ .Release.Name }}-config
               key: GITHUB_REPO
         - name: WORKFLOW_FILE
           valueFrom:
             configMapKeyRef:
-              name: {{ include "k8s-service-trigger.fullname" . }}-config
+              name: {{ .Release.Name }}-config
               key: WORKFLOW_FILE
         - name: TENANT
           valueFrom:
             configMapKeyRef:
-              name: {{ include "k8s-service-trigger.fullname" . }}-config
+              name: {{ .Release.Name }}-config
               key: TENANT
         - name: PROJECT
           valueFrom:
             configMapKeyRef:
-              name: {{ include "k8s-service-trigger.fullname" . }}-config
+              name: {{ .Release.Name }}-config
               key: PROJECT
         resources:
           requests:
