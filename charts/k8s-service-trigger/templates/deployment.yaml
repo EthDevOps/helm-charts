@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-monitor
+  namespace: monitoring
+  labels:
+    app: service-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-monitor
+  template:
+    metadata:
+      labels:
+        app: service-monitor
+    spec:
+      serviceAccountName: service-monitor
+      containers:
+      - name: service-monitor
+        image: service-monitor:latest  # Update this with your registry/image:tag
+        imagePullPolicy: Always
+        env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secretName }}
+              key: {{ .Values.secretKey }}
+        - name: GITHUB_REPO
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "k8s-service-trigger.fullname" . }}-config
+              key: GITHUB_REPO
+        - name: WORKFLOW_FILE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "k8s-service-trigger.fullname" . }}-config
+              key: WORKFLOW_FILE
+        - name: TENANT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "k8s-service-trigger.fullname" . }}-config
+              key: TENANT
+        - name: PROJECT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "k8s-service-trigger.fullname" . }}-config
+              key: PROJECT
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
