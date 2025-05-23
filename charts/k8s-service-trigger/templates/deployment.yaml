@@ -17,7 +17,7 @@ spec:
       serviceAccountName: service-monitor
       containers:
       - name: service-monitor
-        image: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-service-trigger:main
+        image: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-service-trigger:{{ .Values.imageVersion }}
         imagePullPolicy: Always
         env:
         - name: GITHUB_TOKEN
