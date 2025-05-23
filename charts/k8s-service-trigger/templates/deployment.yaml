@@ -18,7 +18,7 @@ spec:
       serviceAccountName: service-monitor
       containers:
       - name: service-monitor
-        image: service-monitor:latest  # Update this with your registry/image:tag
+        image: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-service-trigger:main
         imagePullPolicy: Always
         env:
         - name: GITHUB_TOKEN
