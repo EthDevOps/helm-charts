@@ -15,6 +15,9 @@ ingress:
   # -- tls configuration for the ingress
   tls: []
 
+service:
+  type: ClusterIP
+  annotations: {}
 listmonk:
   # -- The listmonk image configuration
   image:

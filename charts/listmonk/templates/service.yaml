@@ -4,7 +4,12 @@ metadata:
   name: {{ .Release.Name }}-svc
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}-listmonk
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  type: {{ .Values.service.type }}
   selector:
     app: {{ .Release.Name }}-listmonk
   ports:
