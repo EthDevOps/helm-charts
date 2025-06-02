@@ -39,7 +39,9 @@ enableGuests: true
 publicURL: "https://meet.ethquokkaops.io"
 
 tz: Europe/Berlin
-
+geoselector:
+  service:
+    type: ClusterIP 
 auth:
   jwtExpSeconds: 3600
 
