@@ -3203,6 +3203,27 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
+  safe-infrastructure:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-06-11T16:53:40.412924787Z"
+    description: A Helm chart for Safe Infrastructure services
+    digest: 0c5c51d66113fabbe7978e2fb5399e1fb9b2ec90f399bf7d2ec4ba26ae6478d3
+    home: https://github.com/safe-global
+    keywords:
+    - safe
+    - blockchain
+    - ethereum
+    - infrastructure
+    maintainers:
+    - name: Safe Team
+    name: safe-infrastructure
+    sources:
+    - https://github.com/safe-global
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/safe-infrastructure-0.1.0/safe-infrastructure-0.1.0.tgz
+    version: 0.1.0
   simple-website:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -4321,4 +4342,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-06-11T14:21:41.632535053Z"
+generated: "2025-06-11T16:53:40.413381884Z"
