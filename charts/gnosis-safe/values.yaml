@@ -23,7 +23,7 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 8888
-
+  annotations: {}
 ingress:
   enabled: false
   className: ""
