@@ -45,6 +45,7 @@ metadata:
   name: {{ include "safe-infrastructure.fullname" . }}-nginx-config
 data:
   nginx.conf: |
+    http {
     upstream txs {
         server {{ include "safe-infrastructure.fullname" . }}-txs-web:8000;
     }
@@ -71,4 +72,5 @@ data:
         location /events/ {
             proxy_pass http://events/;
         }
+    }
     }
