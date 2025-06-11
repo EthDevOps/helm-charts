@@ -1455,6 +1455,16 @@ entries:
   gnosis-safe:
   - apiVersion: v2
     appVersion: main
+    created: "2025-06-11T14:13:42.032811795Z"
+    description: A Helm chart for Gnosis Safe Transaction Service
+    digest: 3c549a0e75453fbf5c4cd6977c3288371fdb893034285ce0397540c47f6017ce
+    name: gnosis-safe
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/gnosis-safe-0.2.1/gnosis-safe-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: main
     created: "2025-06-11T13:20:01.757458612Z"
     description: A Helm chart for Gnosis Safe Transaction Service
     digest: 33f36c986fe7f9b8fb93ac187d474efc7902fcbd361aa1f71514da6e509ec3d6
@@ -4301,4 +4311,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-06-11T13:20:01.757898623Z"
+generated: "2025-06-11T14:13:42.033221367Z"
