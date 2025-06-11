@@ -10,6 +10,7 @@ data:
   
   # Redis configuration
   REDIS_URL: "redis://{{ include "gnosis-safe.fullname" . }}-redis:{{ .Values.redis.service.port }}"
-  
+
+  ETHEREUM_NODE_URL: "{{ .Values.rpcNode }}"
   # RabbitMQ configuration
   CELERY_BROKER_URL: "amqp://guest@{{ include "gnosis-safe.fullname" . }}-rabbitmq:{{ .Values.rabbitmq.service.port }}//"

@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["docker/web/run_web.sh"]
           ports:
-            - name: http
+            - name: apphttp
               containerPort: 8888
               protocol: TCP
           envFrom:
@@ -48,14 +48,26 @@ spec:
               mountPath: /nginx
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: nginx-shared
+              mountPath: /nginx
       volumes:
         - name: nginx-shared
-          {{- if .Values.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ include "gnosis-safe.fullname" . }}-nginx-shared
-          {{- else }}
           emptyDir: {}
-          {{- end }}
+        - name: nginx-config
+          configMap:
+            name: {{ include "gnosis-safe.fullname" . }}-nginx-config
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

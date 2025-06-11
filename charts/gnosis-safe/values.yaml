@@ -1,4 +1,5 @@
 replicaCount: 1
+rpcNode: "http://localhost:8545"
 
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/safe-transaction-service
