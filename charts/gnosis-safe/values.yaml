@@ -122,6 +122,19 @@ flower:
   service:
     port: 5555
 
+# Static Web Frontend
+staticWeb:
+  enabled: true
+  image:
+    repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/safe-global-web-docker
+    tag: main
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+    annotations: {}
+
 # Persistence
 persistence:
   enabled: true

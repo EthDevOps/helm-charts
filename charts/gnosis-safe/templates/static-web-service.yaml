@@ -1,0 +1,23 @@
+{{- if .Values.staticWeb.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-static-web
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: static-web
+  {{- with .Values.staticWeb.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.staticWeb.service.type }}
+  ports:
+    - port: {{ .Values.staticWeb.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "gnosis-safe.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: static-web
+{{- end }}
