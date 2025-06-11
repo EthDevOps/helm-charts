@@ -1452,6 +1452,17 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-0.0.1/github-runner-manager-0.0.1.tgz
     version: 0.0.1
+  gnosis-safe:
+  - apiVersion: v2
+    appVersion: main
+    created: "2025-06-11T08:26:17.100647224Z"
+    description: A Helm chart for Gnosis Safe Transaction Service
+    digest: e9ed93d52e0f98d768acf52d8be9b98d36733e549630f02fdf7d3255d2d9ec79
+    name: gnosis-safe
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/gnosis-safe-0.1.1/gnosis-safe-0.1.1.tgz
+    version: 0.1.1
   hackmd-backup:
   - apiVersion: v2
     appVersion: v0.0.1
@@ -4270,4 +4281,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-06-02T12:14:46.129503856Z"
+generated: "2025-06-11T08:26:17.101170771Z"
