@@ -1,0 +1,237 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-txs-web
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: txs-web
+spec:
+  replicas: {{ .Values.txs.replicas }}
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: txs-web
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: txs-web
+    spec:
+      containers:
+      - name: txs-web
+        image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
+        ports:
+        - containerPort: 8000
+        env:
+        - name: PYTHONPATH
+          value: {{ .Values.txs.env.pythonPath | quote }}
+        - name: DJANGO_SETTINGS_MODULE
+          value: {{ .Values.txs.env.djangoSettingsModule | quote }}
+        - name: DJANGO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: django-secret-key
+        - name: DEBUG
+          value: {{ .Values.txs.env.debug | quote }}
+        - name: DATABASE_URL
+          value: "psql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/$(POSTGRES_DATABASE)"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-password
+        - name: POSTGRES_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-database
+        - name: ETH_L2_NETWORK
+          value: {{ .Values.txs.env.ethL2Network | quote }}
+        - name: REDIS_URL
+          value: "redis://{{ include "safe-infrastructure.fullname" . }}-txs-redis:6379/0"
+        - name: CELERY_BROKER_URL
+          value: "amqp://guest:guest@{{ include "safe-infrastructure.fullname" . }}-txs-rabbitmq/"
+        - name: DJANGO_ALLOWED_HOSTS
+          value: {{ .Values.txs.env.djangoAllowedHosts | quote }}
+        - name: FORCE_SCRIPT_NAME
+          value: {{ .Values.txs.env.forceScriptName | quote }}
+        - name: CSRF_TRUSTED_ORIGINS
+          value: {{ .Values.txs.env.csrfTrustedOrigins | quote }}
+        - name: EVENTS_QUEUE_URL
+          value: "amqp://{{ include "safe-infrastructure.fullname" . }}-general-rabbitmq:5672"
+        - name: EVENTS_QUEUE_ASYNC_CONNECTION
+          value: {{ .Values.txs.env.eventsQueueAsyncConnection | quote }}
+        - name: EVENTS_QUEUE_EXCHANGE_NAME
+          value: {{ .Values.txs.env.eventsQueueExchangeName | quote }}
+        - name: ETHEREUM_NODE_URL
+          value: {{ .Values.global.rpcNodeUrl | quote }}
+        command: ["docker/web/run_web.sh"]
+        volumeMounts:
+        - name: nginx-shared-txs
+          mountPath: /nginx
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: nginx-shared-txs
+        emptyDir: {}
+---
+{{- range $worker := list "indexer" "contracts-tokens" "notifications-webhooks" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" $ }}-txs-worker-{{ $worker }}
+  labels:
+    {{- include "safe-infrastructure.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: txs-worker-{{ $worker }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: txs-worker-{{ $worker }}
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: txs-worker-{{ $worker }}
+    spec:
+      containers:
+      - name: txs-worker-{{ $worker }}
+        image: {{ $.Values.txs.image }}:{{ $.Values.images.txsVersion }}
+        env:
+        - name: PYTHONPATH
+          value: {{ $.Values.txs.env.pythonPath | quote }}
+        - name: DJANGO_SETTINGS_MODULE
+          value: {{ $.Values.txs.env.djangoSettingsModule | quote }}
+        - name: DJANGO_SECRET_KEY
+          value: {{ $.Values.txs.env.djangoSecretKey | quote }}
+        - name: DEBUG
+          value: {{ $.Values.txs.env.debug | quote }}
+        - name: DATABASE_URL
+          value: {{ $.Values.txs.env.databaseUrl | quote }}
+        - name: ETH_L2_NETWORK
+          value: {{ $.Values.txs.env.ethL2Network | quote }}
+        - name: REDIS_URL
+          value: {{ $.Values.txs.env.redisUrl | quote }}
+        - name: CELERY_BROKER_URL
+          value: {{ $.Values.txs.env.celeryBrokerUrl | quote }}
+        - name: DJANGO_ALLOWED_HOSTS
+          value: {{ $.Values.txs.env.djangoAllowedHosts | quote }}
+        - name: FORCE_SCRIPT_NAME
+          value: {{ $.Values.txs.env.forceScriptName | quote }}
+        - name: CSRF_TRUSTED_ORIGINS
+          value: {{ $.Values.txs.env.csrfTrustedOrigins | quote }}
+        - name: EVENTS_QUEUE_URL
+          value: {{ $.Values.txs.env.eventsQueueUrl | quote }}
+        - name: EVENTS_QUEUE_ASYNC_CONNECTION
+          value: {{ $.Values.txs.env.eventsQueueAsyncConnection | quote }}
+        - name: EVENTS_QUEUE_EXCHANGE_NAME
+          value: {{ $.Values.txs.env.eventsQueueExchangeName | quote }}
+        - name: ETHEREUM_NODE_URL
+          value: {{ $.Values.global.rpcNodeUrl | quote }}
+        {{- if eq $worker "indexer" }}
+        - name: RUN_MIGRATIONS
+          value: "1"
+        - name: WORKER_QUEUES
+          value: "default,indexing,processing"
+        {{- else if eq $worker "contracts-tokens" }}
+        - name: WORKER_QUEUES
+          value: "contracts,tokens"
+        {{- else if eq $worker "notifications-webhooks" }}
+        - name: WORKER_QUEUES
+          value: "notifications,webhooks"
+        {{- end }}
+        command: ["docker/web/celery/worker/run.sh"]
+        livenessProbe:
+          exec:
+            command:
+            - celery
+            - inspect
+            - ping
+          initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+        resources:
+          {{- toYaml $.Values.resources | nindent 10 }}
+---
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-txs-scheduler
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: txs-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: txs-scheduler
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: txs-scheduler
+    spec:
+      containers:
+      - name: txs-scheduler
+        image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
+        env:
+        - name: PYTHONPATH
+          value: {{ .Values.txs.env.pythonPath | quote }}
+        - name: DJANGO_SETTINGS_MODULE
+          value: {{ .Values.txs.env.djangoSettingsModule | quote }}
+        - name: DJANGO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: django-secret-key
+        - name: DEBUG
+          value: {{ .Values.txs.env.debug | quote }}
+        - name: DATABASE_URL
+          value: "psql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/$(POSTGRES_DATABASE)"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-password
+        - name: POSTGRES_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-database
+        - name: ETH_L2_NETWORK
+          value: {{ .Values.txs.env.ethL2Network | quote }}
+        - name: REDIS_URL
+          value: "redis://{{ include "safe-infrastructure.fullname" . }}-txs-redis:6379/0"
+        - name: CELERY_BROKER_URL
+          value: "amqp://guest:guest@{{ include "safe-infrastructure.fullname" . }}-txs-rabbitmq/"
+        - name: DJANGO_ALLOWED_HOSTS
+          value: {{ .Values.txs.env.djangoAllowedHosts | quote }}
+        - name: FORCE_SCRIPT_NAME
+          value: {{ .Values.txs.env.forceScriptName | quote }}
+        - name: CSRF_TRUSTED_ORIGINS
+          value: {{ .Values.txs.env.csrfTrustedOrigins | quote }}
+        - name: EVENTS_QUEUE_URL
+          value: "amqp://{{ include "safe-infrastructure.fullname" . }}-general-rabbitmq:5672"
+        - name: EVENTS_QUEUE_ASYNC_CONNECTION
+          value: {{ .Values.txs.env.eventsQueueAsyncConnection | quote }}
+        - name: EVENTS_QUEUE_EXCHANGE_NAME
+          value: {{ .Values.txs.env.eventsQueueExchangeName | quote }}
+        - name: ETHEREUM_NODE_URL
+          value: {{ .Values.global.rpcNodeUrl | quote }}
+        command: ["docker/web/celery/scheduler/run.sh"]
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}

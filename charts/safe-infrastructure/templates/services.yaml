@@ -1,0 +1,192 @@
+# Nginx Service (LoadBalancer for external access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-nginx
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+  {{- with .Values.services.nginx.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.services.nginx.type }}
+  ports:
+  - port: {{ .Values.services.nginx.port }}
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+
+---
+# Database Services
+{{- range $db := list "txs" "cfg" "events" "cgw" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" $ }}-{{ $db }}-db
+  labels:
+    {{- include "safe-infrastructure.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $db }}-db
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $db }}-db
+---
+{{- end }}
+
+# Redis Services
+{{- range $redis := list "txs" "cgw" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" $ }}-{{ $redis }}-redis
+  labels:
+    {{- include "safe-infrastructure.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $redis }}-redis
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $redis }}-redis
+---
+{{- end }}
+
+# RabbitMQ Services
+{{- range $rabbitmq := list "txs" "general" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" $ }}-{{ $rabbitmq }}-rabbitmq
+  labels:
+    {{- include "safe-infrastructure.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $rabbitmq }}-rabbitmq
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5672
+    targetPort: 5672
+    protocol: TCP
+    name: amqp
+  - port: 15672
+    targetPort: 15672
+    protocol: TCP
+    name: management
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $rabbitmq }}-rabbitmq
+---
+{{- end }}
+
+# Transaction Service Web
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-txs-web
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: txs-web
+spec:
+  type: {{ .Values.services.txsWeb.type }}
+  ports:
+  - port: {{ .Values.services.txsWeb.port }}
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: txs-web
+
+---
+# Config Service Web
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-cfg-web
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cfg-web  
+spec:
+  type: {{ .Values.services.cfgWeb.type }}
+  ports:
+  - port: {{ .Values.services.cfgWeb.port }}
+    targetPort: 8001
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: cfg-web
+
+---
+# Client Gateway Web
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-cgw-web
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cgw-web
+spec:
+  type: {{ .Values.services.cgwWeb.type }}
+  ports:
+  - port: {{ .Values.services.cgwWeb.port }}
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: cgw-web
+
+---
+# Events Service Web
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-events-web
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: events-web
+spec:
+  type: {{ .Values.services.eventsWeb.type }}
+  ports:
+  - port: {{ .Values.services.eventsWeb.port }}
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: events-web
+
+---
+# UI Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-ui
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ui
+spec:
+  type: {{ .Values.services.ui.type }}
+  ports:
+  - port: {{ .Values.services.ui.port }}
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "safe-infrastructure.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: ui

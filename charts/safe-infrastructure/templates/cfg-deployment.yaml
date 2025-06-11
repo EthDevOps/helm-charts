@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-cfg-web
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cfg-web
+spec:
+  replicas: {{ .Values.cfg.replicas }}
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: cfg-web
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: cfg-web
+    spec:
+      containers:
+      - name: cfg-web
+        image: {{ .Values.cfg.image }}:{{ .Values.images.cfgVersion }}
+        ports:
+        - containerPort: 8001
+        env:
+        - name: PYTHONDONTWRITEBYTECODE
+          value: {{ .Values.cfg.env.pythonDontWriteBytecode | quote }}
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: cfg-secret-key
+        - name: DEBUG
+          value: {{ .Values.cfg.env.debug | quote }}
+        - name: ROOT_LOG_LEVEL
+          value: {{ .Values.cfg.env.rootLogLevel | quote }}
+        - name: DJANGO_ALLOWED_HOSTS
+          value: {{ .Values.cfg.env.djangoAllowedHosts | quote }}
+        - name: GUNICORN_BIND_PORT
+          value: {{ .Values.cfg.env.gunicornBindPort | quote }}
+        - name: DOCKER_NGINX_VOLUME_ROOT
+          value: {{ .Values.cfg.env.dockerNginxVolumeRoot | quote }}
+        - name: GUNICORN_BIND_SOCKET
+          value: "unix:{{ .Values.cfg.env.dockerNginxVolumeRoot }}/gunicorn.socket"
+        - name: NGINX_ENVSUBST_OUTPUT_DIR
+          value: {{ .Values.cfg.env.nginxEnvsubstOutputDir | quote }}
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-password
+        - name: POSTGRES_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-database
+        - name: POSTGRES_HOST
+          value: "{{ include "safe-infrastructure.fullname" . }}-cfg-db"
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: DOCKER_WEB_VOLUME
+          value: {{ .Values.cfg.env.dockerWebVolume | quote }}
+        - name: GUNICORN_WEB_RELOAD
+          value: {{ .Values.cfg.env.gunicornWebReload | quote }}
+        - name: DJANGO_SUPERUSER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: django-superuser-password
+        - name: DJANGO_SUPERUSER_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: django-superuser-username
+        - name: DJANGO_SUPERUSER_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: django-superuser-email
+        - name: DJANGO_OTP_ADMIN
+          value: {{ .Values.cfg.env.djangoOtpAdmin | quote }}
+        - name: DEFAULT_FILE_STORAGE
+          value: {{ .Values.cfg.env.defaultFileStorage | quote }}
+        - name: FORCE_SCRIPT_NAME
+          value: {{ .Values.cfg.env.forceScriptName | quote }}
+        - name: CGW_URL
+          value: "http://{{ include "safe-infrastructure.fullname" . }}-nginx:8000/cgw"
+        - name: CGW_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: cgw-auth-token
+        - name: CSRF_TRUSTED_ORIGINS
+          value: {{ .Values.cfg.env.csrfTrustedOrigins | quote }}
+        - name: MEDIA_URL
+          value: {{ .Values.cfg.env.mediaUrl | quote }}
+        volumeMounts:
+        - name: nginx-shared-cfg
+          mountPath: /nginx
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: nginx-shared-cfg
+        emptyDir: {}

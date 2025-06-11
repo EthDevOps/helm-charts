@@ -1,0 +1,45 @@
+{{- range $redis := list "txs" "cgw" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" $ }}-{{ $redis }}-redis
+  labels:
+    {{- include "safe-infrastructure.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $redis }}-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $redis }}-redis
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $redis }}-redis
+    spec:
+      containers:
+      - name: redis
+        image: {{ $.Values.redis.image }}
+        ports:
+        - containerPort: 6379
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+        resources:
+          {{- toYaml $.Values.resources | nindent 10 }}
+{{- end }}

@@ -1,0 +1,91 @@
+{{- range $db := list "txs" "cfg" "events" "cgw" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" $ }}-{{ $db }}-db
+  labels:
+    {{- include "safe-infrastructure.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $db }}-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $db }}-db
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $db }}-db
+    spec:
+      containers:
+      - name: postgres
+        image: {{ $.Values.databases.postgres.image }}
+        {{- if eq $db "txs" }}
+        command: ["postgres", "-c", "max_connections=250"]
+        {{- end }}
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" $ }}-credentials
+              key: postgres-password
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" $ }}-credentials
+              key: postgres-user
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" $ }}-credentials
+              key: postgres-database
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+      volumes:
+      - name: postgres-data
+        {{- if $.Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "safe-infrastructure.fullname" $ }}-{{ $db }}-db-pvc
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+---
+{{- if $.Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "safe-infrastructure.fullname" $ }}-{{ $db }}-db-pvc
+spec:
+  accessModes:
+    - {{ $.Values.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ $.Values.persistence.size }}
+  {{- if $.Values.persistence.storageClass }}
+  storageClassName: {{ $.Values.persistence.storageClass }}
+  {{- end }}
+{{- end }}
+{{- end }}

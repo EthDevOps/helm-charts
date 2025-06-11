@@ -1,0 +1,49 @@
+{{- range $rabbitmq := list "txs" "general" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" $ }}-{{ $rabbitmq }}-rabbitmq
+  labels:
+    {{- include "safe-infrastructure.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $rabbitmq }}-rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $rabbitmq }}-rabbitmq
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $rabbitmq }}-rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: {{ $.Values.rabbitmq.image }}
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+        livenessProbe:
+          exec:
+            command:
+            - rabbitmq-diagnostics
+            - -q
+            - ping
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+          failureThreshold: {{ $.Values.healthCheck.failureThreshold }}
+        readinessProbe:
+          exec:
+            command:
+            - rabbitmq-diagnostics
+            - -q
+            - ping
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+        resources:
+          {{- toYaml $.Values.resources | nindent 10 }}
+{{- end }}

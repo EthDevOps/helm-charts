@@ -1,0 +1,206 @@
+# Global configuration
+global:
+  reverseProxyPort: 8000
+  rpcNodeUrl: ""
+  
+# Image versions
+images:
+  txsVersion: "latest"
+  cfgVersion: "latest" 
+  cgwVersion: "latest"
+  uiVersion: "latest"
+  eventsVersion: "latest"
+
+# Nginx configuration
+nginx:
+  image: nginx:alpine
+  replicas: 1
+  
+
+# Database configurations
+databases:
+  postgres:
+    image: postgres:14-alpine
+    maxConnections: 250
+
+# Redis configurations  
+redis:
+  image: redis:alpine
+
+# RabbitMQ configurations
+rabbitmq:
+  image: rabbitmq:alpine
+
+# Transaction Service configuration
+txs:
+  replicas: 1
+  image: safeglobal/safe-transaction-service
+  env:
+    pythonPath: /app/
+    djangoSettingsModule: config.settings.production
+    debug: "0"
+    ethL2Network: "1"
+    djangoAllowedHosts: "*"
+    forceScriptName: /txs/
+    csrfTrustedOrigins: "http://localhost:8000"
+    eventsQueueAsyncConnection: "True"
+    eventsQueueExchangeName: safe-transaction-service-events
+
+# Config Service configuration
+cfg:
+  replicas: 1
+  image: safeglobal/safe-config-service
+  env:
+    pythonDontWriteBytecode: "true"
+    debug: "true"
+    rootLogLevel: DEBUG
+    djangoAllowedHosts: "*"
+    gunicornBindPort: "8001"
+    dockerNginxVolumeRoot: /nginx
+    nginxEnvsubstOutputDir: /etc/nginx/
+    dockerWebVolume: .:/app
+    gunicornWebReload: "false"
+    djangoOtpAdmin: "false"
+    defaultFileStorage: django.core.files.storage.FileSystemStorage
+    forceScriptName: /cfg/
+    cgwUrl: http://nginx:8000/cgw
+    csrfTrustedOrigins: "http://localhost:8000"
+    mediaUrl: "http://localhost:8000/cfg/media/"
+
+# Client Gateway configuration  
+cgw:
+  replicas: 1
+  image: safeglobal/safe-client-gateway-nest
+  env:
+    httpClientRequestTimeoutMilliseconds: "60000"
+    safeConfigBaseUri: http://nginx:8000/cfg
+    infuraApiKey: ""
+    logLevel: info
+    emailApiApplicationCode: ""
+    emailApiFromEmail: changeme@example.com
+    emailApiKey: ""
+    emailTemplateRecoveryTx: ""
+    emailTemplateUnknownRecoveryTx: ""
+    emailTemplateVerificationCode: ""
+    pushNotificationsApiProject: ""
+    pushNotificationsApiServiceAccountClientEmail: changeme@example.com
+    pushNotificationsApiServiceAccountPrivateKey: ""
+    relayProviderApiKeyOptimism: ""
+    relayProviderApiKeyBsc: ""
+    relayProviderApiKeyGnosisChain: ""
+    relayProviderApiKeyPolygon: ""
+    relayProviderApiKeyPolygonZkevm: ""
+    relayProviderApiKeyBase: ""
+    relayProviderApiKeyArbitrumOne: ""
+    relayProviderApiKeyAvalanche: ""
+    relayProviderApiKeyLinea: ""
+    relayProviderApiKeyBlast: ""
+    relayProviderApiKeySepolia: ""
+    stakingApiKey: ""
+    stakingTestnetApiKey: ""
+
+# Events Service configuration
+events:
+  replicas: 1
+  image: safeglobal/safe-events-service
+  env:
+    amqpExchange: safe-transaction-service-events
+    amqpQueue: safe-events-service
+    webhooksCacheTtl: "300000"
+    nodeEnv: production
+    urlBasePath: /events
+
+# UI configuration
+ui:
+  replicas: 1
+  image: safeglobal/safe-wallet-web
+  env:
+    nextPublicInfuraToken: ""
+    nextPublicGatewayUrlProduction: http://localhost:8000/cgw
+    nextPublicSafeAppsInfuraToken: ""
+    nextPublicTenderlySimulateEndpointUrl: ""
+    nextPublicTenderlyProjectName: ""
+    nextPublicTenderlyOrgName: ""
+    nextPublicIsProduction: "true"
+    nextPublicSafeVersion: "1.4.1"
+    nextPublicSentryDsn: ""
+    nextPublicBeamerId: ""
+    nextPublicWcBridge: ""
+    nextPublicFortmaticKey: ""
+    nextPublicPortisKey: ""
+    nextPublicCypressMnemonic: ""
+
+# Service configurations
+services:
+  nginx:
+    type: LoadBalancer
+    port: 8000
+  txsWeb:
+    type: ClusterIP
+    port: 8000
+  cfgWeb:
+    type: ClusterIP 
+    port: 8001
+  cgwWeb:
+    type: ClusterIP
+    port: 3000
+  eventsWeb:
+    type: ClusterIP
+    port: 3000
+  ui:
+    type: ClusterIP
+    port: 8080
+
+# Persistent Volume configurations  
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Node selector and affinity
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Health check configurations
+healthCheck:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+
+# Credentials (these should be overridden in production)
+credentials:
+  postgres:
+    user: postgres
+    password: postgres
+    database: postgres
+  django:
+    secretKey: Very-secure-secret-string
+    superuser:
+      username: root
+      password: admin
+      email: test@example.com
+  cfg:
+    secretKey: insecure_key_for_dev
+  cgw:
+    authToken: your_privileged_endpoints_token
+    fingerprintEncryptionKey: ""
+  jwt:
+    issuer: ""
+    secret: ""
+  events:
+    adminEmail: admin@safe
+    adminPassword: password

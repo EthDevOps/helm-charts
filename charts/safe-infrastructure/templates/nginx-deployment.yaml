@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-nginx
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+spec:
+  replicas: {{ .Values.nginx.replicas }}
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: nginx
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: {{ .Values.nginx.image }}
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: nginx-shared-txs
+          mountPath: /nginx-txs
+        - name: nginx-shared-cfg
+          mountPath: /nginx-cfg
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: {{ include "safe-infrastructure.fullname" . }}-nginx-config
+      - name: nginx-shared-txs
+        emptyDir: {}
+      - name: nginx-shared-cfg
+        emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-nginx-config
+data:
+  nginx.conf: |
+    upstream txs {
+        server {{ include "safe-infrastructure.fullname" . }}-txs-web:8000;
+    }
+    upstream cfg {
+        server {{ include "safe-infrastructure.fullname" . }}-cfg-web:8001;
+    }
+    upstream cgw {
+        server {{ include "safe-infrastructure.fullname" . }}-cgw-web:3000;
+    }
+    upstream events {
+        server {{ include "safe-infrastructure.fullname" . }}-events-web:3000;
+    }
+    server {
+        listen 8000;
+        location /txs/ {
+            proxy_pass http://txs/;
+        }
+        location /cfg/ {
+            proxy_pass http://cfg/;
+        }
+        location /cgw/ {
+            proxy_pass http://cgw/;
+        }
+        location /events/ {
+            proxy_pass http://events/;
+        }
+    }

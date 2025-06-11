@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-ui
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ui
+spec:
+  replicas: {{ .Values.ui.replicas }}
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: ui
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: ui
+    spec:
+      containers:
+      - name: ui
+        image: {{ .Values.ui.image }}:{{ .Values.images.uiVersion }}
+        ports:
+        - containerPort: 8080
+        env:
+        - name: NEXT_PUBLIC_INFURA_TOKEN
+          value: {{ .Values.ui.env.nextPublicInfuraToken | quote }}
+        - name: NEXT_PUBLIC_GATEWAY_URL_PRODUCTION
+          value: {{ .Values.ui.env.nextPublicGatewayUrlProduction | quote }}
+        - name: NEXT_PUBLIC_SAFE_APPS_INFURA_TOKEN
+          value: {{ .Values.ui.env.nextPublicSafeAppsInfuraToken | quote }}
+        - name: NEXT_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL
+          value: {{ .Values.ui.env.nextPublicTenderlySimulateEndpointUrl | quote }}
+        - name: NEXT_PUBLIC_TENDERLY_PROJECT_NAME
+          value: {{ .Values.ui.env.nextPublicTenderlyProjectName | quote }}
+        - name: NEXT_PUBLIC_TENDERLY_ORG_NAME
+          value: {{ .Values.ui.env.nextPublicTenderlyOrgName | quote }}
+        - name: NEXT_PUBLIC_IS_PRODUCTION
+          value: {{ .Values.ui.env.nextPublicIsProduction | quote }}
+        - name: NEXT_PUBLIC_SAFE_VERSION
+          value: {{ .Values.ui.env.nextPublicSafeVersion | quote }}
+        - name: NEXT_PUBLIC_SENTRY_DSN
+          value: {{ .Values.ui.env.nextPublicSentryDsn | quote }}
+        - name: NEXT_PUBLIC_BEAMER_ID
+          value: {{ .Values.ui.env.nextPublicBeamerId | quote }}
+        - name: NEXT_PUBLIC_WC_BRIDGE
+          value: {{ .Values.ui.env.nextPublicWcBridge | quote }}
+        - name: NEXT_PUBLIC_FORTMATIC_KEY
+          value: {{ .Values.ui.env.nextPublicFortmaticKey | quote }}
+        - name: NEXT_PUBLIC_PORTIS_KEY
+          value: {{ .Values.ui.env.nextPublicPortisKey | quote }}
+        - name: NEXT_PUBLIC_CYPRESS_MNEMONIC
+          value: {{ .Values.ui.env.nextPublicCypressMnemonic | quote }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}

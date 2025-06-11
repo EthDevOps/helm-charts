@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-cgw-web
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cgw-web
+spec:
+  replicas: {{ .Values.cgw.replicas }}
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: cgw-web
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: cgw-web
+    spec:
+      containers:
+      - name: cgw-web
+        image: {{ .Values.cgw.image }}:{{ .Values.images.cgwVersion }}
+        ports:
+        - containerPort: 3000
+        env:
+        - name: HTTP_CLIENT_REQUEST_TIMEOUT_MILLISECONDS
+          value: {{ .Values.cgw.env.httpClientRequestTimeoutMilliseconds | quote }}
+        - name: SAFE_CONFIG_BASE_URI
+          value: "http://{{ include "safe-infrastructure.fullname" . }}-nginx:8000/cfg"
+        - name: INFURA_API_KEY
+          value: {{ .Values.cgw.env.infuraApiKey | quote }}
+        - name: REDIS_HOST
+          value: "{{ include "safe-infrastructure.fullname" . }}-cgw-redis"
+        - name: AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: cgw-auth-token
+        - name: LOG_LEVEL
+          value: {{ .Values.cgw.env.logLevel | quote }}
+        - name: EMAIL_API_APPLICATION_CODE
+          value: {{ .Values.cgw.env.emailApiApplicationCode | quote }}
+        - name: EMAIL_API_FROM_EMAIL
+          value: {{ .Values.cgw.env.emailApiFromEmail | quote }}
+        - name: EMAIL_API_KEY
+          value: {{ .Values.cgw.env.emailApiKey | quote }}
+        - name: EMAIL_TEMPLATE_RECOVERY_TX
+          value: {{ .Values.cgw.env.emailTemplateRecoveryTx | quote }}
+        - name: EMAIL_TEMPLATE_UNKNOWN_RECOVERY_TX
+          value: {{ .Values.cgw.env.emailTemplateUnknownRecoveryTx | quote }}
+        - name: EMAIL_TEMPLATE_VERIFICATION_CODE
+          value: {{ .Values.cgw.env.emailTemplateVerificationCode | quote }}
+        - name: PUSH_NOTIFICATIONS_API_PROJECT
+          value: {{ .Values.cgw.env.pushNotificationsApiProject | quote }}
+        - name: PUSH_NOTIFICATIONS_API_SERVICE_ACCOUNT_CLIENT_EMAIL
+          value: {{ .Values.cgw.env.pushNotificationsApiServiceAccountClientEmail | quote }}
+        - name: PUSH_NOTIFICATIONS_API_SERVICE_ACCOUNT_PRIVATE_KEY
+          value: {{ .Values.cgw.env.pushNotificationsApiServiceAccountPrivateKey | quote }}
+        - name: RELAY_PROVIDER_API_KEY_OPTIMISM
+          value: {{ .Values.cgw.env.relayProviderApiKeyOptimism | quote }}
+        - name: RELAY_PROVIDER_API_KEY_BSC
+          value: {{ .Values.cgw.env.relayProviderApiKeyBsc | quote }}
+        - name: RELAY_PROVIDER_API_KEY_GNOSIS_CHAIN
+          value: {{ .Values.cgw.env.relayProviderApiKeyGnosisChain | quote }}
+        - name: RELAY_PROVIDER_API_KEY_POLYGON
+          value: {{ .Values.cgw.env.relayProviderApiKeyPolygon | quote }}
+        - name: RELAY_PROVIDER_API_KEY_POLYGON_ZKEVM
+          value: {{ .Values.cgw.env.relayProviderApiKeyPolygonZkevm | quote }}
+        - name: RELAY_PROVIDER_API_KEY_BASE
+          value: {{ .Values.cgw.env.relayProviderApiKeyBase | quote }}
+        - name: RELAY_PROVIDER_API_KEY_ARBITRUM_ONE
+          value: {{ .Values.cgw.env.relayProviderApiKeyArbitrumOne | quote }}
+        - name: RELAY_PROVIDER_API_KEY_AVALANCHE
+          value: {{ .Values.cgw.env.relayProviderApiKeyAvalanche | quote }}
+        - name: RELAY_PROVIDER_API_KEY_LINEA
+          value: {{ .Values.cgw.env.relayProviderApiKeyLinea | quote }}
+        - name: RELAY_PROVIDER_API_KEY_BLAST
+          value: {{ .Values.cgw.env.relayProviderApiKeyBlast | quote }}
+        - name: RELAY_PROVIDER_API_KEY_SEPOLIA
+          value: {{ .Values.cgw.env.relayProviderApiKeySepolia | quote }}
+        - name: STAKING_API_KEY
+          value: {{ .Values.cgw.env.stakingApiKey | quote }}
+        - name: STAKING_TESTNET_API_KEY
+          value: {{ .Values.cgw.env.stakingTestnetApiKey | quote }}
+        - name: JWT_ISSUER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: jwt-issuer
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: jwt-secret
+        - name: FINGERPRINT_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: fingerprint-encryption-key
+        - name: POSTGRES_HOST
+          value: "{{ include "safe-infrastructure.fullname" . }}-cgw-db"
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-database
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}

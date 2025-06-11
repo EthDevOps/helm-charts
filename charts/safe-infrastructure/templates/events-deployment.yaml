@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-events-web
+  labels:
+    {{- include "safe-infrastructure.labels" . | nindent 4 }}
+    app.kubernetes.io/component: events-web
+spec:
+  replicas: {{ .Values.events.replicas }}
+  selector:
+    matchLabels:
+      {{- include "safe-infrastructure.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: events-web
+  template:
+    metadata:
+      labels:
+        {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: events-web
+    spec:
+      containers:
+      - name: events-web
+        image: {{ .Values.events.image }}:{{ .Values.images.eventsVersion }}
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          value: "psql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ include "safe-infrastructure.fullname" . }}-events-db:5432/$(POSTGRES_DATABASE)"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-password
+        - name: POSTGRES_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: postgres-database
+        - name: AMQP_URL
+          value: "amqp://{{ include "safe-infrastructure.fullname" . }}-general-rabbitmq:5672"
+        - name: AMQP_EXCHANGE
+          value: {{ .Values.events.env.amqpExchange | quote }}
+        - name: AMQP_QUEUE
+          value: {{ .Values.events.env.amqpQueue | quote }}
+        - name: ADMIN_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: events-admin-email
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "safe-infrastructure.fullname" . }}-credentials
+              key: events-admin-password
+        - name: WEBHOOKS_CACHE_TTL
+          value: {{ .Values.events.env.webhooksCacheTtl | quote }}
+        - name: NODE_ENV
+          value: {{ .Values.events.env.nodeEnv | quote }}
+        - name: URL_BASE_PATH
+          value: {{ .Values.events.env.urlBasePath | quote }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
