@@ -14,7 +14,7 @@ spec:
   type: {{ .Values.staticWeb.service.type }}
   ports:
     - port: {{ .Values.staticWeb.service.port }}
-      targetPort: http
+      targetPort: 8080
       protocol: TCP
       name: http
   selector:
