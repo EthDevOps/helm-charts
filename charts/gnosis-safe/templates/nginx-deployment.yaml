@@ -1,0 +1,47 @@
+{{- if .Values.nginx.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-nginx
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "gnosis-safe.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: nginx
+  template:
+    metadata:
+      labels:
+        {{- include "gnosis-safe.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: nginx-shared
+              mountPath: /nginx
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "gnosis-safe.fullname" . }}-nginx-config
+        - name: nginx-shared
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "gnosis-safe.fullname" . }}-nginx-shared
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+{{- end }}

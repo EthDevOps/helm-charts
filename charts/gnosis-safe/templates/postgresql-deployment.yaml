@@ -1,0 +1,61 @@
+{{- if .Values.postgresql.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-postgresql
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "gnosis-safe.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: postgresql
+  template:
+    metadata:
+      labels:
+        {{- include "gnosis-safe.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.auth.username }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgresql.auth.password }}
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.auth.database }}
+          {{- if .Values.postgresql.healthcheck.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+            timeoutSeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+            timeoutSeconds: 5
+            periodSeconds: 10
+          {{- end }}
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgresql-data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "gnosis-safe.fullname" . }}-postgresql-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+{{- end }}

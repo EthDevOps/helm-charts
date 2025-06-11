@@ -1,0 +1,19 @@
+{{- if .Values.rabbitmq.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-rabbitmq
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.rabbitmq.service.port }}
+      targetPort: amqp
+      protocol: TCP
+      name: amqp
+  selector:
+    {{- include "gnosis-safe.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+{{- end }}

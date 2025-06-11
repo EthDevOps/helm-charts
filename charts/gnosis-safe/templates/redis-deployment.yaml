@@ -1,0 +1,45 @@
+{{- if .Values.redis.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-redis
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "gnosis-safe.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: redis
+  template:
+    metadata:
+      labels:
+        {{- include "gnosis-safe.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: redis
+    spec:
+      containers:
+        - name: redis
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          {{- if .Values.redis.healthcheck.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            timeoutSeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            timeoutSeconds: 5
+            periodSeconds: 10
+          {{- end }}
+{{- end }}

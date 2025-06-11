@@ -1,0 +1,103 @@
+{{- if .Values.workers.indexer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-indexer-worker
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: indexer-worker
+spec:
+  replicas: {{ .Values.workers.indexer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "gnosis-safe.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: indexer-worker
+  template:
+    metadata:
+      labels:
+        {{- include "gnosis-safe.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: indexer-worker
+    spec:
+      containers:
+        - name: indexer-worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["docker/web/celery/worker/run.sh"]
+          env:
+            - name: RUN_MIGRATIONS
+              value: "1"
+            - name: WORKER_QUEUES
+              value: {{ .Values.workers.indexer.queues }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "gnosis-safe.fullname" . }}-config
+            - secretRef:
+                name: {{ include "gnosis-safe.fullname" . }}-secret
+---
+{{- end }}
+{{- if .Values.workers.contractsTokens.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-contracts-tokens-worker
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: contracts-tokens-worker
+spec:
+  replicas: {{ .Values.workers.contractsTokens.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "gnosis-safe.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: contracts-tokens-worker
+  template:
+    metadata:
+      labels:
+        {{- include "gnosis-safe.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: contracts-tokens-worker
+    spec:
+      containers:
+        - name: contracts-tokens-worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["docker/web/celery/worker/run.sh"]
+          env:
+            - name: WORKER_QUEUES
+              value: {{ .Values.workers.contractsTokens.queues }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "gnosis-safe.fullname" . }}-config
+            - secretRef:
+                name: {{ include "gnosis-safe.fullname" . }}-secret
+---
+{{- end }}
+{{- if .Values.workers.scheduler.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-scheduler
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: scheduler
+spec:
+  replicas: {{ .Values.workers.scheduler.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "gnosis-safe.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: scheduler
+  template:
+    metadata:
+      labels:
+        {{- include "gnosis-safe.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: scheduler
+    spec:
+      containers:
+        - name: scheduler
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["docker/web/celery/scheduler/run.sh"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "gnosis-safe.fullname" . }}-config
+            - secretRef:
+                name: {{ include "gnosis-safe.fullname" . }}-secret
+{{- end }}

@@ -1,0 +1,35 @@
+{{- if .Values.flower.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-flower
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: flower
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "gnosis-safe.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: flower
+  template:
+    metadata:
+      labels:
+        {{- include "gnosis-safe.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: flower
+    spec:
+      containers:
+        - name: flower
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["docker/web/celery/flower/run.sh"]
+          ports:
+            - name: http
+              containerPort: 5555
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "gnosis-safe.fullname" . }}-config
+            - secretRef:
+                name: {{ include "gnosis-safe.fullname" . }}-secret
+{{- end }}

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: gnosis-safe
+description: A Helm chart for Gnosis Safe Transaction Service
+type: application
+version: 0.1.0
+appVersion: "main"

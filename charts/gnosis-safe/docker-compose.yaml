@@ -1,0 +1,92 @@
+
+volumes:
+  nginx-shared:
+
+services:
+  nginx:
+    image: nginx:alpine
+    hostname: nginx
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx-shared:/nginx
+    depends_on:
+      - web
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping"]
+      timeout: 5s
+      retries: 3
+
+
+  rabbitmq:
+    image: rabbitmq:alpine
+    ports:
+      - "5672:5672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      timeout: 5s
+      retries: 3
+
+  web:
+    image: docker.ethquokkaops.io/ethquokkaops/ethdevops/safe-transaction-service:main
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    working_dir: /app
+    ports:
+      - "8888:8888"
+    volumes:
+      - nginx-shared:/nginx
+    command: docker/web/run_web.sh
+
+  indexer-worker: &worker
+    image: docker.ethquokkaops.io/ethquokkaops/ethdevops/safe-transaction-service:main
+    env_file:
+      - .env
+    environment:
+      RUN_MIGRATIONS: 1
+      WORKER_QUEUES: "default,indexing,processing"
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+    command: docker/web/celery/worker/run.sh
+
+  contracts-tokens-worker:
+    <<: *worker
+    environment:
+      WORKER_QUEUES: "contracts,tokens"
+
+  scheduler:
+    <<: *worker
+    command: docker/web/celery/scheduler/run.sh
+
+  flower:
+    <<: *worker
+    command: docker/web/celery/flower/run.sh
+    ports:
+      - "5555:5555"
+    profiles:
+      - debug
+

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-config
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+data:
+  # Database configuration
+  DATABASE_URL: "postgresql://{{ .Values.postgresql.auth.username }}:{{ .Values.postgresql.auth.password }}@{{ include "gnosis-safe.fullname" . }}-postgresql:{{ .Values.postgresql.service.port }}/{{ .Values.postgresql.auth.database }}"
+  
+  # Redis configuration
+  REDIS_URL: "redis://{{ include "gnosis-safe.fullname" . }}-redis:{{ .Values.redis.service.port }}"
+  
+  # RabbitMQ configuration
+  CELERY_BROKER_URL: "amqp://guest@{{ include "gnosis-safe.fullname" . }}-rabbitmq:{{ .Values.rabbitmq.service.port }}//"

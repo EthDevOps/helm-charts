@@ -1,0 +1,47 @@
+{{- if .Values.rabbitmq.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gnosis-safe.fullname" . }}-rabbitmq
+  labels:
+    {{- include "gnosis-safe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "gnosis-safe.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: rabbitmq
+  template:
+    metadata:
+      labels:
+        {{- include "gnosis-safe.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: amqp
+              containerPort: 5672
+              protocol: TCP
+          {{- if .Values.rabbitmq.healthcheck.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - rabbitmq-diagnostics
+                - -q
+                - ping
+            timeoutSeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+                - rabbitmq-diagnostics
+                - -q
+                - ping
+            timeoutSeconds: 30
+            periodSeconds: 10
+          {{- end }}
+{{- end }}
