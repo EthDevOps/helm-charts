@@ -22,9 +22,6 @@ spec:
       containers:
       - name: postgres
         image: {{ $.Values.databases.postgres.image }}
-        {{- if eq $db "txs" }}
-        command: ["postgres", "-c", "max_connections=250"]
-        {{- end }}
         env:
         - name: POSTGRES_PASSWORD
           valueFrom:

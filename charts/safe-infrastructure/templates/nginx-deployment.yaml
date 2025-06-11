@@ -45,6 +45,14 @@ metadata:
   name: {{ include "safe-infrastructure.fullname" . }}-nginx-config
 data:
   nginx.conf: |
+    worker_processes 1;
+
+    events {
+      worker_connections 2000; # increase if you have lots of clients
+      accept_mutex off; # set to 'on' if nginx worker_processes > 1
+      use epoll; # Enable epoll for Linux 2.6+
+      # 'use kqueue;' to enable for FreeBSD, OSX
+    }
     http {
     upstream txs {
         server {{ include "safe-infrastructure.fullname" . }}-txs-web:8000;
