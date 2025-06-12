@@ -81,6 +81,7 @@ spec:
       - name: nginx-shared-txs
         emptyDir: {}
 ---
+{{- $root := . -}}
 {{- range $worker := list "indexer" "contracts-tokens" "notifications-webhooks" }}
 apiVersion: apps/v1
 kind: Deployment
@@ -114,7 +115,7 @@ spec:
         - name: DEBUG
           value: {{ $.Values.txs.env.debug | quote }}
         - name: DATABASE_URL
-          value: "psql://{{ $.Values.credentials.postgres.user }}:{{ $.Values.credentials.postgres.password }}@{{ include "safe-infrastructure.fullname" $ }}-txs-db:5432/{{ $.Values.credentials.postgres.database }}"
+          value: "psql://{{ $.Values.credentials.postgres.user }}:{{ $.Values.credentials.postgres.password }}@{{ include "safe-infrastructure.fullname" $root }}-txs-db:5432/{{ $.Values.credentials.postgres.database }}"
         - name: ETH_L2_NETWORK
           value: {{ $.Values.txs.env.ethL2Network | quote }}
         - name: REDIS_URL
