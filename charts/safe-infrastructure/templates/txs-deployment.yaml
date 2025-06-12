@@ -114,13 +114,13 @@ spec:
         - name: DEBUG
           value: {{ $.Values.txs.env.debug | quote }}
         - name: DATABASE_URL
-          value: {{ $.Values.txs.env.databaseUrl | quote }}
+          value: "psql://{{ .Values.credentials.postgres.user }}:{{ .Values.credentials.postgres.password }}@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/{{ .Values.credentials.postgres.database }}"
         - name: ETH_L2_NETWORK
           value: {{ $.Values.txs.env.ethL2Network | quote }}
         - name: REDIS_URL
-          value: {{ $.Values.txs.env.redisUrl | quote }}
+          value: "redis://{{ include "safe-infrastructure.fullname" . }}-txs-redis:6379/0"
         - name: CELERY_BROKER_URL
-          value: {{ $.Values.txs.env.celeryBrokerUrl | quote }}
+          value: "amqp://guest:guest@{{ include "safe-infrastructure.fullname" . }}-txs-rabbitmq/"
         - name: DJANGO_ALLOWED_HOSTS
           value: {{ $.Values.txs.env.djangoAllowedHosts | quote }}
         - name: FORCE_SCRIPT_NAME
@@ -196,7 +196,7 @@ spec:
         - name: DEBUG
           value: {{ .Values.txs.env.debug | quote }}
         - name: DATABASE_URL
-          value: "psql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/$(POSTGRES_DATABASE)"
+          value: "psql://{{ .Values.credentials.postgres.user }}:{{ .Values.credentials.postgres.password }}@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/{{ .Values.credentials.postgres.database }}"
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:

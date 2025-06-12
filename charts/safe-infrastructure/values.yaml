@@ -159,13 +159,8 @@ persistence:
   size: 10Gi
 
 # Resource limits and requests
-resources:
-  limits:
-    cpu: 1000m
-    memory: 1Gi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+resources: {}
+
 
 # Node selector and affinity
 nodeSelector: {}
