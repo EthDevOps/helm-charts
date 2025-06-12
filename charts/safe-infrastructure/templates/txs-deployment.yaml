@@ -35,7 +35,7 @@ spec:
         - name: DEBUG
           value: {{ .Values.txs.env.debug | quote }}
         - name: DATABASE_URL
-          value: "psql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/$(POSTGRES_DATABASE)"
+          value: "psql://{{ .Values.credentials.postgres.user }}:{{ .Values.credentials.postgres.password }}@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/{{ .Values.credentials.postgres.database }}"
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:

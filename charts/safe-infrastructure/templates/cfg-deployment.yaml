@@ -87,8 +87,7 @@ spec:
         - name: DEFAULT_FILE_STORAGE
           value: {{ .Values.cfg.env.defaultFileStorage | quote }}
         - name: FORCE_SCRIPT_NAME
-          value: {{ .Values.cfg.env.forceScriptName | quote }}
-        - name: CGW_URL
+
           value: "http://{{ include "safe-infrastructure.fullname" . }}-nginx:8000/cgw"
         - name: CGW_AUTH_TOKEN
           valueFrom:

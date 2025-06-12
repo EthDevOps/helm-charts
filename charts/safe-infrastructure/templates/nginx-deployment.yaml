@@ -66,6 +66,9 @@ data:
     upstream events {
         server {{ include "safe-infrastructure.fullname" . }}-events-web:3000;
     }
+    upstream ui {
+        server {{ include "safe-infrastructure.fullname" . }}-ui:8080;
+    }
     server {
         listen 8000;
         location /txs/ {
@@ -79,6 +82,9 @@ data:
         }
         location /events/ {
             proxy_pass http://events/;
+        }
+        location /web/ {
+            proxy_pass http://ui/;
         }
     }
     }
