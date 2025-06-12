@@ -114,7 +114,7 @@ spec:
         - name: DEBUG
           value: {{ $.Values.txs.env.debug | quote }}
         - name: DATABASE_URL
-          value: "psql://{{ .Values.credentials.postgres.user }}:{{ .Values.credentials.postgres.password }}@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/{{ .Values.credentials.postgres.database }}"
+          value: "psql://{{ $.Values.credentials.postgres.user }}:{{ $.Values.credentials.postgres.password }}@{{ include "safe-infrastructure.fullname" . }}-txs-db:5432/{{ $.Values.credentials.postgres.database }}"
         - name: ETH_L2_NETWORK
           value: {{ $.Values.txs.env.ethL2Network | quote }}
         - name: REDIS_URL
