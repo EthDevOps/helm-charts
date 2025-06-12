@@ -119,9 +119,9 @@ spec:
         - name: ETH_L2_NETWORK
           value: {{ $.Values.txs.env.ethL2Network | quote }}
         - name: REDIS_URL
-          value: "redis://{{ include "safe-infrastructure.fullname" . }}-txs-redis:6379/0"
+          value: "redis://{{ include "safe-infrastructure.fullname" $root }}-txs-redis:6379/0"
         - name: CELERY_BROKER_URL
-          value: "amqp://guest:guest@{{ include "safe-infrastructure.fullname" . }}-txs-rabbitmq/"
+          value: "amqp://guest:guest@{{ include "safe-infrastructure.fullname" $root }}-txs-rabbitmq/"
         - name: DJANGO_ALLOWED_HOSTS
           value: {{ $.Values.txs.env.djangoAllowedHosts | quote }}
         - name: FORCE_SCRIPT_NAME
