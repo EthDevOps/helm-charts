@@ -83,7 +83,7 @@ data:
         location /events/ {
             proxy_pass http://events/;
         }
-        location /web/ {
+        location / {
             proxy_pass http://ui/;
         }
     }
