@@ -2,6 +2,7 @@
 global:
   reverseProxyPort: 8000
   rpcNodeUrl: ""
+baseUrl: "http://localhost"
   
 # Image versions
 images:

@@ -60,7 +60,7 @@ spec:
         - name: DJANGO_ALLOWED_HOSTS
           value: {{ .Values.txs.env.djangoAllowedHosts | quote }}
         - name: FORCE_SCRIPT_NAME
-          value: {{ .Values.txs.env.forceScriptName | quote }}
+          value: "{{ .Values.baseUrl }}/txs"
         - name: CSRF_TRUSTED_ORIGINS
           value: {{ .Values.txs.env.csrfTrustedOrigins | quote }}
         - name: EVENTS_QUEUE_URL
