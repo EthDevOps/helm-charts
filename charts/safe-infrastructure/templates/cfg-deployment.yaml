@@ -88,6 +88,8 @@ spec:
           value: {{ .Values.cfg.env.defaultFileStorage | quote }}
         - name: FORCE_SCRIPT_NAME
           value: "{{ .Values.baseUrl }}/cfg"
+        - name: CGW_URL
+          value: "http://{{ include "safe-infrastructure.fullname" . }}-cgw-web:3000"
         - name: CGW_AUTH_TOKEN
           valueFrom:
             secretKeyRef:
