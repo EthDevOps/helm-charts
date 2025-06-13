@@ -55,7 +55,7 @@ data:
     }
     http {
     upstream txs {
-        server {{ include "safe-infrastructure.fullname" . }}-txs-web:8000;
+        server {{ include "safe-infrastructure.fullname" . }}-txs-web:8888;
     }
     upstream cfg {
         server {{ include "safe-infrastructure.fullname" . }}-cfg-web:8001;

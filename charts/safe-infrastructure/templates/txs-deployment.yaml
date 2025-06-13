@@ -21,7 +21,7 @@ spec:
       - name: txs-web
         image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
         ports:
-        - containerPort: 8000
+        - containerPort: 8888
         env:
         - name: PYTHONPATH
           value: {{ .Values.txs.env.pythonPath | quote }}

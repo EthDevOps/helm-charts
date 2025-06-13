@@ -103,8 +103,8 @@ metadata:
 spec:
   type: {{ .Values.services.txsWeb.type }}
   ports:
-  - port: {{ .Values.services.txsWeb.port }}
-    targetPort: 8000
+  - port: 8888
+    targetPort: 8888
     protocol: TCP
     name: http
   selector:
