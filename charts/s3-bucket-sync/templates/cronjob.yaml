@@ -29,6 +29,45 @@ spec:
             envFrom:
               - configMapRef:
                   name: {{ .Release.Name }}-sync-config
+            {{- if and (not .Values.existingSourceSecret) (not .Values.existingDestinationSecret) }}
               - secretRef:
                   name: {{ .Release.Name }}-sync-credentials
+            {{- end }}
+            env:
+            {{- if .Values.existingSourceSecret }}
+              - name: SOURCE_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.existingSourceSecret }}
+                    key: {{ .Values.sourceSecretKeys.accessKey }}
+              - name: SOURCE_SECRET_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.existingSourceSecret }}
+                    key: {{ .Values.sourceSecretKeys.secretKey }}
+            {{- end }}
+            {{- if .Values.existingDestinationSecret }}
+              - name: DESTINATION_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.existingDestinationSecret }}
+                    key: {{ .Values.destinationSecretKeys.accessKey }}
+              - name: DESTINATION_SECRET_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.existingDestinationSecret }}
+                    key: {{ .Values.destinationSecretKeys.secretKey }}
+            {{- end }}
+            {{- if and (not .Values.existingSourceSecret) .Values.existingDestinationSecret }}
+              - name: SOURCE_ACCESS_KEY
+                value: "{{ .Values.sourceAccessKey }}"
+              - name: SOURCE_SECRET_KEY
+                value: "{{ .Values.sourceSecretKey }}"
+            {{- end }}
+            {{- if and .Values.existingSourceSecret (not .Values.existingDestinationSecret) }}
+              - name: DESTINATION_ACCESS_KEY
+                value: "{{ .Values.destinationAccessKey }}"
+              - name: DESTINATION_SECRET_KEY
+                value: "{{ .Values.destinationSecretKey }}"
+            {{- end }}
 

@@ -4,12 +4,26 @@ sourceBucket: "my-bucket"
 sourceAccessKey: "my-access-key"
 sourceSecretKey: "my-secret-key"
 
+# Source secret configuration
+# If existingSourceSecret is specified, sourceAccessKey and sourceSecretKey will be ignored
+existingSourceSecret: ""
+sourceSecretKeys:
+  accessKey: "SOURCE_ACCESS_KEY"
+  secretKey: "SOURCE_SECRET_KEY"
+
 # Destination
 destinationEndpoint: "http://localhost:9000"
 destinationBucket: "my-bucket"
 destinationTempBucket: "my-bucket-tmp"
 destinationAccessKey: "my-access-key"
 destinationSecretKey: "my-secret-key"
+
+# Destination secret configuration
+# If existingDestinationSecret is specified, destinationAccessKey and destinationSecretKey will be ignored
+existingDestinationSecret: ""
+destinationSecretKeys:
+  accessKey: "DESTINATION_ACCESS_KEY"
+  secretKey: "DESTINATION_SECRET_KEY"
 
 useAtomic: false
 healthcheckUrl: "http://localhost"
