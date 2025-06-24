@@ -1,0 +1,20 @@
+sidecar:
+  enabled: true
+  env:
+    sleep_time_sidecar: 10s
+    method: watch
+    label: node-red-settings
+    label_value: "1"
+    script: flow_refresh.sh
+    username: "x"
+    password: "y"
+    passwordFromExistingSecret: {}
+  extraEnv: []
+  resources: {}
+  securityContext: {}
+  image:
+    registry: quay.io
+    repository: kiwigrid/k8s-sidecar
+    tag: 1.18.1
+    pullPolicy: IfNotPresent
+  volumeMounts: []
