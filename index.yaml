@@ -2609,6 +2609,53 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/netbox-5.0.0/netbox-5.0.0.tgz
     version: 5.0.0
+  node-red:
+  - annotations:
+      artifacthub.io/changes: |
+        - Update k8s-sidecar to 1.28.4
+        - Update Node-Red to 4.0.8
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/images: |
+        - name: node-red
+          image: docker.io/nodered/node-red:4.0.8
+        - name: node-red-sidecar
+          image: quay.io/kiwigrid/k8s-sidecar:1.28.4
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: website
+          url: https://jobs.schwarz
+      artifacthub.io/maintainers: |
+        - name: dirien
+          email: engin.diri@mail.schwarz
+        - name: Kaktor
+          email: felix.kammerer@mail.schwarz
+    apiVersion: v2
+    appVersion: 4.0.8
+    created: "2025-06-24T09:22:42.735779092Z"
+    description: A Helm chart for Node-Red, a low-code programming for event-driven
+      applications
+    digest: c49a70be7230106a4be885e723d5523bf605fce52cc186e2b1e3cd158b42f42e
+    home: https://nodered.org/
+    icon: https://nodered.org/about/resources/media/node-red-icon-2.png
+    keywords:
+    - node-red
+    - iot
+    - home
+    - automation
+    maintainers:
+    - email: engin@pulumi.com
+      name: dirien
+      url: https://pulumi.com
+    - email: felix.kammerer@mail.schwarz
+      name: Kaktor
+      url: https://jobs.schwarz
+    name: node-red
+    sources:
+    - https://github.com/SchwarzIT/node-red-chart
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/node-red-0.34.0/node-red-0.34.0.tgz
+    version: 0.34.0
   notion-backup:
   - apiVersion: v2
     appVersion: v0.0.1
@@ -4612,4 +4659,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-06-23T12:57:36.874862006Z"
+generated: "2025-06-24T09:22:42.736332079Z"
