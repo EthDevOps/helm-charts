@@ -11,9 +11,7 @@ spec:
   concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy | default "Forbid" }}
   successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit | default 3 }}
   failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit | default 1 }}
-  {{- if .Values.cronjob.suspend }}
-  suspend: {{ .Values.cronjob.suspend }}
-  {{- end }}
+  suspend: {{ .Values.cronjob.suspend | default false }}
   jobTemplate:
     spec:
       template:
@@ -21,27 +19,27 @@ spec:
           labels:
             {{- include "k8s-ceph-backup.selectorLabels" . | nindent 12 }}
         spec:
-      serviceAccountName: {{ include "k8s-ceph-backup.serviceAccountName" . }}
-      containers:
-      - name: {{ .Chart.Name }}
+          serviceAccountName: {{ include "k8s-ceph-backup.serviceAccountName" . }}
+          containers:
+          - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
         command: {{ .Values.command | default "[\"./k8s-ceph-backup\"]" | toJson }}
         args: {{ .Values.args | default "[\"--namespace\", \"production\", \"--verbose\"]" | toJson }}
         env:
-        - name: KUBECONFIG
-          value: ""
-        - name: MINIO_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
-              key: access-key
-        - name: MINIO_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
-              key: secret-key
-          volumeMounts:
+          - name: KUBECONFIG
+            value: ""
+          - name: MINIO_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
+                key: access-key
+          - name: MINIO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
+                key: secret-key
+        volumeMounts:
           - name: config
             mountPath: /root/.k8s-ceph-backup.yaml
             subPath: config.yaml
@@ -54,10 +52,10 @@ spec:
             readOnly: true
           - name: temp-storage
             mountPath: /tmp/k8s-ceph-backup
-        resources:
-          {{- toYaml .Values.resources | nindent 12 }}
-          restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
-          volumes:
+            resources:
+              {{- toYaml .Values.resources | nindent 14 }}
+        restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
+        volumes:
           - name: config
             configMap:
               name: {{ include "k8s-ceph-backup.fullname" . }}-config
