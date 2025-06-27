@@ -1,0 +1,103 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "k8s-ceph-backup.fullname" . }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "k8s-ceph-backup.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjob.schedule | default "0 2 * * *" | quote }}
+  timeZone: {{ .Values.cronjob.timeZone | default "UTC" | quote }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy | default "Forbid" }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit | default 3 }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit | default 1 }}
+  {{- if .Values.cronjob.suspend }}
+  suspend: {{ .Values.cronjob.suspend }}
+  {{- end }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "k8s-ceph-backup.selectorLabels" . | nindent 12 }}
+        spec:
+      serviceAccountName: {{ include "k8s-ceph-backup.serviceAccountName" . }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+        command: {{ .Values.command | default "[\"./k8s-ceph-backup\"]" | toJson }}
+        args: {{ .Values.args | default "[\"--namespace\", \"production\", \"--verbose\"]" | toJson }}
+        env:
+        - name: KUBECONFIG
+          value: ""
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
+              key: access-key
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
+              key: secret-key
+          volumeMounts:
+          - name: config
+            mountPath: /root/.k8s-ceph-backup.yaml
+            subPath: config.yaml
+            readOnly: true
+          - name: ceph-config
+            mountPath: /etc/ceph
+            readOnly: true
+          - name: gpg-keys
+            mountPath: /root/.gnupg
+            readOnly: true
+          - name: temp-storage
+            mountPath: /tmp/k8s-ceph-backup
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+          restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
+          volumes:
+          - name: config
+            configMap:
+              name: {{ include "k8s-ceph-backup.fullname" . }}-config
+          - name: ceph-config
+            secret:
+              secretName: {{ .Values.secrets.ceph.secretName | default (printf "%s-ceph-config" (include "k8s-ceph-backup.fullname" .)) }}
+          - name: gpg-keys
+            secret:
+              secretName: {{ .Values.secrets.gpg.secretName | default (printf "%s-gpg-keys" (include "k8s-ceph-backup.fullname" .)) }}
+          - name: temp-storage
+            emptyDir:
+              sizeLimit: {{ .Values.tempStorage.sizeLimit | default "10Gi" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "k8s-ceph-backup.fullname" . }}-config
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "k8s-ceph-backup.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    backup:
+      temp_dir: {{ .Values.config.backup.tempDir | default "/tmp/k8s-ceph-backup" | quote }}
+    
+    ceph:
+      rbd_path: {{ .Values.config.ceph.rbdPath | default "rbd" | quote }}
+      config_path: {{ .Values.config.ceph.configPath | default "/etc/ceph/ceph.conf" | quote }}
+      keyring_path: {{ .Values.config.ceph.keyringPath | default "/etc/ceph/keyring" | quote }}
+    
+    gpg:
+      path: {{ .Values.config.gpg.path | default "gpg" | quote }}
+      recipient: {{ .Values.config.gpg.recipient | default "backup@example.com" | quote }}
+      trust_model: {{ .Values.config.gpg.trustModel | default "always" | quote }}
+    
+    minio:
+      endpoint: {{ .Values.config.minio.endpoint | default "minio.example.com:9000" | quote }}
+      use_ssl: {{ .Values.config.minio.useSsl | default true }}
+      bucket_name: {{ .Values.config.minio.bucketName | default "k8s-ceph-backups" | quote }}
+    
+    logging:
+      level: {{ .Values.config.logging.level | default "info" | quote }}
+      format: {{ .Values.config.logging.format | default "text" | quote }}

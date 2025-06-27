@@ -1,0 +1,179 @@
+# Default values for k8s-ceph-backup.
+# This is a YAML-formatted file.
+# Declare variables to be substituted into your templates.
+
+# CronJob configuration
+cronjob:
+  # Cron schedule for backup job (daily at 2 AM UTC by default)
+  schedule: "0 2 * * *"
+  # Timezone for the cron schedule
+  timeZone: "UTC"
+  # Concurrency policy: Allow, Forbid, or Replace
+  concurrencyPolicy: "Forbid"
+  # Number of successful finished jobs to retain
+  successfulJobsHistoryLimit: 3
+  # Number of failed finished jobs to retain
+  failedJobsHistoryLimit: 1
+  # Suspend the cron job if set to true
+  suspend: false
+  # Restart policy for the job pods
+  restartPolicy: "OnFailure"
+
+image:
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-ceph-backup
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: v0.0.1
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Namespace to deploy to (defaults to Release namespace)
+namespace: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Command and arguments for the container
+command: ["./k8s-ceph-backup"]
+args: ["--namespace", "production", "--verbose"]
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 64Mi
+
+# Temporary storage configuration
+tempStorage:
+  sizeLimit: "10Gi"
+
+# Application configuration
+config:
+  backup:
+    tempDir: "/tmp/k8s-ceph-backup"
+  
+  ceph:
+    rbdPath: "rbd"
+    configPath: "/etc/ceph/ceph.conf"
+    keyringPath: "/etc/ceph/keyring"
+  
+  gpg:
+    path: "gpg"
+    recipient: "backup@example.com"
+    trustModel: "always"
+  
+  minio:
+    endpoint: "minio.example.com:9000"
+    useSsl: true
+    bucketName: "k8s-ceph-backups"
+  
+  logging:
+    level: "info"
+    format: "text"
+
+# Secret configurations
+secrets:
+  ceph:
+    # Set to true if using an external secret (e.g., ExternalSecret, SealedSecret, etc.)
+    external: false
+    # Name of the secret containing CEPH configuration
+    secretName: ""
+    # Raw CEPH configuration (will be base64 encoded)
+    # Only used when external is false
+    cephConf: |
+      [global]
+          auth_client_required = cephx
+          auth_cluster_required = cephx
+          auth_service_required = cephx
+          mon_allow_pool_delete = true
+          ms_bind_ipv4 = true
+          ms_bind_ipv6 = false
+          osd_pool_default_min_size = 2
+          osd_pool_default_size = 3
+      [client]
+          keyring = /etc/ceph/keyring
+    keyring: |
+      [client.admin]
+          caps mds = "allow *"
+          caps mgr = "allow *"
+          caps mon = "allow *"
+          caps osd = "allow *"
+
+  gpg:
+    # Set to true if using an external secret
+    external: false
+    # Name of the secret containing GPG keys
+    secretName: ""
+    # Raw GPG public key (will be base64 encoded)
+    # Only used when external is false
+    pubkey: |
+      -----BEGIN PGP PUBLIC KEY BLOCK-----
+      -----END PGP PUBLIC KEY BLOCK-----
+    # Optional GPG trustdb (will be base64 encoded)
+    trustdb: ""
+
+  minio:
+    # Set to true if using an external secret
+    external: false
+    # Name of the secret containing MinIO credentials
+    secretName: ""
+    # MinIO credentials (will be base64 encoded)
+    # Only used when external is false
+    accessKey: "your-access-key"
+    secretKey: "your-secret-key"
+
+# External Secrets configuration
+# Only applies if you're using External Secrets Operator
+externalSecrets:
+  enabled: false
+  # SecretStore reference
+  secretStore:
+    name: ""
+    kind: SecretStore  # or ClusterSecretStore
+  
+  # CEPH external secret configuration
+  ceph:
+    enabled: false
+    secretName: ""  # Will use default if not specified
+    refreshInterval: "1h"
+    # Key mappings from external secret store
+    keys:
+      cephConf:
+        key: "ceph/config"
+        property: "ceph.conf"
+      keyring:
+        key: "ceph/keyring"
+        property: "keyring"
+  
+  # GPG external secret configuration  
+  gpg:
+    enabled: false
+    secretName: ""  # Will use default if not specified
+    refreshInterval: "1h"
+    keys:
+      pubkey:
+        key: "gpg/pubkey"
+        property: "pubkey.asc"
+      trustdb:
+        key: "gpg/trustdb"
+        property: "trustdb.gpg"
+  
+  # MinIO external secret configuration
+  minio:
+    enabled: false
+    secretName: ""  # Will use default if not specified
+    refreshInterval: "1h"
+    keys:
+      accessKey:
+        key: "minio/credentials"
+        property: "access-key"
+      secretKey:
+        key: "minio/credentials"
+        property: "secret-key"
