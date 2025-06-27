@@ -55,19 +55,19 @@ spec:
                 resources:
                   {{- toYaml .Values.resources | nindent 14 }}
             restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
-            volumes:
-              - name: config
-                configMap:
-                  name: {{ include "k8s-ceph-backup.fullname" . }}-config
-              - name: ceph-config
-                secret:
-                  secretName: {{ .Values.secrets.ceph.secretName | default (printf "%s-ceph-config" (include "k8s-ceph-backup.fullname" .)) }}
-              - name: gpg-keys
-                secret:
-                  secretName: {{ .Values.secrets.gpg.secretName | default (printf "%s-gpg-keys" (include "k8s-ceph-backup.fullname" .)) }}
-              - name: temp-storage
-                emptyDir:
-                  sizeLimit: {{ .Values.tempStorage.sizeLimit | default "10Gi" }}
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "k8s-ceph-backup.fullname" . }}-config
+            - name: ceph-config
+              secret:
+                secretName: {{ .Values.secrets.ceph.secretName | default (printf "%s-ceph-config" (include "k8s-ceph-backup.fullname" .)) }}
+            - name: gpg-keys
+              secret:
+                secretName: {{ .Values.secrets.gpg.secretName | default (printf "%s-gpg-keys" (include "k8s-ceph-backup.fullname" .)) }}
+            - name: temp-storage
+              emptyDir:
+                sizeLimit: {{ .Values.tempStorage.sizeLimit | default "10Gi" }}
 ---
 apiVersion: v1
 kind: ConfigMap
