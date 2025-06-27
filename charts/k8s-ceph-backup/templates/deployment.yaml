@@ -22,52 +22,52 @@ spec:
           serviceAccountName: {{ include "k8s-ceph-backup.serviceAccountName" . }}
           containers:
           - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
-        command: {{ .Values.command | default "[\"./k8s-ceph-backup\"]" | toJson }}
-        args: {{ .Values.args | default "[\"--namespace\", \"production\", \"--verbose\"]" | toJson }}
-        env:
-          - name: KUBECONFIG
-            value: ""
-          - name: MINIO_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
-                key: access-key
-          - name: MINIO_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
-                key: secret-key
-        volumeMounts:
-          - name: config
-            mountPath: /root/.k8s-ceph-backup.yaml
-            subPath: config.yaml
-            readOnly: true
-          - name: ceph-config
-            mountPath: /etc/ceph
-            readOnly: true
-          - name: gpg-keys
-            mountPath: /root/.gnupg
-            readOnly: true
-          - name: temp-storage
-            mountPath: /tmp/k8s-ceph-backup
-            resources:
-              {{- toYaml .Values.resources | nindent 14 }}
-        restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
-        volumes:
-          - name: config
-            configMap:
-              name: {{ include "k8s-ceph-backup.fullname" . }}-config
-          - name: ceph-config
-            secret:
-              secretName: {{ .Values.secrets.ceph.secretName | default (printf "%s-ceph-config" (include "k8s-ceph-backup.fullname" .)) }}
-          - name: gpg-keys
-            secret:
-              secretName: {{ .Values.secrets.gpg.secretName | default (printf "%s-gpg-keys" (include "k8s-ceph-backup.fullname" .)) }}
-          - name: temp-storage
-            emptyDir:
-              sizeLimit: {{ .Values.tempStorage.sizeLimit | default "10Gi" }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+            command: {{ .Values.command | default "[\"./k8s-ceph-backup\"]" | toJson }}
+            args: {{ .Values.args | default "[\"--namespace\", \"production\", \"--verbose\"]" | toJson }}
+            env:
+              - name: KUBECONFIG
+                value: ""
+              - name: MINIO_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
+                    key: access-key
+              - name: MINIO_SECRET_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" .)) }}
+                    key: secret-key
+            volumeMounts:
+              - name: config
+                mountPath: /root/.k8s-ceph-backup.yaml
+                subPath: config.yaml
+                readOnly: true
+              - name: ceph-config
+                mountPath: /etc/ceph
+                readOnly: true
+              - name: gpg-keys
+                mountPath: /root/.gnupg
+                readOnly: true
+              - name: temp-storage
+                mountPath: /tmp/k8s-ceph-backup
+                resources:
+                  {{- toYaml .Values.resources | nindent 14 }}
+            restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
+            volumes:
+              - name: config
+                configMap:
+                  name: {{ include "k8s-ceph-backup.fullname" . }}-config
+              - name: ceph-config
+                secret:
+                  secretName: {{ .Values.secrets.ceph.secretName | default (printf "%s-ceph-config" (include "k8s-ceph-backup.fullname" .)) }}
+              - name: gpg-keys
+                secret:
+                  secretName: {{ .Values.secrets.gpg.secretName | default (printf "%s-gpg-keys" (include "k8s-ceph-backup.fullname" .)) }}
+              - name: temp-storage
+                emptyDir:
+                  sizeLimit: {{ .Values.tempStorage.sizeLimit | default "10Gi" }}
 ---
 apiVersion: v1
 kind: ConfigMap
