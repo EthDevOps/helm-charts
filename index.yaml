@@ -2377,6 +2377,17 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-monitor-0.1.0/jitsi-monitor-0.1.0.tgz
     version: 0.1.0
+  k8s-ceph-backup:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2025-06-27T10:11:40.349343875Z"
+    description: Creates backups of PVC via CEPH
+    digest: 0a98bfbefb878b4668d187cf301251d05ab35f5bfeb7a1f76c32981a7a005ded
+    name: k8s-ceph-backup
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/k8s-ceph-backup-0.0.1/k8s-ceph-backup-0.0.1.tgz
+    version: 0.0.1
   k8s-service-trigger:
   - apiVersion: v2
     appVersion: 0.0.1
@@ -4659,4 +4670,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-06-24T09:22:42.736332079Z"
+generated: "2025-06-27T10:11:40.349853331Z"
