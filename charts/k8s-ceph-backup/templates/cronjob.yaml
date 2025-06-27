@@ -24,8 +24,9 @@ spec:
           - name: {{ .Chart.Name }}
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
             imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
-            command: {{ .Values.command | default "[\"./k8s-ceph-backup\"]" | toJson }}
-            args: {{ .Values.args | default "[\"--namespace\", \"production\", \"--verbose\"]" | toJson }}
+            {{- if .Values.args }}
+            args: {{ .Values.args | toJson }}
+            {{- end }}
             env:
               - name: GNUPGHOME
                 value: "/tmp/gnupg"

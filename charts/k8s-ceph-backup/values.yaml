@@ -38,8 +38,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-# Command and arguments for the container
-command: ["./k8s-ceph-backup"]
+# Arguments for the container (will use built-in entrypoint script)
 args: ["--namespace", "production", "--verbose"]
 
 resources:
