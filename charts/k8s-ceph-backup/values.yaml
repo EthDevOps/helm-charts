@@ -23,7 +23,7 @@ image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-ceph-backup
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: v0.0.1
+  tag: v0.0.2
 
 nameOverride: ""
 fullnameOverride: ""
