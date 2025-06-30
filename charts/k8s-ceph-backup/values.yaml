@@ -38,8 +38,17 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-# Arguments for the container (will use built-in entrypoint script)
-args: ["--namespace", "production", "--verbose"]
+# Backup configurations for multiple namespaces
+# Each namespace will get its own CronJob, staggered 30 minutes apart
+backups:
+  - namespace: "production"
+    schedule: "0 2 * * *"  # 2:00 AM UTC
+  # Example additional namespaces:
+  # - namespace: "staging" 
+  #   schedule: "30 2 * * *"  # 2:30 AM UTC
+  # - namespace: "development"
+  #   schedule: "0 3 * * *"   # 3:00 AM UTC  
+
 
 resources:
   limits:
