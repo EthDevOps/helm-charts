@@ -2,7 +2,7 @@
 
 # Image configuration
 image:
-  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-recording-uploader:{{ .Values.imageTag }}
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-recording-uploader
   tag: latest
   pullPolicy: Always
 

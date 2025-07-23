@@ -2,7 +2,7 @@ apiVersion: v2
 name: jitsi-recording-uploader
 description: A Helm chart for Jitsi Recording Uploader - automatically uploads Jibri recordings to Google Drive
 type: application
-version: 1.0.2
+version: 1.0.3
 appVersion: "1.0.0"
 keywords:
   - jitsi
