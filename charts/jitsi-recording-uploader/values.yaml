@@ -1,0 +1,197 @@
+# Default values for jitsi-recording-uploader
+
+# Image configuration
+image:
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-recording-uploader:{{ .Values.imageTag }}
+  tag: latest
+  pullPolicy: Always
+
+# Image pull secrets for private registries
+imagePullSecrets: []
+  # - name: myregistrykey
+
+# Deployment configuration
+replicaCount: 1  # Should be 1 to avoid duplicate uploads
+
+# Service Account
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use
+  name: ""
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1001
+
+# Container security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 3000
+
+# Resources
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity - configure to schedule with Jibri pods for RWO PVCs
+affinity:
+  # Pod affinity to schedule on same node as Jibri
+  podAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app.kubernetes.io/component
+          operator: In
+          values: ["jibri"]  # Update to match your Jibri pod labels
+      topologyKey: kubernetes.io/hostname
+
+# Alternatively, use node selector for specific nodes
+# nodeSelector:
+#   jibri-node: "true"
+
+# Google Drive credentials configuration
+credentials:
+  # Method to provide credentials: "secret" or "externalSecret"
+  method: secret
+  
+  # For method: "secret" - provide credentials directly
+  googleDrive:
+    clientId: ""
+    clientSecret: ""
+    refreshToken: ""
+  
+  # For method: "externalSecret" - reference external secret
+  externalSecret:
+    # Name of the ExternalSecret resource
+    name: jitsi-uploader-external-secret
+    # Name of the secret that will be created by external-secrets-operator
+    secretName: jitsi-uploader-credentials
+    # External secret store reference
+    secretStore:
+      name: vault-secret-store  # Name of your SecretStore or ClusterSecretStore
+      kind: SecretStore  # or ClusterSecretStore
+    # Key mappings from external store to secret keys
+    data:
+      - secretKey: GOOGLE_CLIENT_ID
+        remoteRef:
+          key: google-drive/jitsi-uploader
+          property: client-id
+      - secretKey: GOOGLE_CLIENT_SECRET
+        remoteRef:
+          key: google-drive/jitsi-uploader
+          property: client-secret
+      - secretKey: GOOGLE_REFRESH_TOKEN
+        remoteRef:
+          key: google-drive/jitsi-uploader
+          property: refresh-token
+
+# Application configuration
+config:
+  # Google Drive settings
+  googleDrive:
+    redirectUri: "http://localhost:3000/oauth2callback"
+    # Optional: Google Drive folder ID where recordings should be uploaded
+    uploadFolderId: ""
+  
+  # Jibri settings
+  jibri:
+    # Path where recordings will be mounted in the container
+    recordingsPath: "/recordings"
+    # Name of the PVC containing Jibri recordings
+    pvcName: "jibri-recordings-pvc"
+    # Whether the PVC should be mounted read-only
+    readOnly: true
+  
+  # Application settings
+  app:
+    logLevel: "info"
+    watchInterval: 5000
+    maxRetries: 3
+    cleanupAfterUpload: false
+
+# Monitoring configuration
+monitoring:
+  # Enable ServiceMonitor for Prometheus
+  enabled: false
+  # Additional labels for ServiceMonitor
+  labels: {}
+  # Monitoring interval
+  interval: 30s
+  # Metrics path
+  path: /metrics
+
+# Probes configuration
+probes:
+  liveness:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+# Additional environment variables
+extraEnv: []
+  # - name: CUSTOM_VAR
+  #   value: "custom-value"
+
+# Additional environment variables from ConfigMaps/Secrets
+extraEnvFrom: []
+  # - configMapRef:
+  #     name: extra-config
+  # - secretRef:
+  #     name: extra-secret
+
+# Additional volumes
+extraVolumes: []
+  # - name: extra-volume
+  #   emptyDir: {}
+
+# Additional volume mounts
+extraVolumeMounts: []
+  # - name: extra-volume
+  #   mountPath: /extra
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1
+
+# Horizontal Pod Autoscaler (not recommended for this use case)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80

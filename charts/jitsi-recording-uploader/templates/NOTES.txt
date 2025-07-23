@@ -1,0 +1,45 @@
+1. Get the application URL by running these commands:
+{{- if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "jitsi-recording-uploader.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "jitsi-recording-uploader.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "jitsi-recording-uploader.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "{{- include "jitsi-recording-uploader.selectorLabels" . }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
+2. Check the status of your Jitsi Recording Uploader:
+   kubectl get pods --namespace {{ .Release.Namespace }} -l "{{- include "jitsi-recording-uploader.selectorLabels" . }}" -w
+
+3. View the logs:
+   kubectl logs --namespace {{ .Release.Namespace }} -l "{{- include "jitsi-recording-uploader.selectorLabels" . }}" -f
+
+4. Check if the uploader can access your Jibri recordings:
+   kubectl exec --namespace {{ .Release.Namespace }} deployment/{{ include "jitsi-recording-uploader.fullname" . }} -- ls -la {{ .Values.config.jibri.recordingsPath }}
+
+5. Test Google Drive authentication:
+   kubectl exec --namespace {{ .Release.Namespace }} deployment/{{ include "jitsi-recording-uploader.fullname" . }} -- npm run test-auth
+
+{{- if eq .Values.credentials.method "secret" }}
+WARNING: You are using the 'secret' method for credentials. Make sure your Google Drive credentials are properly configured in values.yaml.
+{{- else if eq .Values.credentials.method "externalSecret" }}
+✓ External Secret is configured. Make sure your external-secrets-operator is running and the SecretStore is properly configured.
+{{- end }}
+
+{{- if not .Values.config.googleDrive.uploadFolderId }}
+NOTE: No upload folder ID specified. Recordings will be uploaded to the root of your Google Drive.
+{{- end }}
+
+{{- if .Values.monitoring.enabled }}
+✓ Monitoring is enabled. ServiceMonitor has been created for Prometheus scraping.
+{{- end }}
+
+For more information about configuration options, check the values.yaml file or visit:
+https://github.com/your-org/jitsi-recording-uploader

@@ -1,0 +1,20 @@
+apiVersion: v2
+name: jitsi-recording-uploader
+description: A Helm chart for Jitsi Recording Uploader - automatically uploads Jibri recordings to Google Drive
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - jitsi
+  - jibri
+  - recording
+  - google-drive
+  - upload
+home: https://github.com/your-org/jitsi-recording-uploader
+sources:
+  - https://github.com/your-org/jitsi-recording-uploader
+maintainers:
+  - name: Your Name
+    email: your-email@example.com
+annotations:
+  category: MediaProcessing

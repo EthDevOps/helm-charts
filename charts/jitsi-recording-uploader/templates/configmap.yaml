@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jitsi-recording-uploader.configMapName" . }}
+  labels:
+    {{- include "jitsi-recording-uploader.labels" . | nindent 4 }}
+data:
+  # Google Drive settings
+  GOOGLE_REDIRECT_URI: {{ .Values.config.googleDrive.redirectUri | quote }}
+  {{- if .Values.config.googleDrive.uploadFolderId }}
+  UPLOAD_FOLDER_ID: {{ .Values.config.googleDrive.uploadFolderId | quote }}
+  {{- end }}
+  
+  # Jibri settings
+  JIBRI_RECORDINGS_PATH: {{ .Values.config.jibri.recordingsPath | quote }}
+  
+  # Application settings
+  LOG_LEVEL: {{ .Values.config.app.logLevel | quote }}
+  WATCH_INTERVAL: {{ .Values.config.app.watchInterval | quote }}
+  MAX_RETRIES: {{ .Values.config.app.maxRetries | quote }}
+  CLEANUP_AFTER_UPLOAD: {{ .Values.config.app.cleanupAfterUpload | quote }}
