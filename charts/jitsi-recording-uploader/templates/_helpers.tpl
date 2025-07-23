@@ -86,9 +86,6 @@ Validate required values
 {{- if and (eq .Values.credentials.method "secret") (or (not .Values.credentials.googleDrive.clientId) (not .Values.credentials.googleDrive.clientSecret) (not .Values.credentials.googleDrive.refreshToken)) }}
 {{- fail "When credentials.method is 'secret', you must provide credentials.googleDrive.clientId, credentials.googleDrive.clientSecret, and credentials.googleDrive.refreshToken" }}
 {{- end }}
-{{- if and (eq .Values.credentials.method "externalSecret") (not .Values.credentials.externalSecret.name) }}
-{{- fail "When credentials.method is 'externalSecret', you must provide credentials.externalSecret.name" }}
-{{- end }}
 {{- if not .Values.config.jibri.pvcName }}
 {{- fail "config.jibri.pvcName is required" }}
 {{- end }}
