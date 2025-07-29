@@ -3,7 +3,7 @@ name: teleport-argo-sync
 description: A Helm chart for teleport-argo-sync
 type: application
 
-version: 0.0.3
+version: 0.0.4
 
 # App metadata
 appVersion: "1.0.0"

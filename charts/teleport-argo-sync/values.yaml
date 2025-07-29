@@ -1,5 +1,5 @@
 image:
-  tag: v0.0.1
+  tag: v0.0.5
 
 teleport:
   domain: teleport.example.com
