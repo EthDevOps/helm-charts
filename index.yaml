@@ -3164,6 +3164,29 @@ entries:
   quokka-service-registry:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-07-29T12:34:45.966178205Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 15.5.36
+    description: A Helm chart for QuokkaServiceRegistry - A comprehensive service
+      catalog management application
+    digest: 5190da796481c6665d9a9c48d856981dfcf3dbcc0bb82787d4da129b13a3f422
+    keywords:
+    - service-registry
+    - catalog
+    - dotnet
+    - aspnet
+    maintainers:
+    - name: QuokkaServiceRegistry Team
+    name: quokka-service-registry
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/quokka-service-registry-0.1.4/quokka-service-registry-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-07-29T11:01:20.612674572Z"
     dependencies:
     - condition: postgresql.enabled
@@ -4947,4 +4970,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-07-29T12:20:41.602959228Z"
+generated: "2025-07-29T12:34:45.96650139Z"
