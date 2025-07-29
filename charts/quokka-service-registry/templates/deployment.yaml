@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "quokka-service-registry.fullname" . }}
+  labels:
+    {{- include "quokka-service-registry.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "quokka-service-registry.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "quokka-service-registry.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "quokka-service-registry.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+            {{- if .Values.secrets.database.existingSecret }}
+            - name: ConnectionStrings__DefaultConnection
+              value: "Host={{ include "quokka-service-registry.postgresql.fullname" . }};Database={{ .Values.postgresql.auth.database }};Username=$(DB_USERNAME);Password=$(DB_PASSWORD)"
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.database.existingSecret }}
+                  key: {{ .Values.secrets.database.secretKeys.username }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.database.existingSecret }}
+                  key: {{ .Values.secrets.database.secretKeys.password }}
+            {{- else }}
+            - name: ConnectionStrings__DefaultConnection
+              value: "Host={{ include "quokka-service-registry.postgresql.fullname" . }};Database={{ .Values.postgresql.auth.database }};Username={{ .Values.postgresql.auth.username }};Password=$(DB_PASSWORD)"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "quokka-service-registry.postgresql.secretName" . }}
+                  key: {{ include "quokka-service-registry.postgresql.userPasswordKey" . }}
+            {{- end }}
+            {{- if .Values.secrets.auth.existingSecret }}
+            - name: Authentication__Google__ClientId
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.auth.existingSecret }}
+                  key: {{ .Values.secrets.auth.secretKeys.googleClientId }}
+            - name: Authentication__Google__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.auth.existingSecret }}
+                  key: {{ .Values.secrets.auth.secretKeys.googleClientSecret }}
+            - name: Authentication__AuthorizedUsers
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.auth.existingSecret }}
+                  key: {{ .Values.secrets.auth.secretKeys.authorizedUsers }}
+            - name: Authentication__LocalAdmin__Username
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.auth.existingSecret }}
+                  key: {{ .Values.secrets.auth.secretKeys.localAdminUsername }}
+            - name: Authentication__LocalAdmin__Password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.auth.existingSecret }}
+                  key: {{ .Values.secrets.auth.secretKeys.localAdminPassword }}
+            {{- end }}
+            - name: Authentication__AllowLocalAdminBypass
+              value: {{ .Values.config.allowLocalAdminBypass | quote }}
+            - name: AllowedHosts
+              value: {{ .Values.config.allowedHosts | quote }}
+            - name: Logging__LogLevel__Default
+              value: {{ .Values.config.logging.logLevel.default | quote }}
+            - name: Logging__LogLevel__Microsoft.AspNetCore
+              value: {{ .Values.config.logging.logLevel.microsoftAspNetCore | quote }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: var-tmp
+              mountPath: /var/tmp
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: var-tmp
+          emptyDir: {}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
