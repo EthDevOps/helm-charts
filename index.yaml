@@ -3859,6 +3859,19 @@ entries:
   teleport-argo-sync:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-07-29T12:20:41.602366855Z"
+    description: A Helm chart for teleport-argo-sync
+    digest: 0a70a07d583362a97112f7b7e858dc517ddc14d24d60fc8160d0b366170c45ec
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: teleport-argo-sync
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.4/teleport-argo-sync-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2024-10-22T09:03:40.709006057Z"
     description: A Helm chart for teleport-argo-sync
     digest: 216cef47e92118d412f2b12e47c3b8738be7cf7c5437905602444370eeaad1ba
@@ -4934,4 +4947,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-07-29T11:01:20.61305269Z"
+generated: "2025-07-29T12:20:41.602959228Z"
