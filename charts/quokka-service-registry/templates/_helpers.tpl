@@ -66,7 +66,7 @@ Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "quokka-service-registry.postgresql.fullname" -}}
-{{- include "postgresql.primary.fullname" .Subcharts.postgresql }}
+{{- include "postgresql.v1.primary.fullname" .Subcharts.postgresql }}
 {{- end }}
 
 {{/*
@@ -76,7 +76,7 @@ Get the PostgreSQL credentials secret.
 {{- if .Values.postgresql.auth.existingSecret }}
 {{- printf "%s" .Values.postgresql.auth.existingSecret }}
 {{- else }}
-{{- printf "%s" (include "postgresql.secretName" .Subcharts.postgresql) }}
+{{- printf "%s" (include "postgresql.v1.secretName" .Subcharts.postgresql) }}
 {{- end }}
 {{- end }}
 
