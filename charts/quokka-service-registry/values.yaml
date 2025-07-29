@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: quokka-service-registry
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/service-regisrty
   pullPolicy: IfNotPresent
   tag: ""
 

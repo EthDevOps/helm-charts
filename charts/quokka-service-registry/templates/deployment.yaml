@@ -51,23 +51,25 @@ spec:
               value: "Production"
             - name: ASPNETCORE_URLS
               value: "http://+:8080"
+            - name: Database__Host
+              value: "{{ include "quokka-service-registry.postgresql.fullname" . }}"
+            - name: Database__Name
+              value: "{{ .Values.postgresql.auth.database }}"
             {{- if .Values.secrets.database.existingSecret }}
-            - name: ConnectionStrings__DefaultConnection
-              value: "Host={{ include "quokka-service-registry.postgresql.fullname" . }};Database={{ .Values.postgresql.auth.database }};Username=$(DB_USERNAME);Password=$(DB_PASSWORD)"
-            - name: DB_USERNAME
+            - name: Database__Username
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.database.existingSecret }}
                   key: {{ .Values.secrets.database.secretKeys.username }}
-            - name: DB_PASSWORD
+            - name: Database__Password
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.database.existingSecret }}
                   key: {{ .Values.secrets.database.secretKeys.password }}
             {{- else }}
-            - name: ConnectionStrings__DefaultConnection
-              value: "Host={{ include "quokka-service-registry.postgresql.fullname" . }};Database={{ .Values.postgresql.auth.database }};Username={{ .Values.postgresql.auth.username }};Password=$(DB_PASSWORD)"
-            - name: DB_PASSWORD
+            - name: Database__Username
+              value: "{{ .Values.postgresql.auth.username }}"
+            - name: Database__Password
               valueFrom:
                 secretKeyRef:
                   name: {{ include "quokka-service-registry.postgresql.secretName" . }}
