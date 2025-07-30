@@ -225,3 +225,17 @@ Return the PostgreSQL read replica headless service name
 {{- define "postgresql.v1.readReplica.svc.headless" -}}
 {{- printf "%s-hl" (include "postgresql.v1.readReplica.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Return the PostgreSQL admin password key (v1 compatibility)
+*/}}
+{{- define "postgresql.v1.adminPasswordKey" -}}
+{{- include "postgresql.adminPasswordKey" . -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL user password key (v1 compatibility)
+*/}}
+{{- define "postgresql.v1.userPasswordKey" -}}
+{{- include "postgresql.userPasswordKey" . -}}
+{{- end -}}
