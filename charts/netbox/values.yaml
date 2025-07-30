@@ -428,6 +428,9 @@ postgresql:
   # To use an external database, set this to false and configure the settings
   # under externalDatabase
   enabled: true
+  image:
+    tag:
+      13-alpine
 
   auth:
     username: netbox
