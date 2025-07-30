@@ -429,8 +429,7 @@ postgresql:
   # under externalDatabase
   enabled: true
   image:
-    tag:
-      13-alpine
+    tag: 13-alpine
 
   auth:
     username: netbox
