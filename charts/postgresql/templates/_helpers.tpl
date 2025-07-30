@@ -115,3 +115,113 @@ Get the user password key from secret
 password
 {{- end -}}
 {{- end }}
+
+{{/*
+==============================================================================
+Bitnami Compatibility Templates for Parent Charts
+==============================================================================
+*/}}
+
+{{/*
+Return the full name of the chart (compatible with common.names.fullname)
+*/}}
+{{- define "postgresql.v1.chart.fullname" -}}
+{{- if .Values.global.postgresql.fullnameOverride -}}
+{{- .Values.global.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- include "postgresql.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL primary full name
+*/}}
+{{- define "postgresql.v1.primary.fullname" -}}
+{{- $fullname := include "postgresql.v1.chart.fullname" . -}}
+{{- if and (hasKey .Values "architecture") (eq .Values.architecture "replication") -}}
+{{- printf "%s-%s" $fullname (.Values.primary.name | default "primary") | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $fullname -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL read replica full name
+*/}}
+{{- define "postgresql.v1.readReplica.fullname" -}}
+{{- $fullname := include "postgresql.v1.chart.fullname" . -}}
+{{- printf "%s-%s" $fullname (.Values.readReplicas.name | default "read") | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL secret name
+*/}}
+{{- define "postgresql.v1.secretName" -}}
+{{- if .Values.global.postgresql.auth.existingSecret -}}
+{{- tpl .Values.global.postgresql.auth.existingSecret $ -}}
+{{- else if .Values.auth.existingSecret -}}
+{{- tpl .Values.auth.existingSecret $ -}}
+{{- else -}}
+{{- include "postgresql.v1.chart.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL username
+*/}}
+{{- define "postgresql.v1.username" -}}
+{{- if .Values.global.postgresql.auth.username -}}
+{{- .Values.global.postgresql.auth.username -}}
+{{- else -}}
+{{- .Values.auth.username | default "postgres" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL database name
+*/}}
+{{- define "postgresql.v1.database" -}}
+{{- if .Values.global.postgresql.auth.database -}}
+{{- tpl .Values.global.postgresql.auth.database $ -}}
+{{- else if .Values.auth.database -}}
+{{- tpl .Values.auth.database $ -}}
+{{- else -}}
+postgres
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL primary service port
+*/}}
+{{- define "postgresql.v1.service.port" -}}
+{{- if .Values.global.postgresql.service.ports.postgresql -}}
+{{- .Values.global.postgresql.service.ports.postgresql -}}
+{{- else -}}
+{{- .Values.service.ports.postgresql | default 5432 -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL primary headless service name
+*/}}
+{{- define "postgresql.v1.primary.svc.headless" -}}
+{{- printf "%s-hl" (include "postgresql.v1.primary.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL read replica service port
+*/}}
+{{- define "postgresql.v1.readReplica.service.port" -}}
+{{- if .Values.global.postgresql.service.ports.postgresql -}}
+{{- .Values.global.postgresql.service.ports.postgresql -}}
+{{- else -}}
+{{- .Values.readReplicas.service.ports.postgresql | default 5432 -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL read replica headless service name
+*/}}
+{{- define "postgresql.v1.readReplica.svc.headless" -}}
+{{- printf "%s-hl" (include "postgresql.v1.readReplica.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

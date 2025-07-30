@@ -1,0 +1,34 @@
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed via port {{ include "postgresql.v1.service.port" . }} on the following DNS names from within your cluster:
+
+    {{ include "postgresql.v1.primary.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local - Read/Write connection
+
+To get the password for "{{ include "postgresql.v1.username" . }}" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "postgresql.v1.secretName" . }} -o jsonpath="{.data.postgres-password}" | base64 -d)
+
+To connect to your database run the following command:
+
+    kubectl run {{ include "postgresql.fullname" . }}-client --rm --tty -i --restart='Never' --namespace {{ .Release.Namespace }} --image postgres:16-alpine --env="PGPASSWORD=$POSTGRES_PASSWORD" --command -- psql --host {{ include "postgresql.v1.primary.fullname" . }} -U {{ include "postgresql.v1.username" . }} -d {{ include "postgresql.v1.database" . }} -p {{ include "postgresql.v1.service.port" . }}
+
+    > NOTE: If you have persistent volumes enabled, deletion of the Deployment will not remove the storage volumes.
+
+To connect to your database from outside the cluster execute the following commands:
+
+{{- if contains "NodePort" .Values.service.type }}
+    export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+    export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "postgresql.fullname" . }})
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host $NODE_IP --port $NODE_PORT -U {{ include "postgresql.v1.username" . }} -d {{ include "postgresql.v1.database" . }}
+
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "postgresql.fullname" . }}'
+    export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "postgresql.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host $SERVICE_IP --port {{ .Values.service.ports.postgresql }} -U {{ include "postgresql.v1.username" . }} -d {{ include "postgresql.v1.database" . }}
+
+{{- else if contains "ClusterIP" .Values.service.type }}
+    kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "postgresql.fullname" . }} {{ .Values.service.ports.postgresql }}:{{ .Values.service.ports.postgresql }} &
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U {{ include "postgresql.v1.username" . }} -d {{ include "postgresql.v1.database" . }} -p {{ .Values.service.ports.postgresql }}
+
+{{- end }}

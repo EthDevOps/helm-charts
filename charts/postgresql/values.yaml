@@ -16,6 +16,31 @@ global:
   ##
   imagePullSecrets: []
   storageClass: ""
+  ## PostgreSQL configuration (for parent chart compatibility)
+  ##
+  postgresql:
+    ## @param global.postgresql.fullnameOverride Override the fullname for postgresql resources
+    ##
+    fullnameOverride: ""
+    ## PostgreSQL authentication parameters
+    ##
+    auth:
+      ## @param global.postgresql.auth.existingSecret Name of existing secret to use for PostgreSQL credentials
+      ##
+      existingSecret: ""
+      ## @param global.postgresql.auth.username Username for PostgreSQL
+      ##
+      username: ""
+      ## @param global.postgresql.auth.database Database name for PostgreSQL
+      ##
+      database: ""
+    ## PostgreSQL service parameters
+    ##
+    service:
+      ## @param global.postgresql.service.ports.postgresql PostgreSQL service port
+      ##
+      ports:
+        postgresql: ""
 
 ## @section Common parameters
 
@@ -28,6 +53,29 @@ fullnameOverride: ""
 ## @param clusterDomain Kubernetes cluster domain name
 ##
 clusterDomain: cluster.local
+
+## @param architecture PostgreSQL architecture (`standalone` or `replication`)
+##
+architecture: standalone
+
+## PostgreSQL Primary parameters
+##
+primary:
+  ## @param primary.name Name of the primary database (used for replication)
+  ##
+  name: primary
+
+## PostgreSQL read-only replica parameters (only used when architecture=replication)
+##
+readReplicas:
+  ## @param readReplicas.name Name of the read replicas database
+  ##
+  name: read
+  ## @param readReplicas.service.ports.postgresql PostgreSQL read replica service port
+  ##
+  service:
+    ports:
+      postgresql: 5432
 
 ## @section PostgreSQL Image parameters
 
