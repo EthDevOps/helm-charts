@@ -1,0 +1,16 @@
+apiVersion: v2
+name: postgresql
+description: PostgreSQL object-relational database system
+type: application
+version: 1.0.0
+appVersion: "16.0"
+home: https://www.postgresql.org/
+sources:
+  - https://github.com/postgres/postgres
+keywords:
+  - postgresql
+  - postgres
+  - database
+  - sql
+maintainers:
+  - name: QuokkaOps
