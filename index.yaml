@@ -3108,6 +3108,27 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/patchman-0.0.1/patchman-0.0.1.tgz
     version: 0.0.1
+  postgresql:
+  - apiVersion: v2
+    appVersion: "16.0"
+    created: "2025-07-30T13:48:21.119835599Z"
+    description: PostgreSQL object-relational database system
+    digest: bcd1764baed296ded83b555482e19162fb99a2fe4cd588c8074e2f2eefca5fc4
+    home: https://www.postgresql.org/
+    keywords:
+    - postgresql
+    - postgres
+    - database
+    - sql
+    maintainers:
+    - name: QuokkaOps
+    name: postgresql
+    sources:
+    - https://github.com/postgres/postgres
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/postgresql-1.0.0/postgresql-1.0.0.tgz
+    version: 1.0.0
   postiz-app:
   - apiVersion: v2
     appVersion: 1.3.0
@@ -4970,4 +4991,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-07-29T12:34:45.96650139Z"
+generated: "2025-07-30T13:48:21.120293018Z"
