@@ -2637,6 +2637,32 @@ entries:
   netbox:
   - apiVersion: v2
     appVersion: v3.6.4
+    created: "2025-07-31T10:58:02.421926728Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.2
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 18.x.x
+    description: IP address management (IPAM) and data center infrastructure management
+      (DCIM) tool
+    digest: 2fcd49a450d4d5c2250f2bc755a4fdaefade9b5d55cb5d391c618d43440e9cc1
+    home: https://github.com/bootc/netbox-chart
+    icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/docs/netbox_logo.png
+    kubeVersion: '>=1.25.0'
+    maintainers:
+    - email: bootc@boo.tc
+      name: Chris Boot
+      url: https://github.com/bootc
+    name: netbox
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/netbox-5.1.4/netbox-5.1.4.tgz
+    version: 5.1.4
+  - apiVersion: v2
+    appVersion: v3.6.4
     created: "2025-07-31T08:44:08.607052371Z"
     dependencies:
     - condition: postgresql.enabled
@@ -5155,4 +5181,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-07-31T10:38:02.347057263Z"
+generated: "2025-07-31T10:58:02.42236204Z"
