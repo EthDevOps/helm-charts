@@ -167,7 +167,7 @@ graphQlEnabled: true
 
 # HTTP proxies NetBox should use when sending outbound HTTP requests (e.g. for
 # webhooks).
-httpProxies: null
+httpProxies: []
   # http: http://10.10.1.10:3128
   # https: http://10.10.1.10:1080
 
