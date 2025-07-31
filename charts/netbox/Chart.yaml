@@ -12,7 +12,7 @@ maintainers:
   url: https://github.com/bootc
 dependencies:
 - name: postgresql
-  version: 1.1.1
+  version: 1.1.2
   repository: https://ethdevops.github.io/helm-charts
   condition: postgresql.enabled
 - name: redis
