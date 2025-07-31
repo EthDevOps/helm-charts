@@ -420,8 +420,6 @@ serviceAccount:
 ## @param securityContext.runAsUser User ID for the container
 ##
 securityContext:
-  enabled: true
-  fsGroup: 1001
   runAsUser: 1001
 
 ## PostgreSQL pods' Security Context
@@ -430,7 +428,6 @@ securityContext:
 ## @param podSecurityContext.fsGroup Set PostgreSQL pod's Security Context fsGroup
 ##
 podSecurityContext:
-  enabled: true
   fsGroup: 1001
 
 ## Configure Pods Disruption Budget
@@ -455,7 +452,6 @@ pdb:
 ## @param resources.requests.cpu The requested cpu for the PostgreSQL containers
 ##
 resources:
-  limits: {}
   requests:
     memory: 256Mi
     cpu: 250m

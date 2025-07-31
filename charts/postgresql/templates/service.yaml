@@ -41,4 +41,3 @@ spec:
       {{- end }}
   selector:
     {{- include "postgresql.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: primary
