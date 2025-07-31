@@ -24,6 +24,10 @@ spec:
         - name: postgresql
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- if .Values.securityContext.capabilities }}
+            capabilities:
+              {{- toYaml .Values.securityContext.capabilities | nindent 14 }}
+            {{- end }}
           image: {{ include "postgresql.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -119,7 +123,9 @@ spec:
       {{- end }}
   {{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: {{ .Values.persistence.volumeName }}
         labels:
           {{- include "postgresql.labels" . | nindent 10 }}

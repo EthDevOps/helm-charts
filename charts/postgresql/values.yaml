@@ -242,6 +242,29 @@ persistence:
   ##
   volumeName: "data"
 
+## @section Network Policy Parameters
+
+## Configure network policies to control traffic to PostgreSQL pods
+## @param networkPolicy.enabled Enable creation of NetworkPolicy resources
+## @param networkPolicy.allowedPods List of pod selectors that are allowed to connect
+## @param networkPolicy.allowedNamespaces List of namespace selectors that are allowed to connect
+##
+networkPolicy:
+  enabled: false
+  ## Allow specific pods to connect (by label selector)
+  ## e.g:
+  ## allowedPods:
+  ##   - app: web-app
+  ##   - app: api-server
+  ##
+  allowedPods: []
+  ## Allow specific namespaces to connect (by label selector)
+  ## e.g:
+  ## allowedNamespaces:
+  ##   - name: production
+  ##
+  allowedNamespaces: []
+
 ## @section Exposure Parameters
 
 ## Configure the ingress resource that allows you to access the PostgreSQL installation
@@ -418,9 +441,22 @@ serviceAccount:
 ## @param securityContext.enabled Enable security context
 ## @param securityContext.fsGroup Group ID for the filesystem
 ## @param securityContext.runAsUser User ID for the container
+## @param securityContext.runAsNonRoot Ensure container runs as non-root user
+## @param securityContext.readOnlyRootFilesystem Make root filesystem read-only
+## @param securityContext.allowPrivilegeEscalation Prevent privilege escalation
+## @param securityContext.capabilities.drop List of capabilities to drop
 ##
 securityContext:
   runAsUser: 1001
+  runAsNonRoot: true
+  readOnlyRootFilesystem: false  # PostgreSQL needs to write to /tmp and /var/run/postgresql
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+    - SYS_ADMIN
+    - NET_ADMIN
+    - SYS_PTRACE
 
 ## PostgreSQL pods' Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
