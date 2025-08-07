@@ -3611,6 +3611,26 @@ entries:
   redis:
   - apiVersion: v2
     appVersion: "7.2"
+    created: "2025-08-07T12:52:23.958965567Z"
+    description: A Helm chart for Redis standalone deployment with persistent storage
+    digest: 2428efb6b6cd87453cf434c330b61cfd430bf559802c5d1bc4769ee434612f0b
+    home: https://redis.io/
+    keywords:
+    - redis
+    - cache
+    - database
+    - keyvalue
+    maintainers:
+    - name: QuokkaOps
+    name: redis
+    sources:
+    - https://github.com/redis/redis
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/redis-1.0.1/redis-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
+    appVersion: "7.2"
     created: "2025-08-07T12:41:32.230625409Z"
     description: A Helm chart for Redis standalone deployment with persistent storage
     digest: 046fa18ce172aa1dfb263ea4b0a3cdcf83145b35c1d18616cb9de64d38378153
@@ -5342,4 +5362,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-07T12:43:30.596788236Z"
+generated: "2025-08-07T12:52:23.959352067Z"
