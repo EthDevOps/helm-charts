@@ -71,12 +71,16 @@ spec:
                   name: {{ include "redis.secretName" . }}
                   key: {{ include "redis.secretPasswordKey" . }}
           {{- end }}
+          {{- if .Values.auth.enabled }}
           command:
             - redis-server
             - /usr/local/etc/redis/redis.conf
-          {{- if .Values.auth.enabled }}
             - --requirepass
             - $(REDIS_PASSWORD)
+          {{- else }}
+          command:
+            - redis-server
+            - /usr/local/etc/redis/redis.conf
           {{- end }}
       volumes:
         - name: config

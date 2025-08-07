@@ -17,6 +17,9 @@ fullnameOverride: ""
 auth:
   enabled: false
   # password: ""
+  # Use existing secret instead of creating one
+  existingSecret: ""
+  existingSecretPasswordKey: "redis-password"
 
 ## Redis configuration
 redis:

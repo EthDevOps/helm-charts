@@ -98,11 +98,19 @@ Bitnami common template compatibility
 Bitnami Redis specific templates
 */}}
 {{- define "redis.secretName" -}}
+{{- if .Values.auth.existingSecret }}
+{{- .Values.auth.existingSecret }}
+{{- else }}
 {{- printf "%s-redis" .Release.Name }}
+{{- end }}
 {{- end }}
 
 {{- define "redis.secretPasswordKey" -}}
+{{- if .Values.auth.existingSecret }}
+{{- .Values.auth.existingSecretPasswordKey }}
+{{- else }}
 redis-password
+{{- end }}
 {{- end }}
 
 {{/*
@@ -164,5 +172,16 @@ Validate values
 {{- define "redis.validateValues" -}}
 {{- if and .Values.auth.enabled (not .Values.auth.password) }}
 redis: {{ printf "A password is required when auth is enabled. Please set auth.password" }}
+{{- end }}
+{{- end }}
+
+{{/*
+Redis command
+*/}}
+{{- define "redis.command" -}}
+{{- if .Values.auth.enabled }}
+["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "$(REDIS_PASSWORD)"]
+{{- else }}
+["redis-server", "/usr/local/etc/redis/redis.conf"]
 {{- end }}
 {{- end }}
