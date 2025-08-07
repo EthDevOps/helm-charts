@@ -1,6 +1,6 @@
 apiVersion: v2
 name: netbox
-version: 5.1.5
+version: 5.1.6
 appVersion: v3.6.4
 kubeVersion: ">=1.25.0"
 description: IP address management (IPAM) and data center infrastructure management (DCIM) tool
@@ -16,6 +16,6 @@ dependencies:
   repository: https://ethdevops.github.io/helm-charts
   condition: postgresql.enabled
 - name: redis
-  version: 18.x.x
-  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 0.1.0
+  repository: https://ethdevops.github.io/helm-charts
   condition: redis.enabled
