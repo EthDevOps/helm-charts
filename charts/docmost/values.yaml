@@ -7,6 +7,8 @@ image:
 
 postgresql:
   enabled: true
+  image:
+    tag: 17-alpine
   auth:
     username: docmost
     password: docmost
