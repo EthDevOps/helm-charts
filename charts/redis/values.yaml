@@ -66,6 +66,12 @@ service:
   # nodePort: ""
   # loadBalancerIP: ""
 
+## Bitnami Redis compatibility structure
+master:
+  service:
+    ports:
+      redis: 6379
+
 ## Service Account
 serviceAccount:
   # Specifies whether a service account should be created
