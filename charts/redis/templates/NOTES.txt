@@ -1,0 +1,37 @@
+1. Get the application URL by running these commands:
+{{- if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "redis.masterService" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo redis://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "redis.masterService" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "redis.masterService" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo redis://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "{{ include "redis.selectorLabels" . | replace ": " "=" | replace "\n" "," }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit redis://127.0.0.1:6379 to use your Redis"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 6379:$CONTAINER_PORT
+{{- end }}
+
+2. To connect to your Redis server:
+
+{{- if .Values.auth.enabled }}
+   REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli -h {{ include "redis.masterService" . }}.{{ .Release.Namespace }}.svc.cluster.local -p {{ .Values.service.port }}
+{{- else }}
+   redis-cli -h {{ include "redis.masterService" . }}.{{ .Release.Namespace }}.svc.cluster.local -p {{ .Values.service.port }}
+{{- end }}
+
+3. To connect from a pod inside your cluster:
+
+{{- if .Values.auth.enabled }}
+   REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli -h {{ include "redis.masterService" . }} -p {{ .Values.service.port }}
+{{- else }}
+   redis-cli -h {{ include "redis.masterService" . }} -p {{ .Values.service.port }}
+{{- end }}
+
+{{ if .Values.auth.enabled -}}
+4. To get your password run:
+   export REDIS_PASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "redis.fullname" . }} -o jsonpath="{.data.redis-password}" | base64 -d)
+{{- end }}
