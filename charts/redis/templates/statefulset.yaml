@@ -68,8 +68,8 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "redis.fullname" . }}
-                  key: redis-password
+                  name: {{ include "redis.secretName" . }}
+                  key: {{ include "redis.secretPasswordKey" . }}
           {{- end }}
           command:
             - redis-server

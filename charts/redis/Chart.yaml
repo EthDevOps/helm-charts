@@ -2,7 +2,7 @@ apiVersion: v2
 name: redis
 description: A Helm chart for Redis standalone deployment with persistent storage
 type: application
-version: 1.0.1
+version: 1.0.2
 appVersion: "7.2"
 keywords:
   - redis

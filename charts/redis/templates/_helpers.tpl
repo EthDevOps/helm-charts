@@ -98,7 +98,7 @@ Bitnami common template compatibility
 Bitnami Redis specific templates
 */}}
 {{- define "redis.secretName" -}}
-{{- include "redis.fullname" . }}
+{{- printf "%s-redis" .Release.Name }}
 {{- end }}
 
 {{- define "redis.secretPasswordKey" -}}
