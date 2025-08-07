@@ -3556,6 +3556,27 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/quokka-service-registry-0.1.0/quokka-service-registry-0.1.0.tgz
     version: 0.1.0
+  redis:
+  - apiVersion: v2
+    appVersion: "7.2"
+    created: "2025-08-07T12:17:50.23608039Z"
+    description: A Helm chart for Redis standalone deployment with persistent storage
+    digest: a3e045eb28397389c84895d4ecf4d2b0be42dce6a8aa79fb9e7b11dafe65667a
+    home: https://redis.io/
+    keywords:
+    - redis
+    - cache
+    - database
+    - keyvalue
+    maintainers:
+    - name: QuokkaOps
+    name: redis
+    sources:
+    - https://github.com/redis/redis
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/redis-0.1.0/redis-0.1.0.tgz
+    version: 0.1.0
   s3-bucket-sync:
   - apiVersion: v2
     appVersion: v0.11.0
@@ -5249,4 +5270,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-07T09:04:37.353229814Z"
+generated: "2025-08-07T12:17:50.236708558Z"
