@@ -74,3 +74,95 @@ Redis headless service name (for Bitnami compatibility)
 {{- define "redis.headlessService" -}}
 {{- printf "%s-headless" (include "redis.fullname" .) }}
 {{- end }}
+
+{{/*
+Bitnami common template compatibility
+*/}}
+{{- define "common.names.fullname" -}}
+{{- include "redis.fullname" . }}
+{{- end }}
+
+{{- define "common.names.name" -}}
+{{- include "redis.name" . }}
+{{- end }}
+
+{{- define "common.labels.standard" -}}
+{{- include "redis.labels" . }}
+{{- end }}
+
+{{- define "common.labels.matchLabels" -}}
+{{- include "redis.selectorLabels" . }}
+{{- end }}
+
+{{/*
+Bitnami Redis specific templates
+*/}}
+{{- define "redis.secretName" -}}
+{{- include "redis.fullname" . }}
+{{- end }}
+
+{{- define "redis.secretPasswordKey" -}}
+redis-password
+{{- end }}
+
+{{/*
+Redis service port (for Bitnami compatibility)
+*/}}
+{{- define "redis.servicePort" -}}
+{{- .Values.service.port | default 6379 }}
+{{- end }}
+
+{{/*
+Additional Bitnami compatibility templates
+*/}}
+{{- define "common.capabilities.deployment.apiVersion" -}}
+{{- print "apps/v1" -}}
+{{- end }}
+
+{{- define "common.capabilities.statefulset.apiVersion" -}}
+{{- print "apps/v1" -}}
+{{- end }}
+
+{{- define "common.capabilities.ingress.apiVersion" -}}
+{{- if semverCompare ">=1.19" .Capabilities.KubeVersion.GitVersion -}}
+{{- print "networking.k8s.io/v1" -}}
+{{- else if semverCompare ">=1.14" .Capabilities.KubeVersion.GitVersion -}}
+{{- print "networking.k8s.io/v1beta1" -}}
+{{- else -}}
+{{- print "extensions/v1beta1" -}}
+{{- end -}}
+{{- end }}
+
+{{- define "common.names.namespace" -}}
+{{- .Release.Namespace -}}
+{{- end }}
+
+{{- define "common.names.chart" -}}
+{{- include "redis.chart" . }}
+{{- end }}
+
+{{/*
+Redis auth templates for Bitnami compatibility
+*/}}
+{{- define "redis.auth.enabled" -}}
+{{- if .Values.auth.enabled }}
+{{- true -}}
+{{- else -}}
+{{- false -}}
+{{- end -}}
+{{- end }}
+
+{{- define "redis.auth.password" -}}
+{{- if .Values.auth.enabled }}
+{{- .Values.auth.password | default (randAlphaNum 10) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Validate values
+*/}}
+{{- define "redis.validateValues" -}}
+{{- if and .Values.auth.enabled (not .Values.auth.password) }}
+redis: {{ printf "A password is required when auth is enabled. Please set auth.password" }}
+{{- end }}
+{{- end }}
