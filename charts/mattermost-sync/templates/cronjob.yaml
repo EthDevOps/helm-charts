@@ -55,7 +55,7 @@ spec:
             args:
             - "sync_groups_to_mattermost.py"
             - "--dry-run"
-            cmd: "python"
+            command: "python"
             {{- end }}
             env:
             - name: MATTERMOST_URL
