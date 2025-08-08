@@ -69,16 +69,28 @@ spec:
                   name: {{ .Release.Name }}-secret
                   key: mattermost-token
                   {{- end }}
-            - name: GOOGLE_DELEGATED_USER
-              value: {{ .Values.google.delegatedUser | quote }}
             - name: GOOGLE_PARENT_GROUP
               value: {{ .Values.google.parentGroup | quote }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: "/app/config/service-account-key.json"
+              value: "/app/account-key/service-account-key.json"
+            - name: GOOGLE_SERVICE_ACCOUNT_FILE
+              value: "/app/account-key/service-account-key.json"
             - name: CONFIG_PATH
               value: "/app/config/sync_config.yaml"
             - name: DB_PATH
               value: "/app/data/group_mappings.db"
+            - name: TZ
+              value: "UTC"
+            {{- if .Values.google.existingSecret }}
+            - name: GOOGLE_DELEGATED_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.google.existingSecret | quote }}
+                  key: {{ .Values.google.existingSecretKeyDelegatedUser | quote }}
+            {{ else }}
+            - name: GOOGLE_DELEGATED_USER
+              value: {{ .Values.google.delegatedUser | quote }}
+            {{- end }}
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -91,7 +103,7 @@ spec:
               mountPath: /app/config
               readOnly: true
             - name: google-key
-              mountPath: /app/secrets/service-account-key.json
+              mountPath: /app/account-key/service-account-key.json
               subPath: service-account-key.json
               readOnly: true
             {{- if .Values.persistence.enabled }}
