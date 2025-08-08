@@ -1,0 +1,150 @@
+{{- if .Values.cronjob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-sync
+  labels:
+    app: {{ .Release.Name }}-sync
+    app.kubernetes.io/component: sync
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy }}
+  suspend: {{ .Values.cronjob.suspend }}
+  {{- if .Values.cronjob.startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ .Values.cronjob.startingDeadlineSeconds }}
+  {{- end }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          {{- with .Values.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels:
+            app: {{ .Release.Name }}-sync
+            app.kubernetes.io/component: sync
+            {{- with .Values.podLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.serviceAccount.create }}
+          serviceAccountName: {{ .Release.Name }}-sync
+          {{- else if .Values.serviceAccount.name }}
+          serviceAccountName: {{ .Values.serviceAccount.name }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          restartPolicy: {{ .Values.restartPolicy }}
+          {{- with .Values.initContainers }}
+          initContainers:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: sync
+            securityContext:
+              {{- toYaml .Values.securityContext | nindent 14 }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- if .Values.sync.dryRun }}
+            args:
+            - "--dry-run"
+            {{- end }}
+            env:
+            - name: MATTERMOST_URL
+              value: {{ .Values.mattermost.url | quote }}
+            - name: MATTERMOST_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mattermost.existingSecret }}
+                  name: {{ .Values.mattermost.existingSecret }}
+                  key: {{ .Values.mattermost.existingSecretKey }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-secret
+                  key: mattermost-token
+                  {{- end }}
+            - name: GOOGLE_DELEGATED_USER
+              value: {{ .Values.google.delegatedUser | quote }}
+            - name: GOOGLE_PARENT_GROUP
+              value: {{ .Values.google.parentGroup | quote }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/app/config/service-account-key.json"
+            - name: CONFIG_PATH
+              value: "/app/config/sync_config.yaml"
+            - name: DB_PATH
+              value: "/app/data/group_mappings.db"
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.envFrom }}
+            envFrom:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            volumeMounts:
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+            - name: google-key
+              mountPath: /app/config/service-account-key.json
+              subPath: service-account-key.json
+              readOnly: true
+            {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: /app/data
+            {{- else }}
+            - name: data-tmp
+              mountPath: /app/data
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            resources:
+              {{- toYaml .Values.resources | nindent 14 }}
+          volumes:
+          - name: config
+            configMap:
+              name: {{ .Release.Name }}-config
+          - name: google-key
+            secret:
+              {{- if .Values.google.existingSecret }}
+              secretName: {{ .Values.google.existingSecret }}
+              {{- else }}
+              secretName: {{ .Release.Name }}-secret
+              {{- end }}
+              items:
+              - key: {{ .Values.google.existingSecretKey }}
+                path: service-account-key.json
+          {{- if .Values.persistence.enabled }}
+          - name: data
+            persistentVolumeClaim:
+              {{- if .Values.persistence.existingClaim }}
+              claimName: {{ .Values.persistence.existingClaim }}
+              {{- else }}
+              claimName: {{ .Release.Name }}-data
+              {{- end }}
+          {{- else }}
+          - name: data-tmp
+            emptyDir: {}
+          {{- end }}
+          {{- with .Values.volumes }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

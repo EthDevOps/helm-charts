@@ -1,0 +1,189 @@
+# Default values for mattermost-sync
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: mattermost-sync
+  pullPolicy: IfNotPresent
+  tag: "v0.1.0"
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# CronJob configuration for scheduled syncs
+cronjob:
+  # Enable the CronJob for scheduled syncs
+  enabled: true
+  # Schedule in cron format (default: every 4 hours)
+  schedule: "0 */4 * * *"
+  # Successful job history limit
+  successfulJobsHistoryLimit: 3
+  # Failed job history limit
+  failedJobsHistoryLimit: 1
+  # Concurrency policy: Allow, Forbid, Replace
+  concurrencyPolicy: Forbid
+  # Suspend the cron job
+  suspend: false
+  # Starting deadline seconds for the job
+  startingDeadlineSeconds: 300
+
+# Mattermost configuration
+mattermost:
+  # Mattermost server URL (required)
+  url: ""
+  # Mattermost API token (required - stored in secret)
+  token: ""
+  # Use existing secret for token
+  existingSecret: ""
+  # Key in the existing secret containing the token
+  existingSecretKey: "mattermost-token"
+
+# Google Workspace configuration
+google:
+  # Delegated admin user email (required)
+  delegatedUser: ""
+  # Parent group to discover teams from
+  parentGroup: "mattermost-teams@your-domain.com"
+  # Service account key JSON (required - stored in secret)
+  # Use multiline YAML with pipe notation for the JSON content
+  # Example:
+  # serviceAccountKey: |
+  #   {
+  #     "type": "service_account",
+  #     "project_id": "your-project",
+  #     "private_key_id": "...",
+  #     "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+  #     "client_email": "...",
+  #     "client_id": "...",
+  #     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  #     "token_uri": "https://oauth2.googleapis.com/token",
+  #     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  #     "client_x509_cert_url": "..."
+  #   }
+  serviceAccountKey: ""
+  # Use existing secret for service account key
+  existingSecret: ""
+  # Key in the existing secret containing the service account JSON
+  existingSecretKey: "service-account-key.json"
+
+# Sync configuration
+sync:
+  # Enable dry-run mode by default
+  dryRun: false
+  # Enable profile picture sync
+  syncProfilePictures: true
+  # Update user positions with team memberships
+  updateUserPositions: true
+  # Remove users not in Google groups
+  removeUsersNotInGroups: true
+  # Default team type (I = Invite only, O = Open)
+  defaultTeamType: "I"
+  # Remove Google group prefix from team names
+  removeGooglePrefix: "mm-"
+  # Custom sync configuration YAML (optional)
+  config: |
+    groups:
+      - type: "parent_discovery"
+        priority: 2
+        google_parent_group: "{{ .Values.google.parentGroup }}"
+        team_name_prefix: ""
+        group_name_prefix: ""
+        remove_google_prefix: "{{ .Values.sync.removeGooglePrefix }}"
+    settings:
+      default_team_type: "{{ .Values.sync.defaultTeamType }}"
+      remove_users_not_in_groups: {{ .Values.sync.removeUsersNotInGroups }}
+      sync_profile_pictures: {{ .Values.sync.syncProfilePictures }}
+      update_user_positions: {{ .Values.sync.updateUserPositions }}
+
+# Storage configuration
+persistence:
+  # Enable persistent storage for database
+  enabled: true
+  # Storage class name (leave empty for default)
+  storageClassName: ""
+  # Access mode
+  accessMode: ReadWriteOnce
+  # Size of the persistent volume
+  size: 1Gi
+  # Existing PVC to use
+  existingClaim: ""
+  # Annotations for the PVC
+  annotations: {}
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Node selector for pod assignment
+nodeSelector: {}
+
+# Tolerations for pod assignment
+tolerations: []
+
+# Affinity for pod assignment
+affinity: {}
+
+# Security context for the pod
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Security context for the container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Environment variables (additional)
+env: []
+  # - name: EXAMPLE_VAR
+  #   value: "example-value"
+
+# Environment variables from ConfigMaps or Secrets
+envFrom: []
+  # - configMapRef:
+  #     name: example-configmap
+  # - secretRef:
+  #     name: example-secret
+
+# Restart policy for the job pods
+restartPolicy: OnFailure
+
+# Init containers (additional)
+initContainers: []
+
+# Volume mounts (additional)
+volumeMounts: []
+
+# Volumes (additional)
+volumes: []

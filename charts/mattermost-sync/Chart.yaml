@@ -1,0 +1,15 @@
+apiVersion: v2
+name: mattermost-sync
+description: Sync groups and users from Google Workspace to Mattermost
+type: application
+
+version: 1.0.0
+
+# App metadata
+appVersion: "v1.0.0"
+
+sources:
+  - https://github.com/EthDevOps/mattermost-sync-docker
+maintainers:
+  - name: gcordalis
+    email: george.cordalis@ethereum.org
