@@ -3,7 +3,7 @@ name: mattermost-sync
 description: Sync groups and users from Google Workspace to Mattermost
 type: application
 
-version: 1.0.4
+version: 1.0.5
 
 # App metadata
 appVersion: "v1.0.0"

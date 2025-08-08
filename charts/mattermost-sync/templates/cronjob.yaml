@@ -11,7 +11,6 @@ spec:
   successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit }}
   failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit }}
   concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy }}
-  suspend: {{ .Values.cronjob.suspend }}
   {{- if .Values.cronjob.startingDeadlineSeconds }}
   startingDeadlineSeconds: {{ .Values.cronjob.startingDeadlineSeconds }}
   {{- end }}
@@ -54,7 +53,9 @@ spec:
             imagePullPolicy: {{ .Values.image.pullPolicy }}
             {{- if .Values.sync.dryRun }}
             args:
+            - "sync_groups_to_mattermost.py"
             - "--dry-run"
+            cmd: "python"
             {{- end }}
             env:
             - name: MATTERMOST_URL
