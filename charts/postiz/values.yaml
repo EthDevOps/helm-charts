@@ -65,6 +65,8 @@ affinity: {}
 # PostgreSQL configuration
 postgresql:
   enabled: true
+  image:
+    tag: 15-alpine
   auth:
     username: postiz
     password: postiz-password
@@ -77,6 +79,7 @@ postgresql:
 redis:
   enabled: true
   auth:
+    enabled: true
     password: postiz-redis-password
   master:
     service:
