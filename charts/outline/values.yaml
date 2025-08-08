@@ -93,6 +93,8 @@ image:
 
 postgresql:
   enabled: true
+  image:
+    tag: 16-alpine
   auth:
     username: docmost
     password: docmost
