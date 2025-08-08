@@ -2,9 +2,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-sync
+  name: {{ .Release.Name }}
   labels:
-    app: {{ .Release.Name }}-sync
+    app: {{ .Release.Name }}
     app.kubernetes.io/component: sync
 spec:
   schedule: {{ .Values.cronjob.schedule | quote }}
@@ -24,7 +24,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           labels:
-            app: {{ .Release.Name }}-sync
+            app: {{ .Release.Name }}
             app.kubernetes.io/component: sync
             {{- with .Values.podLabels }}
             {{- toYaml . | nindent 12 }}
@@ -35,7 +35,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- if .Values.serviceAccount.create }}
-          serviceAccountName: {{ .Release.Name }}-sync
+          serviceAccountName: {{ .Release.Name }}
           {{- else if .Values.serviceAccount.name }}
           serviceAccountName: {{ .Values.serviceAccount.name }}
           {{- end }}
