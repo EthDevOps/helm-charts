@@ -5,6 +5,8 @@ ingressClassName: haproxy
 envFromSecret: ""
 postgresql:
   enabled: true
+  image:
+    tag: 13-alpine
   auth:
     username: runners
     database: runners
