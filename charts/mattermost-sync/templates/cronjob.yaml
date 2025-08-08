@@ -91,7 +91,7 @@ spec:
               mountPath: /app/config
               readOnly: true
             - name: google-key
-              mountPath: /app/config/service-account-key.json
+              mountPath: /app/secrets/service-account-key.json
               subPath: service-account-key.json
               readOnly: true
             {{- if .Values.persistence.enabled }}
