@@ -10,7 +10,7 @@
 
 # Ignore archives
 *.tgz
-
+Chart.lock
 # IDE
 .idea
 .vscode
