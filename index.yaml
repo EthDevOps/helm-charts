@@ -2679,6 +2679,21 @@ entries:
   mattermost-sync:
   - apiVersion: v2
     appVersion: v1.0.0
+    created: "2025-08-09T04:18:33.460253805Z"
+    description: Sync groups and users from Google Workspace to Mattermost
+    digest: 33a34abfcdd3bb2f4410fc946a64650c3094b85733208cbb05ea744e658607ea
+    maintainers:
+    - email: george.cordalis@ethereum.org
+      name: gcordalis
+    name: mattermost-sync
+    sources:
+    - https://github.com/EthDevOps/mattermost-sync-docker
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/mattermost-sync-1.0.8/mattermost-sync-1.0.8.tgz
+    version: 1.0.8
+  - apiVersion: v2
+    appVersion: v1.0.0
     created: "2025-08-08T08:43:20.635760079Z"
     description: Sync groups and users from Google Workspace to Mattermost
     digest: c5f21d3bff05266695d93ece7bde3115aca00695ce8a2f582bc61c6e56a8092a
@@ -5674,4 +5689,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-08T13:20:11.049053913Z"
+generated: "2025-08-09T04:18:33.460726084Z"
