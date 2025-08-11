@@ -51,12 +51,12 @@ spec:
               {{- toYaml .Values.securityContext | nindent 14 }}
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
             imagePullPolicy: {{ .Values.image.pullPolicy }}
-            {{- if .Values.sync.dryRun }}
             args:
             - "sync_groups_to_mattermost.py"
+            {{- if .Values.sync.dryRun }}
             - "--dry-run"
-            command: ["python"]
             {{- end }}
+            command: ["python"]
             env:
             - name: MATTERMOST_URL
               value: {{ .Values.mattermost.url | quote }}
@@ -82,6 +82,8 @@ spec:
               value: "/app/data/group_mappings.db"
             - name: TZ
               value: "UTC"
+            - name: DRY_RUN
+              value: {{ ternary "true" "false" .Values.sync.dryRun | quote }}
             {{- if .Values.google.existingSecret }}
             - name: GOOGLE_DELEGATED_USER
               valueFrom:
