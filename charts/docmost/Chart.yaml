@@ -3,7 +3,7 @@ name: docmost
 description: OpenSource alternative for Notion
 type: application
 
-version: 0.2.0
+version: 0.2.1
 
 # App metadata
 appVersion: "1.0.0"
@@ -16,6 +16,6 @@ dependencies:
   repository: https://ethdevops.github.io/helm-charts
   condition: postgresql.enabled
 - name: redis
-  version: 18.x.x
-  repository: oci://registry-1.docker.io/bitnamicharts
+  version: "1.0.3"
+  repository: https://ethdevops.github.io/helm-charts
   condition: redis.enabled
