@@ -93,6 +93,8 @@ config:
 
 postgresql:
   enabled: true
+  image:
+    tag: 16-alpine
   auth:
     existingSecret: ""
     secretKeys:
