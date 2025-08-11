@@ -26,7 +26,7 @@ dependencies:
   - name: redis
     #version: ">0.0.0-0"
     #repository: file://../redis
-    version: "1.0.3"
+    version: "1.0.4"
     repository: https://ethdevops.github.io/helm-charts
     condition: redis.enabled
 
