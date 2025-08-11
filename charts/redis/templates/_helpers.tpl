@@ -109,7 +109,7 @@ Bitnami Redis specific templates
 {{- if .Values.auth.existingSecret }}
 {{- .Values.auth.existingSecretPasswordKey }}
 {{- else }}
-redis-password
+{{- printf "redis-password" }}
 {{- end }}
 {{- end }}
 
