@@ -362,7 +362,7 @@ route:
 pgchecker:
   image:
     # Docker image used to check Postgresql readiness at startup
-    repository: docker.io/busybox
+    repository: busybox
     # Image tag for the pgchecker image
     tag: 1.32
     # Image pull policy for the pgchecker image
@@ -391,6 +391,8 @@ postgresql:
   postgresqlPassword: keycloak
   # PostgreSQL Database to create
   postgresqlDatabase: keycloak
+  # Override the PostgreSQL service name (if not set, uses default naming)
+  fullnameOverride: ""
   # PostgreSQL network policy configuration
   networkPolicy:
     enabled: false
