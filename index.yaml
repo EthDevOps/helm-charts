@@ -2664,6 +2664,43 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/k8s-service-trigger-0.0.1/k8s-service-trigger-0.0.1.tgz
     version: 0.0.1
+  keycloak:
+  - apiVersion: v2
+    appVersion: "26.1"
+    created: "2025-08-12T13:07:08.700532967Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.3
+    description: Open Source Identity and Access Management For Modern Applications
+      and Services
+    digest: f60a73e4577f27f546b70fc35b734945779a05b1347bb1fc433017ada79475a7
+    home: https://www.keycloak.org/
+    icon: https://www.keycloak.org/resources/images/keycloak_icon_512px.svg
+    keywords:
+    - sso
+    - idm
+    - openid connect
+    - saml
+    - kerberos
+    - ldap
+    maintainers:
+    - email: unguiculus@gmail.com
+      name: unguiculus
+    - email: thomas.darimont+github@gmail.com
+      name: thomasdarimont
+    - email: markus@ethereum.org
+      name: elasticroentgen
+    name: keycloak
+    sources:
+    - https://github.com/codecentric/helm-charts
+    - https://github.com/jboss-dockerfiles/keycloak
+    - https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+    - https://github.com/ethdevops/helm-charts
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/keycloak-18.10.1/keycloak-18.10.1.tgz
+    version: 18.10.1
   listmonk:
   - apiVersion: v2
     appVersion: 4.1.0
@@ -5808,4 +5845,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-11T17:25:06.080612567Z"
+generated: "2025-08-12T13:07:08.700949409Z"
