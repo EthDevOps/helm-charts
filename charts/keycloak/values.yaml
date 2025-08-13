@@ -102,10 +102,19 @@ clusterDomain: cluster.local
 command: []
 
 ## Overrides the default args for the Keycloak container
-args: []
+args:
+  - "start-dev"
+  - "--http-enabled=true"
+  - "--proxy-headers=xforwarded"
 
 # Additional environment variables for Keycloak
-extraEnv: ""
+extraEnv: |
+  - name: KC_HTTP_ENABLED
+    value: "true"
+  - name: KC_PROXY_HEADERS
+    value: "xforwarded"
+  # - name: KC_HOSTNAME
+  #   value: "https://your.keycloak.domain"
   # - name: KEYCLOAK_LOGLEVEL
   #   value: DEBUG
   # - name: WILDFLY_LOGLEVEL
@@ -165,7 +174,7 @@ podAnnotations: {}
 # Liveness probe configuration
 livenessProbe: |
   httpGet:
-    path: /auth/
+    path: /health/live
     port: http
   initialDelaySeconds: 0
   timeoutSeconds: 5
@@ -173,7 +182,7 @@ livenessProbe: |
 # Readiness probe configuration
 readinessProbe: |
   httpGet:
-    path: /auth/realms/master
+    path: /health/ready
     port: http
   initialDelaySeconds: 30
   timeoutSeconds: 1
@@ -181,7 +190,7 @@ readinessProbe: |
 # Startup probe configuration
 startupProbe: |
   httpGet:
-    path: /auth/
+    path: /health/started
     port: http
   initialDelaySeconds: 30
   timeoutSeconds: 1
@@ -319,7 +328,7 @@ ingress:
         host: '{{ .Release.Name }}.keycloak.example.com'
         # Paths for the host
         paths:
-          - path: /auth/admin/
+          - path: /admin/
             pathType: Prefix
     # Console TLS configuration
     tls: []
@@ -396,6 +405,9 @@ postgresql:
   # PostgreSQL network policy configuration
   networkPolicy:
     enabled: false
+  # PostgreSQL service configuration
+  service:
+    port: 5432
   image:
     tag: 17-alpine
 
@@ -434,8 +446,8 @@ extraServiceMonitor:
   interval: 10s
   # Timeout for scraping
   scrapeTimeout: 10s
-  # The path at which metrics are served
-  path: /auth/realms/master/metrics
+# The path at which metrics are served
+  path: /realms/master/metrics
   # The Service port at which metrics are served
   port: http
 
