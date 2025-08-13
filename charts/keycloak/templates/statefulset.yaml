@@ -121,6 +121,7 @@ spec:
             {{- with .Values.extraPorts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+          {%- if .Values.enableProbes %}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- tpl . $ | nindent 12 }}
@@ -133,6 +134,7 @@ spec:
           startupProbe:
             {{- tpl . $ | nindent 12 }}
           {{- end }}
+          {%- endif %}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

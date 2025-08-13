@@ -36,7 +36,7 @@ updateStrategy: RollingUpdate
 
 # Pod restart policy. One of `Always`, `OnFailure`, or `Never`
 restartPolicy: Always
-
+enableProbes: false
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
   create: true
