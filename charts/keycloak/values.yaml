@@ -398,6 +398,7 @@ postgresql:
   postgresqlUsername: keycloak
   # PostgreSQL Password for the new user
   postgresqlPassword: keycloak
+  postgresqlPasswordKey: password
   # PostgreSQL Database to create
   postgresqlDatabase: keycloak
   # Override the PostgreSQL service name (if not set, uses default naming)

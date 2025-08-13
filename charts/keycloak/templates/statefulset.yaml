@@ -99,7 +99,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "keycloak.postgresql.fullname" . }}
-                  key: postgres-password
+                  key: {{ .Values.postgresql.postgresqlPasswordKey | quote }}
             {{- end }}
             {{- with .Values.extraEnv }}
             {{- tpl . $ | nindent 12 }}
