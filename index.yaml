@@ -2667,6 +2667,42 @@ entries:
   keycloak:
   - apiVersion: v2
     appVersion: "26.1"
+    created: "2025-08-13T14:24:48.445730077Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.3
+    description: Open Source Identity and Access Management For Modern Applications
+      and Services
+    digest: 3caa52d36ad4076a6fecc24e4c6ab9bf4cd82c7cb4617fa73beeacfd5066c6c6
+    home: https://www.keycloak.org/
+    icon: https://www.keycloak.org/resources/images/keycloak_icon_512px.svg
+    keywords:
+    - sso
+    - idm
+    - openid connect
+    - saml
+    - kerberos
+    - ldap
+    maintainers:
+    - email: unguiculus@gmail.com
+      name: unguiculus
+    - email: thomas.darimont+github@gmail.com
+      name: thomasdarimont
+    - email: markus@ethereum.org
+      name: elasticroentgen
+    name: keycloak
+    sources:
+    - https://github.com/codecentric/helm-charts
+    - https://github.com/jboss-dockerfiles/keycloak
+    - https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+    - https://github.com/ethdevops/helm-charts
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/keycloak-18.10.9/keycloak-18.10.9.tgz
+    version: 18.10.9
+  - apiVersion: v2
+    appVersion: "26.1"
     created: "2025-08-13T14:07:19.096311746Z"
     dependencies:
     - condition: postgresql.enabled
@@ -6097,4 +6133,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-13T14:07:19.09702204Z"
+generated: "2025-08-13T14:24:48.447479809Z"
