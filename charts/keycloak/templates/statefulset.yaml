@@ -85,13 +85,17 @@ spec:
           {{- end }}
           env:
             {{- if .Values.postgresql.enabled }}
-            - name: KC_DB
+            - name: DB_VENDOR
               value: postgres
-            - name: KC_DB_URL
-              value: "jdbc:postgresql://{{ include "keycloak.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}/{{ .Values.postgresql.postgresqlDatabase }}"
-            - name: KC_DB_USERNAME
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_ADDR
+              value: "{{ include "keycloak.postgresql.fullname" . }}"
+            - name: DB_DATABASE
+              value: "{{ .Values.postgresql.postgresqlDatabase }}"
+            - name: DB_USER
               value: {{ .Values.postgresql.postgresqlUsername | quote }}
-            - name: KC_DB_PASSWORD
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "keycloak.postgresql.fullname" . }}
