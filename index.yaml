@@ -888,6 +888,17 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/discourse-16.0.0/discourse-16.0.0.tgz
     version: 16.0.0
+  discourse-vanilla:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-08-15T11:42:16.096141721Z"
+    description: A Helm chart for deploying Discourse forum server on Kubernetes
+    digest: 26e8c1f35e57cca9caacab88f5ef252f443c7fc1e2f8213a02ea2917ebfb117f
+    name: discourse-vanilla
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/discourse-vanilla-0.1.0/discourse-vanilla-0.1.0.tgz
+    version: 0.1.0
   docmost:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -6133,4 +6144,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-13T14:24:48.447479809Z"
+generated: "2025-08-15T11:42:16.096658863Z"
