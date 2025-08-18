@@ -17,6 +17,16 @@ image:
 forum:
   name: "default"
   version: "latest"
+  hostname: "forum.discource.example"
+  workers: 4
+  letsencrypt:
+    email: john@doe.com
+  mail:
+    host: smtp.example.com
+    port: 587
+    user: mailuser
+    password: mailpass
+    # existingSecret: ""  # Name of existing secret containing DISCOURSE_SMTP_USER_NAME and DISCOURSE_SMTP_PASSWORD
 
 
 # Persistence configuration

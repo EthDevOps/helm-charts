@@ -41,6 +41,11 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}/{{ .Values.forum.name }}:{{ .Values.forum.version | default .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "discourse.fullname" . }}-config
+            - secretRef:
+                name: {{ .Values.forum.mail.existingSecret | default (printf "%s-smtp" (include "discourse.fullname" .)) }}
           ports:
             - name: http
               containerPort: 80
