@@ -6,7 +6,7 @@ metadata:
     {{- include "discourse.labels" . | nindent 4 }}
 spec:
   serviceName: {{ include "discourse.fullname" . }}
-  {{- if not .Values.autoscaling.enabled }}
+  {{- if not (and .Values.autoscaling .Values.autoscaling.enabled) }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
