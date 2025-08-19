@@ -22,7 +22,7 @@ data:
   RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR: "1.5"
   DISCOURSE_DB_SOCKET: "/var/run/postgresql"
   LETSENCRYPT_DIR: "/shared/letsencrypt"
-  DISCOURSE_DEVELOPER_EMAILS: "jakub.vysoky@ethereum.org,ligi@ethereum.org"
+  DISCOURSE_DEVELOPER_EMAILS: {{ join ","" .Values.forum.admins | quote }}
   PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
   RUBY_VERSION: "3.3.6"
   PG_MAJOR: "15"

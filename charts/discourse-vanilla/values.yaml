@@ -19,6 +19,7 @@ forum:
   version: "latest"
   hostname: "forum.discource.example"
   workers: 4
+  admins: []
   letsencrypt:
     email: john@doe.com
   mail:
