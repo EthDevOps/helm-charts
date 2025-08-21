@@ -24,7 +24,7 @@ spec:
         - containerPort: 3000
         env:
         - name: BRIDGE_API_KEY
-          value: 123456
+          value: "123456"
         - name: HTTP_CLIENT_REQUEST_TIMEOUT_MILLISECONDS
           value: {{ .Values.cgw.env.httpClientRequestTimeoutMilliseconds | quote }}
         - name: SAFE_CONFIG_BASE_URI
