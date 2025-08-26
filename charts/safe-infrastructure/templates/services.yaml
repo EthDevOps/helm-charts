@@ -107,6 +107,10 @@ spec:
     targetPort: 8888
     protocol: TCP
     name: http
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: static
   selector:
     {{- include "safe-infrastructure.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: txs-web
@@ -127,6 +131,10 @@ spec:
     targetPort: 8001
     protocol: TCP
     name: http
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: static
   selector:
     {{- include "safe-infrastructure.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: cfg-web
