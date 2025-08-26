@@ -57,8 +57,14 @@ data:
     upstream txs {
         server {{ include "safe-infrastructure.fullname" . }}-txs-web:8888;
     }
+    upstream txs-static {
+        server {{ include "safe-infrastructure.fullname" . }}-txs-web:80;
+    }
     upstream cfg {
         server {{ include "safe-infrastructure.fullname" . }}-cfg-web:8001;
+    }
+    upstream cfg-static {
+        server {{ include "safe-infrastructure.fullname" . }}-cfg-web:80;
     }
     upstream cgw {
         server {{ include "safe-infrastructure.fullname" . }}-cgw-web:3000;
@@ -72,32 +78,18 @@ data:
     server {
         listen 8000;
 
-        location ~ ^/[^/]+/static/(.*)$ {
-            # Rewrite the URL to remove the first path segment
-            rewrite ^/[^/]+/static/(.*)$ /static/$1 break;
-            
-            # Proxy the request to the UI server
-            proxy_pass http://ui;
-            
-            # Standard proxy headers
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            
-            # Cache settings for static content (optional)
-            proxy_cache_bypass $http_pragma;
-            proxy_cache_revalidate on;
-            expires 7d;
+        location /txs/static/ {
+            proxy_pass http://txs-static/;
         }
-
-
         location /txs/ {
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_pass http://txs/;
+        }
+        location /cfg/static/ {
+            proxy_pass http://cfg-static/;
         }
         location /cfg/ {
             proxy_set_header Host $host;

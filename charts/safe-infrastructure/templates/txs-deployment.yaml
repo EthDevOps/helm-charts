@@ -17,6 +17,13 @@ spec:
         {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: txs-web
     spec:
+      initContainers:
+      - name: copy-staticfiles
+        image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
+        command: ["sh", "-c", "cp -r /app/staticfiles/* /shared-static/"]
+        volumeMounts:
+        - name: staticfiles-volume
+          mountPath: /shared-static
       containers:
       - name: txs-web
         image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
@@ -79,9 +86,25 @@ spec:
           mountPath: /nginx
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+      - name: nginx-staticfiles
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: staticfiles-volume
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+        - name: nginx-static-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
       volumes:
       - name: nginx-shared-txs
         emptyDir: {}
+      - name: staticfiles-volume
+        emptyDir: {}
+      - name: nginx-static-config
+        configMap:
+          name: {{ include "safe-infrastructure.fullname" . }}-nginx-static-config
 ---
 {{- $root := . -}}
 {{- range $worker := list "indexer" "contracts-tokens" "notifications-webhooks" }}
@@ -238,3 +261,28 @@ spec:
         command: ["docker/web/celery/scheduler/run.sh"]
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "safe-infrastructure.fullname" . }}-nginx-static-config
+data:
+  nginx.conf: |
+    events {
+      worker_connections 1024;
+    }
+    http {
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      
+      server {
+        listen 80;
+        root /usr/share/nginx/html;
+        
+        location / {
+          try_files $uri $uri/ =404;
+        }
+      }
+    }
