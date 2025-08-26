@@ -4855,6 +4855,26 @@ entries:
   safe-infrastructure:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-08-26T13:17:12.235117701Z"
+    description: A Helm chart for Safe Infrastructure services
+    digest: c7026fd0014dad146664a14b79cef2a0641f9fa20cd4c4e4dad42802d991884b
+    home: https://github.com/safe-global
+    keywords:
+    - safe
+    - blockchain
+    - ethereum
+    - infrastructure
+    maintainers:
+    - name: Safe Team
+    name: safe-infrastructure
+    sources:
+    - https://github.com/safe-global
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/safe-infrastructure-0.1.17/safe-infrastructure-0.1.17.tgz
+    version: 0.1.17
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-08-26T13:08:14.462150776Z"
     description: A Helm chart for Safe Infrastructure services
     digest: 9001a0204227df876af7cc5559ab10c0c2a8b092d0ceb132d0593aedce68671e
@@ -6324,4 +6344,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-26T13:08:14.464121771Z"
+generated: "2025-08-26T13:17:12.235926801Z"
