@@ -23,6 +23,8 @@ spec:
         ports:
         - containerPort: 8888
         env:
+        - name: CSRF_COOKIE_NAME
+          value: "csrf_txs"
         - name: PYTHONPATH
           value: {{ .Values.txs.env.pythonPath | quote }}
         - name: DJANGO_SETTINGS_MODULE

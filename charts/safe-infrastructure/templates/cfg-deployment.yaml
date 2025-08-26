@@ -23,6 +23,8 @@ spec:
         ports:
         - containerPort: 8001
         env:
+        - name: CSRF_COOKIE_NAME
+          value: "csrf_cfg"
         - name: PYTHONDONTWRITEBYTECODE
           value: {{ .Values.cfg.env.pythonDontWriteBytecode | quote }}
         - name: SECRET_KEY

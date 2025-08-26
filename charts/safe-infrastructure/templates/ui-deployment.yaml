@@ -23,6 +23,8 @@ spec:
         ports:
         - containerPort: 8080
         env:
+        - name: CSRF_COOKIE_NAME
+          value: "csrf_ui"
         - name: NEXT_PUBLIC_INFURA_TOKEN
           value: {{ .Values.ui.env.nextPublicInfuraToken | quote }}
         - name: NEXT_PUBLIC_GATEWAY_URL_PRODUCTION

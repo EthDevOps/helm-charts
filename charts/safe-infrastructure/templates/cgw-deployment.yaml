@@ -23,6 +23,8 @@ spec:
         ports:
         - containerPort: 3000
         env:
+        - name: CSRF_COOKIE_NAME
+          value: "csrf_cgw"
         - name: BRIDGE_API_KEY
           value: "123456"
         - name: HTTP_CLIENT_REQUEST_TIMEOUT_MILLISECONDS
