@@ -30,6 +30,8 @@ spec:
         ports:
         - containerPort: 8888
         env:
+        - name: DISABLE_CREATION_MULTISIG_TRANSACTIONS_WITH_DELEGATE_CALL_OPERATION
+          value: "false"
         - name: CSRF_COOKIE_NAME
           value: "csrf_txs"
         - name: PYTHONPATH
