@@ -2636,6 +2636,16 @@ entries:
   k8s-ceph-backup:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2025-08-28T08:22:07.000012995Z"
+    description: Creates backups of PVC via CEPH
+    digest: fb776160293b275922242bb296652c2743176bdb0bd170155ae91e8b72f33add
+    name: k8s-ceph-backup
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/k8s-ceph-backup-0.0.9/k8s-ceph-backup-0.0.9.tgz
+    version: 0.0.9
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2025-06-30T10:50:34.39857368Z"
     description: Creates backups of PVC via CEPH
     digest: e65cf4487d6449b319125e5256653b4c645d3a1090c64e001a8af39cd16db702
@@ -6384,4 +6394,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-27T09:13:24.665979732Z"
+generated: "2025-08-28T08:22:07.000630447Z"
