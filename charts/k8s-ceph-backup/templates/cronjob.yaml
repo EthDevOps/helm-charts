@@ -4,7 +4,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "k8s-ceph-backup.fullname" $ }}-{{ $backup.namespace }}
+  name: backup-{{ $backup.namespace }}
   namespace: {{ $.Values.namespace | default $.Release.Namespace }}
   labels:
     {{- include "k8s-ceph-backup.labels" $ | nindent 4 }}
