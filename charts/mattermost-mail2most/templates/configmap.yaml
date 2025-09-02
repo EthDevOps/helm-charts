@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/component: mail2most
 data:
   mail2most.conf: |
-{{ tpl .Values.mail.config . | indent 4 }}
+{{ .Values.config | indent 4 }}
 
 {{- define "mattermost-mail2most.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}

@@ -8,13 +8,9 @@ metadata:
     app.kubernetes.io/name: {{ include "mattermost-mail2most.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: mail2most
-  {{- with .Values.persistence.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
 spec:
   accessModes:
-    - {{ .Values.persistence.accessMode }}
+    - ReadWriteOnce
   {{- if .Values.persistence.storageClassName }}
   storageClassName: {{ .Values.persistence.storageClassName }}
   {{- end }}

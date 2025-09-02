@@ -29,17 +29,11 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if .Values.serviceAccount.create }}
-      serviceAccountName: {{ include "mattermost-mail2most.serviceAccountName" . }}
-      {{- else if .Values.serviceAccount.name }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}
-      {{- end }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       initContainers:
       - name: config-init
         image: busybox:1.36
@@ -57,9 +51,9 @@ spec:
         - name: IMAP_PASSWORD
           valueFrom:
             secretKeyRef:
-              {{- if .Values.mail.existingSecret }}
-              name: {{ .Values.mail.existingSecret }}
-              key: {{ .Values.mail.existingSecretKey }}
+              {{- if .Values.secrets.imapExistingSecret }}
+              name: {{ .Values.secrets.imapExistingSecret }}
+              key: {{ .Values.secrets.imapExistingSecretKey }}
               {{- else }}
               name: {{ .Release.Name }}-secret
               key: imap-password
@@ -67,9 +61,9 @@ spec:
         - name: MATTERMOST_TOKEN
           valueFrom:
             secretKeyRef:
-              {{- if .Values.mattermost.existingSecret }}
-              name: {{ .Values.mattermost.existingSecret }}
-              key: {{ .Values.mattermost.existingSecretKey }}
+              {{- if .Values.secrets.mattermostExistingSecret }}
+              name: {{ .Values.secrets.mattermostExistingSecret }}
+              key: {{ .Values.secrets.mattermostExistingSecretKey }}
               {{- else }}
               name: {{ .Release.Name }}-secret
               key: mattermost-token
@@ -85,46 +79,18 @@ spec:
           runAsNonRoot: false
       containers:
       - name: mail2most
-        securityContext:
-          {{- toYaml .Values.securityContext | nindent 10 }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/mail2most/mail2most"]
         args: ["-c", "/mail2most/conf/mail2most.conf"]
-        env:
-        {{- with .Values.env }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-        {{- with .Values.envFrom }}
-        envFrom:
-          {{- toYaml . | nindent 10 }}
-        {{- end }}
-        {{- if .Values.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - "ps aux | grep -v grep | grep mail2most"
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-          successThreshold: {{ .Values.livenessProbe.successThreshold }}
-        {{- end }}
-        {{- if .Values.readinessProbe.enabled }}
-        readinessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - "test -f /mail2most/data/data.json"
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
-          successThreshold: {{ .Values.readinessProbe.successThreshold }}
-        {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1000
         volumeMounts:
         - name: config
           mountPath: /mail2most/conf
@@ -141,9 +107,6 @@ spec:
           mountPath: /mail2most/data
         - name: logs-tmp
           mountPath: /mail2most/logs
-        {{- end }}
-        {{- with .Values.volumeMounts }}
-        {{- toYaml . | nindent 8 }}
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
@@ -167,21 +130,6 @@ spec:
       - name: logs-tmp
         emptyDir: {}
       {{- end }}
-      {{- with .Values.volumes }}
-      {{- toYaml . | nindent 6 }}
-      {{- end }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
 
 {{- define "mattermost-mail2most.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
@@ -197,13 +145,5 @@ spec:
 {{- else }}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
 {{- end }}
-{{- end }}
-{{- end }}
-
-{{- define "mattermost-mail2most.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "mattermost-mail2most.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
