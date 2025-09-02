@@ -3124,6 +3124,19 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/listmonk-0.1.0/listmonk-0.1.0.tgz
     version: 0.1.0
+  mattermost-mail2most:
+  - apiVersion: v2
+    appVersion: v.1.11.10
+    created: "2025-09-02T00:48:20.348357097Z"
+    description: Filter emails from mail accounts and send them to Mattermost
+    digest: 529695e27df1cf4c1e6da2571a21905505763a01b8c7304202f52d73d7bf1f32
+    name: mattermost-mail2most
+    sources:
+    - https://github.com/Virtomize/mail2most
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/mattermost-mail2most-1.0.0/mattermost-mail2most-1.0.0.tgz
+    version: 1.0.0
   mattermost-sync:
   - apiVersion: v2
     appVersion: v1.0.0
@@ -6394,4 +6407,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-08-28T08:22:07.000630447Z"
+generated: "2025-09-02T00:48:20.349052415Z"
