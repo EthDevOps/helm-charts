@@ -1,0 +1,209 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ include "mattermost-mail2most.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: mail2most
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "mattermost-mail2most.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "mattermost-mail2most.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: mail2most
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "mattermost-mail2most.serviceAccountName" . }}
+      {{- else if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      - name: config-init
+        image: busybox:1.36
+        command: ['sh', '-c']
+        args:
+        - |
+          echo "Preparing mail2most configuration..."
+          cp /tmp/config/mail2most.conf /mail2most/conf/mail2most.conf.tmp
+          # Replace placeholders with actual secret values
+          sed -i "s|\${IMAP_PASSWORD}|$IMAP_PASSWORD|g" /mail2most/conf/mail2most.conf.tmp
+          sed -i "s|\${MATTERMOST_TOKEN}|$MATTERMOST_TOKEN|g" /mail2most/conf/mail2most.conf.tmp
+          mv /mail2most/conf/mail2most.conf.tmp /mail2most/conf/mail2most.conf
+          echo "Configuration prepared successfully"
+        env:
+        - name: IMAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.mail.existingSecret }}
+              name: {{ .Values.mail.existingSecret }}
+              key: {{ .Values.mail.existingSecretKey }}
+              {{- else }}
+              name: {{ .Release.Name }}-secret
+              key: imap-password
+              {{- end }}
+        - name: MATTERMOST_TOKEN
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.mattermost.existingSecret }}
+              name: {{ .Values.mattermost.existingSecret }}
+              key: {{ .Values.mattermost.existingSecretKey }}
+              {{- else }}
+              name: {{ .Release.Name }}-secret
+              key: mattermost-token
+              {{- end }}
+        volumeMounts:
+        - name: config-template
+          mountPath: /tmp/config
+          readOnly: true
+        - name: config
+          mountPath: /mail2most/conf
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+      containers:
+      - name: mail2most
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/mail2most/mail2most"]
+        args: ["-c", "/mail2most/conf/mail2most.conf"]
+        env:
+        {{- with .Values.env }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "ps aux | grep -v grep | grep mail2most"
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "test -f /mail2most/data/data.json"
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
+        {{- end }}
+        volumeMounts:
+        - name: config
+          mountPath: /mail2most/conf
+          readOnly: true
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          mountPath: /mail2most/data
+          subPath: data
+        - name: data
+          mountPath: /mail2most/logs
+          subPath: logs
+        {{- else }}
+        - name: data-tmp
+          mountPath: /mail2most/data
+        - name: logs-tmp
+          mountPath: /mail2most/logs
+        {{- end }}
+        {{- with .Values.volumeMounts }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: config-template
+        configMap:
+          name: {{ .Release.Name }}-config
+      - name: config
+        emptyDir: {}
+      {{- if .Values.persistence.enabled }}
+      - name: data
+        persistentVolumeClaim:
+          {{- if .Values.persistence.existingClaim }}
+          claimName: {{ .Values.persistence.existingClaim }}
+          {{- else }}
+          claimName: {{ .Release.Name }}-data
+          {{- end }}
+      {{- else }}
+      - name: data-tmp
+        emptyDir: {}
+      - name: logs-tmp
+        emptyDir: {}
+      {{- end }}
+      {{- with .Values.volumes }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+{{- define "mattermost-mail2most.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{- define "mattermost-mail2most.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "mattermost-mail2most.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "mattermost-mail2most.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,251 @@
+# Default values for mattermost-mail2most
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: virtomize/mail2most
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Mail server configuration
+mail:
+  # IMAP server configuration
+  server: ""
+  port: 993
+  username: ""
+  # Password will be stored in secret
+  password: ""
+  # Use existing secret for password
+  existingSecret: ""
+  # Key in the existing secret containing the password
+  existingSecretKey: "imap-password"
+  # Read only mode - don't delete emails after processing
+  readOnly: true
+  # Use SSL/TLS
+  ssl: true
+  # Use StartTLS
+  starttls: false
+  # Custom mail2most configuration (uses Go template syntax)
+  config: |
+    [General]
+    File = /mail2most/data/data.json
+    Loglevel = {{ .Values.logging.level }}
+
+    [Mail]
+    ImapServer = {{ .Values.mail.server }}
+    ImapPort = {{ .Values.mail.port }}
+    ImapUser = {{ .Values.mail.username }}
+    ImapPass = ${IMAP_PASSWORD}
+    ReadOnly = {{ .Values.mail.readOnly }}
+    {{- if .Values.mail.ssl }}
+    SSL = true
+    {{- end }}
+    {{- if .Values.mail.starttls }}
+    StartTLS = true
+    {{- end }}
+
+    [Mattermost]
+    URL = {{ .Values.mattermost.url }}
+    Token = ${MATTERMOST_TOKEN}
+    {{- if .Values.mattermost.team }}
+    Team = {{ .Values.mattermost.team }}
+    {{- end }}
+    {{- if .Values.mattermost.broadcast }}
+    Broadcast = true
+    {{- end }}
+
+    {{- range $name, $profile := .Values.profiles }}
+    {{- if $profile.enabled }}
+    [Profile:{{ $name }}]
+    {{- if $profile.channel }}
+    Channel = {{ $profile.channel }}
+    {{- end }}
+    {{- if $profile.mailbox }}
+    Mailbox = {{ $profile.mailbox }}
+    {{- end }}
+    {{- if $profile.subjectOnly }}
+    SubjectOnly = true
+    {{- end }}
+    {{- if $profile.stripHTML }}
+    StripHTML = true
+    {{- end }}
+    {{- if $profile.hideFrom }}
+    HideFrom = true
+    {{- end }}
+    {{- if $profile.hideFromEmail }}
+    HideFromEmail = true
+    {{- end }}
+    {{- if $profile.attachment }}
+    Attachment = true
+    {{- end }}
+    {{- range $profile.from }}
+    From = {{ . }}
+    {{- end }}
+    {{- range $profile.to }}
+    To = {{ . }}
+    {{- end }}
+    {{- range $profile.subject }}
+    Subject = {{ . }}
+    {{- end }}
+    {{- if $profile.timeRange }}
+    TimeRange = {{ $profile.timeRange }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+# Mattermost configuration
+mattermost:
+  # Mattermost server URL (required)
+  url: ""
+  # Mattermost API token (required - stored in secret)
+  token: ""
+  # Use existing secret for token
+  existingSecret: ""
+  # Key in the existing secret containing the token
+  existingSecretKey: "mattermost-token"
+  # Team name (optional)
+  team: ""
+  # Enable broadcast mode
+  broadcast: false
+
+# Mail profiles configuration
+profiles:
+  default:
+    enabled: true
+    # Mattermost channel to post to
+    channel: ""
+    # Mail folder to monitor
+    mailbox: "INBOX"
+    # Only post subject (not body)
+    subjectOnly: false
+    # Strip HTML from messages
+    stripHTML: true
+    # Hide sender information
+    hideFrom: false
+    # Hide sender email
+    hideFromEmail: false
+    # Process attachments
+    attachment: true
+    # Filter by sender (array)
+    from: []
+    # Filter by recipient (array)
+    to: []
+    # Filter by subject (array)
+    subject: []
+    # Time range in hours (e.g., 24 for last 24 hours)
+    timeRange: ""
+
+# Logging configuration
+logging:
+  # Log level: debug, info, warn, error
+  level: "info"
+
+# Storage configuration
+persistence:
+  # Enable persistent storage for data and logs
+  enabled: true
+  # Storage class name (leave empty for default)
+  storageClassName: ""
+  # Access mode
+  accessMode: ReadWriteOnce
+  # Size of the persistent volume
+  size: 5Gi
+  # Use existing PVC
+  existingClaim: ""
+  # Annotations for the PVC
+  annotations: {}
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Node selector for pod assignment
+nodeSelector: {}
+
+# Tolerations for pod assignment
+tolerations: []
+
+# Affinity for pod assignment
+affinity: {}
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Additional environment variables
+env: []
+  # - name: EXAMPLE_VAR
+  #   value: "example-value"
+
+# Environment variables from ConfigMaps or Secrets
+envFrom: []
+  # - configMapRef:
+  #     name: example-configmap
+  # - secretRef:
+  #     name: example-secret
+
+# Liveness probe configuration
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 30
+  periodSeconds: 60
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+# Readiness probe configuration
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 15
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+# Additional volume mounts
+volumeMounts: []
+
+# Additional volumes
+volumes: []

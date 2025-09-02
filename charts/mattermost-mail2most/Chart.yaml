@@ -1,0 +1,12 @@
+apiVersion: v2
+name: mattermost-mail2most
+description: Filter emails from mail accounts and send them to Mattermost
+type: application
+
+version: 1.0.0
+
+# Application version from Docker Hub
+appVersion: "v.1.11.10"
+
+sources:
+  - https://github.com/Virtomize/mail2most
