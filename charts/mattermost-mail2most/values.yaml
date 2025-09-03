@@ -1,0 +1,71 @@
+# Default values for mattermost-mail2most
+
+image:
+  repository: virtomize/mail2most
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+# Mail2Most configuration
+# Raw configuration file content - will have secrets substituted at runtime
+config: |
+  [General]
+  File = /mail2most/data/data.json
+  Loglevel = info
+
+  [Mail]
+  ImapServer = imap.example.com
+  ImapPort = 993
+  ImapUser = user@example.com
+  ImapPass = ${IMAP_PASSWORD}
+  ReadOnly = true
+  SSL = true
+
+  [Mattermost]
+  URL = https://mattermost.example.com
+  Token = ${MATTERMOST_TOKEN}
+
+  [Profile:default]
+  Channel = general
+  Mailbox = INBOX
+  StripHTML = true
+  Attachment = true
+
+# Secrets configuration
+secrets:
+  # IMAP password - stored in secret
+  imapPassword: ""
+  # Use existing secret for IMAP password
+  imapExistingSecret: ""
+  # Key in the existing secret containing the IMAP password
+  imapExistingSecretKey: "imap-password"
+  # Mattermost API token - stored in secret
+  mattermostToken: ""
+  # Use existing secret for Mattermost token
+  mattermostExistingSecret: ""
+  # Key in the existing secret containing the Mattermost token
+  mattermostExistingSecretKey: "mattermost-token"
+
+# Storage configuration
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClassName: ""
+  existingClaim: ""
+
+# Resource limits and requests
+resources:
+  {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
