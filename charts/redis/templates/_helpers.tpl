@@ -87,7 +87,11 @@ Bitnami common template compatibility
 {{- end }}
 
 {{- define "common.labels.standard" -}}
-{{- include "redis.labels" . }}
+{{- $ctx := . -}}
+{{- if .context -}}
+{{- $ctx = .context -}}
+{{- end -}}
+{{- include "redis.labels" $ctx }}
 {{- end }}
 
 {{- define "common.labels.matchLabels" -}}
