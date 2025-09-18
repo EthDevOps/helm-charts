@@ -100,7 +100,7 @@ spec:
           subPath: {{ .Values.persistence.subPath | default "" | quote }}
         {{- if .Values.reportsPersistence.enabled }}
         - name: reports
-          mountPath: /opt/netbox/netbox/reports
+          mountPath: /opt/netbox/netbox/scripts
           subPath: {{ .Values.reportsPersistence.subPath | default "" | quote }}
         {{- end }}
         {{- with .Values.worker.extraVolumeMounts }}
