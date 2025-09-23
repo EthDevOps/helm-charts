@@ -1,4 +1,4 @@
-commonAnnotations: {}
+hcommonAnnotations: {}
 podAnnotations: {}
 podLabels: {}
 extraInitContainers: {}
@@ -24,7 +24,7 @@ listmonk:
     # -- the listmonk image repository
     repository: listmonk/listmonk
     # -- the listmonk image tag
-    tag: v4.1.0
+    tag: v5.1.0
 
   # -- the number of listmonk deployment replicas
   replicas: 1
