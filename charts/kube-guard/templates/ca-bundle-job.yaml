@@ -35,13 +35,13 @@ spec:
             exit 1
           fi
 
-          echo "Updating ValidatingAdmissionWebhook with CA bundle..."
-          kubectl patch validatingadmissionwebhook {{ include "kube-guard.fullname" . }}-validator \
+          echo "Updating ValidatingWebhookConfiguration with CA bundle..."
+          kubectl patch validatingwebhookconfiguration {{ include "kube-guard.fullname" . }}-validator \
             --type='json' \
             -p='[{"op": "replace", "path": "/webhooks/0/clientConfig/caBundle", "value": "'$CA_BUNDLE'"}]'
 
-          echo "Updating MutatingAdmissionWebhook with CA bundle..."
-          kubectl patch mutatingadmissionwebhook {{ include "kube-guard.fullname" . }}-mutator \
+          echo "Updating MutatingWebhookConfiguration with CA bundle..."
+          kubectl patch mutatingwebhookconfiguration {{ include "kube-guard.fullname" . }}-mutator \
             --type='json' \
             -p='[{"op": "replace", "path": "/webhooks/0/clientConfig/caBundle", "value": "'$CA_BUNDLE'"}]'
 
