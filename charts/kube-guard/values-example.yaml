@@ -1,0 +1,41 @@
+# Example values file for KubeGuard
+# Copy this file and customize it for your environment
+
+# Configuration
+config:
+  # Mattermost configuration
+  mattermost:
+    # Replace with your actual Mattermost webhook URL
+    webhookUrl: "https://mattermost.company.com/hooks/abc123def456"
+    # Channel to send notifications to
+    channel: "security-alerts"
+
+  # Namespace to monitor
+  monitoredNamespace: "production"
+
+  # Notification settings
+  notifications:
+    shellAccess: true
+    portForward: true
+
+# Image configuration
+image:
+  repository: your-registry/kube-guard
+  tag: "v1.0.0"
+  pullPolicy: Always
+
+# Deployment configuration
+deployment:
+  replicaCount: 3
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+# Webhook configuration
+webhook:
+  name: kube-guard.company.com
+  failurePolicy: Fail

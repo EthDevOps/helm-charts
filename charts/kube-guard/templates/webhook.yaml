@@ -1,0 +1,50 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionWebhook
+metadata:
+  name: {{ include "kube-guard.fullname" . }}-validator
+  labels:
+    {{- include "kube-guard.labels" . | nindent 4 }}
+webhooks:
+- name: {{ .Values.webhook.name }}
+  clientConfig:
+    service:
+      name: {{ .Values.service.name | default (printf "%s-webhook" (include "kube-guard.fullname" .)) }}
+      namespace: {{ .Values.namespace.name }}
+      path: "/validate"
+    {{- if .Values.webhook.caBundle }}
+    caBundle: {{ .Values.webhook.caBundle }}
+    {{- end }}
+  rules:
+  - operations: ["CONNECT"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods/exec", "pods/portforward"]
+  admissionReviewVersions: ["v1", "v1beta1"]
+  sideEffects: None
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionWebhook
+metadata:
+  name: {{ include "kube-guard.fullname" . }}-mutator
+  labels:
+    {{- include "kube-guard.labels" . | nindent 4 }}
+webhooks:
+- name: {{ .Values.webhook.name }}
+  clientConfig:
+    service:
+      name: {{ .Values.service.name | default (printf "%s-webhook" (include "kube-guard.fullname" .)) }}
+      namespace: {{ .Values.namespace.name }}
+      path: "/mutate"
+    {{- if .Values.webhook.caBundle }}
+    caBundle: {{ .Values.webhook.caBundle }}
+    {{- end }}
+  rules:
+  - operations: ["CONNECT"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods/exec", "pods/portforward"]
+  admissionReviewVersions: ["v1", "v1beta1"]
+  sideEffects: None
+  failurePolicy: {{ .Values.webhook.failurePolicy }}

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kube-guard.fullname" . }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "kube-guard.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kube-guard.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kube-guard.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "kube-guard.serviceAccountName" . }}
+      containers:
+      - name: kube-guard
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.deployment.containerPort }}
+          name: webhook
+        env:
+        - name: CONFIG_MAP_NAME
+          value: "{{ include "kube-guard.fullname" . }}-config"
+        - name: CONFIG_MAP_NAMESPACE
+          value: {{ .Values.namespace.name | quote }}
+        - name: PORT
+          value: {{ .Values.deployment.containerPort | quote }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.deployment.livenessProbe.httpGet.path }}
+            port: {{ .Values.deployment.livenessProbe.httpGet.port }}
+            scheme: {{ .Values.deployment.livenessProbe.httpGet.scheme }}
+          initialDelaySeconds: {{ .Values.deployment.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deployment.livenessProbe.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.deployment.readinessProbe.httpGet.path }}
+            port: {{ .Values.deployment.readinessProbe.httpGet.port }}
+            scheme: {{ .Values.deployment.readinessProbe.httpGet.scheme }}
+          initialDelaySeconds: {{ .Values.deployment.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deployment.readinessProbe.periodSeconds }}
+        resources:
+          {{- toYaml .Values.deployment.resources | nindent 10 }}
+        securityContext:
+          {{- toYaml .Values.deployment.securityContext | nindent 10 }}
+        volumeMounts:
+        - name: tls-certs
+          mountPath: /etc/tls
+          readOnly: true
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: {{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}

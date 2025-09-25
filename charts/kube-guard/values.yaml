@@ -1,0 +1,100 @@
+# Default values for kube-guard
+
+# Namespace to deploy KubeGuard into
+namespace:
+  name: kube-guard
+  create: true
+
+# Image configuration
+image:
+  repository: kube-guard
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# Service account
+serviceAccount:
+  create: true
+  name: kube-guard
+
+# Configuration
+config:
+  # Mattermost configuration
+  mattermost:
+    # Mattermost webhook URL - REQUIRED
+    webhookUrl: "https://your-mattermost.example.com/hooks/your-webhook-id"
+    # Mattermost channel name (without #)
+    channel: "alerts"
+
+  # Namespace to monitor for shell access and port forwarding
+  monitoredNamespace: "my-namespace"
+
+  # Notification settings
+  notifications:
+    shellAccess: true
+    portForward: true
+
+# Deployment configuration
+deployment:
+  name: kube-guard
+  replicaCount: 2
+
+  # Container port
+  containerPort: 8443
+
+  # Resource limits and requests
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # Security context
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+
+  # Probes
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8443
+      scheme: HTTPS
+    initialDelaySeconds: 10
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8443
+      scheme: HTTPS
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Service configuration
+service:
+  name: kube-guard-webhook
+  type: ClusterIP
+  port: 443
+  targetPort: 8443
+
+# Webhook configuration
+webhook:
+  # Webhook name
+  name: kube-guard.example.com
+  # Failure policy: Ignore or Fail
+  failurePolicy: Ignore
+
+  # TLS configuration
+  tls:
+    # If false, certificates will be generated automatically
+    provided: false
+    # If provided is true, specify the secret name containing tls.crt and tls.key
+    secretName: kube-guard-tls
+
+# RBAC
+rbac:
+  create: true

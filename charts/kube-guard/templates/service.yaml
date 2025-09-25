@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name | default (printf "%s-webhook" (include "kube-guard.fullname" .)) }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "kube-guard.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "kube-guard.selectorLabels" . | nindent 4 }}
+  ports:
+  - name: webhook
+    port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.targetPort }}
+    protocol: TCP
+  type: {{ .Values.service.type }}

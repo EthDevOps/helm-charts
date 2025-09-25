@@ -1,0 +1,16 @@
+apiVersion: v2
+name: kube-guard
+description: A Kubernetes admission controller that monitors shell access and port forwarding activities
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - security
+  - admission-controller
+  - monitoring
+  - mattermost
+home: https://github.com/your-org/kube-guard
+sources:
+  - https://github.com/your-org/kube-guard
+maintainers:
+  - name: KubeGuard Team
+    email: team@example.com

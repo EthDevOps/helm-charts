@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kube-guard.fullname" . }}-config
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "kube-guard.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    mattermost:
+      webhook_url: {{ .Values.config.mattermost.webhookUrl | quote }}
+      channel: {{ .Values.config.mattermost.channel | quote }}
+
+    monitored_namespace: {{ .Values.config.monitoredNamespace | quote }}
+
+    notifications:
+      shell_access: {{ .Values.config.notifications.shellAccess }}
+      port_forward: {{ .Values.config.notifications.portForward }}
