@@ -9,7 +9,7 @@ webhooks:
   clientConfig:
     service:
       name: {{ .Values.service.name | default (printf "%s-webhook" (include "kube-guard.fullname" .)) }}
-      namespace: {{ .Values.namespace.name }}
+      namespace: {{ .Release.Namespace }}
       path: "/validate"
     {{- if .Values.webhook.caBundle }}
     caBundle: {{ .Values.webhook.caBundle }}
@@ -35,7 +35,7 @@ webhooks:
   clientConfig:
     service:
       name: {{ .Values.service.name | default (printf "%s-webhook" (include "kube-guard.fullname" .)) }}
-      namespace: {{ .Values.namespace.name }}
+      namespace: {{ .Release.Namespace }}
       path: "/mutate"
     {{- if .Values.webhook.caBundle }}
     caBundle: {{ .Values.webhook.caBundle }}
