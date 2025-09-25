@@ -47,12 +47,6 @@ spec:
 
           echo "CA bundle updated successfully"
 
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 65534
-
         resources:
           limits:
             cpu: 200m

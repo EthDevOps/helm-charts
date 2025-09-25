@@ -108,12 +108,6 @@ spec:
 
           echo "TLS certificate generated and stored in secret $SECRET_NAME"
 
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 65534
-
         volumeMounts:
         - name: temp
           mountPath: /tmp
