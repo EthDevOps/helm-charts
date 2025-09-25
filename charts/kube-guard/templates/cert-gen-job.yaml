@@ -58,56 +58,16 @@ spec:
           DNS.4 = $SERVICE_NAME.$NAMESPACE.svc.cluster.local
           EOF
 
-          # Generate certificate signing request
-          openssl req -new -key /tmp/tls.key -out /tmp/tls.csr -config /tmp/csr.conf -subj "/CN=$SERVICE_NAME.$NAMESPACE.svc"
+          # Generate self-signed certificate (K3s doesn't support webhook CSR signing)
+          openssl req -new -x509 -key /tmp/tls.key -out /tmp/tls.crt -days 365 -config /tmp/csr.conf -subj "/CN=$SERVICE_NAME.$NAMESPACE.svc"
 
-          # Create Kubernetes CSR
-          cat <<EOF | kubectl apply -f -
-          apiVersion: certificates.k8s.io/v1
-          kind: CertificateSigningRequest
-          metadata:
-            name: {{ include "kube-guard.fullname" . }}-csr
-          spec:
-            request: $(cat /tmp/tls.csr | base64 | tr -d '\n')
-            signerName: kubernetes.io/kubelet-serving
-            usages:
-            - digital signature
-            - key encipherment
-            - server auth
-          EOF
-
-          # Approve the CSR
-          kubectl certificate approve {{ include "kube-guard.fullname" . }}-csr
-
-          # Wait for certificate to be ready
-          for i in $(seq 1 60); do
-            echo "Checking CSR status... ($i/60)"
-            CSR_STATUS=$(kubectl get csr {{ include "kube-guard.fullname" . }}-csr -o jsonpath='{.status.conditions[0].type}' 2>/dev/null || echo "")
-            echo "CSR status: $CSR_STATUS"
-
-            if [ "$CSR_STATUS" = "Approved" ]; then
-              CERT_DATA=$(kubectl get csr {{ include "kube-guard.fullname" . }}-csr -o jsonpath='{.status.certificate}' 2>/dev/null || echo "")
-              if [ -n "$CERT_DATA" ]; then
-                echo "$CERT_DATA" | base64 -d > /tmp/tls.crt
-                if [ -s /tmp/tls.crt ]; then
-                  echo "Certificate received successfully"
-                  break
-                else
-                  echo "Certificate data is empty"
-                fi
-              else
-                echo "No certificate data in CSR yet"
-              fi
-            else
-              echo "CSR not yet approved or failed"
-            fi
-            sleep 5
-          done
-
+          # Verify certificate was created
           if [ ! -s /tmp/tls.crt ]; then
-            echo "Failed to get certificate"
+            echo "Failed to generate certificate"
             exit 1
           fi
+
+          echo "Self-signed certificate generated successfully"
 
           # Create or update the secret
           kubectl create secret tls $SECRET_NAME \
@@ -115,9 +75,6 @@ spec:
             --key=/tmp/tls.key \
             --namespace=$NAMESPACE \
             --dry-run=client -o yaml | kubectl apply -f -
-
-          # Clean up CSR
-          kubectl delete csr {{ include "kube-guard.fullname" . }}-csr || true
 
           echo "TLS certificate generated and stored in secret $SECRET_NAME"
 
