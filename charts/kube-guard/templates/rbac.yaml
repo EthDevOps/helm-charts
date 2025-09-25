@@ -29,7 +29,7 @@ rules:
   verbs: ["approve"]
   resourceNames: ["kubernetes.io/kube-apiserver-client", "kubernetes.io/kubelet-serving"]
 - apiGroups: ["admissionregistration.k8s.io"]
-  resources: ["validatingadmissionwebhooks", "mutatingadmissionwebhooks"]
+  resources: ["validatingadmissionwebhooks", "mutatingadmissionwebhooks", "validatingwebhookconfigurations", "mutatingwebhookconfigurations"]
   verbs: ["get", "list", "patch", "update"]
 
 ---
