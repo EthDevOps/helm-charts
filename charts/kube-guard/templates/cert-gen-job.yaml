@@ -61,7 +61,7 @@ spec:
           EOF
 
           # Generate self-signed certificate (K3s doesn't support webhook CSR signing)
-          openssl req -new -x509 -key /tmp/tls.key -out /tmp/tls.crt -days 365 -config /tmp/csr.conf -subj "/CN=$SERVICE_NAME.$NAMESPACE.svc"
+          openssl req -new -x509 -key /tmp/tls.key -out /tmp/tls.crt -days 365 -config /tmp/csr.conf -extensions v3_req
 
           # Verify certificate was created
           if [ ! -s /tmp/tls.crt ]; then
