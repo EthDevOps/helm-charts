@@ -47,13 +47,17 @@ spec:
           {{- toYaml .Values.deployment.resources | nindent 10 }}
         securityContext:
           {{- toYaml .Values.deployment.securityContext | nindent 10 }}
-        {{- if .Values.webhook.tls.enabled }}
         volumeMounts:
+        - name: temp
+          mountPath: /tmp
+        {{- if .Values.webhook.tls.enabled }}
         - name: tls-certs
           mountPath: /etc/tls
           readOnly: true
         {{- end }}
       volumes:
+      - name: temp
+        emtydir: {}
       {{- if .Values.webhook.tls.enabled }}
       - name: tls-certs
         secret:
