@@ -3090,6 +3090,28 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/keycloak-18.10.1/keycloak-18.10.1.tgz
     version: 18.10.1
+  kube-guard:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-09-25T08:35:16.817317739Z"
+    description: A Kubernetes admission controller that monitors shell access and
+      port forwarding activities
+    digest: 161c0ed9b718ca46dff1f9266d5d1f40bf0774ab57ab18f9f953d46106b6f539
+    home: https://github.com/your-org/kube-guard
+    keywords:
+    - security
+    - admission-controller
+    - monitoring
+    - mattermost
+    maintainers:
+    - email: team@example.com
+      name: KubeGuard Team
+    name: kube-guard
+    sources:
+    - https://github.com/your-org/kube-guard
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/kube-guard-0.1.0/kube-guard-0.1.0.tgz
+    version: 0.1.0
   listmonk:
   - apiVersion: v2
     appVersion: 5.1.0
@@ -6502,4 +6524,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-09-23T23:00:55.190147331Z"
+generated: "2025-09-25T08:35:16.81801948Z"
