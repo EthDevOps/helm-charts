@@ -49,8 +49,8 @@ spec:
           [req_distinguished_name]
           CN = $SERVICE_NAME.$NAMESPACE.svc
           [v3_req]
-          basicConstraints = CA:FALSE
-          keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+          basicConstraints = CA:TRUE
+          keyUsage = keyCertSign, cRLSign, digitalSignature, keyEncipherment
           extendedKeyUsage = serverAuth
           subjectAltName = @alt_names
           [alt_names]
