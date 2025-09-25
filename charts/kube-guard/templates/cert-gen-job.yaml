@@ -37,11 +37,20 @@ spec:
           NAMESPACE="{{ .Release.Namespace }}"
           SECRET_NAME="{{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}"
 
-          # Generate private key
+          # Generate CA private key
+          openssl genrsa -out /tmp/ca.key 2048
+
+          # Generate CA certificate
+          openssl req -new -x509 -key /tmp/ca.key -out /tmp/ca.crt -days 365 \
+            -subj "/CN=kube-guard-ca" \
+            -extensions v3_ca \
+            -config <(echo "[req]"; echo "distinguished_name=req"; echo "[v3_ca]"; echo "basicConstraints=CA:TRUE"; echo "keyUsage=keyCertSign,cRLSign")
+
+          # Generate server private key
           openssl genrsa -out /tmp/tls.key 2048
 
-          # Create certificate signing request config
-          cat <<EOF > /tmp/csr.conf
+          # Create server certificate config
+          cat <<EOF > /tmp/server.conf
           [req]
           req_extensions = v3_req
           distinguished_name = req_distinguished_name
@@ -49,8 +58,8 @@ spec:
           [req_distinguished_name]
           CN = $SERVICE_NAME.$NAMESPACE.svc
           [v3_req]
-          basicConstraints = CA:TRUE
-          keyUsage = keyCertSign, cRLSign, digitalSignature, keyEncipherment
+          basicConstraints = CA:FALSE
+          keyUsage = digitalSignature, keyEncipherment
           extendedKeyUsage = serverAuth
           subjectAltName = @alt_names
           [alt_names]
@@ -60,8 +69,12 @@ spec:
           DNS.4 = $SERVICE_NAME.$NAMESPACE.svc.cluster.local
           EOF
 
-          # Generate self-signed certificate (K3s doesn't support webhook CSR signing)
-          openssl req -new -x509 -key /tmp/tls.key -out /tmp/tls.crt -days 365 -config /tmp/csr.conf -extensions v3_req
+          # Generate server certificate signing request
+          openssl req -new -key /tmp/tls.key -out /tmp/server.csr -config /tmp/server.conf
+
+          # Sign server certificate with CA
+          openssl x509 -req -in /tmp/server.csr -CA /tmp/ca.crt -CAkey /tmp/ca.key -CAcreateserial \
+            -out /tmp/tls.crt -days 365 -extensions v3_req -extfile /tmp/server.conf
 
           # Verify certificate was created
           if [ ! -s /tmp/tls.crt ]; then
@@ -71,10 +84,16 @@ spec:
 
           echo "Self-signed certificate generated successfully"
 
-          # Create or update the secret
+          # Create or update the TLS secret with server certificate
           kubectl create secret tls $SECRET_NAME \
             --cert=/tmp/tls.crt \
             --key=/tmp/tls.key \
+            --namespace=$NAMESPACE \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # Create or update the CA secret for webhook configuration
+          kubectl create secret generic ${SECRET_NAME}-ca \
+            --from-file=ca.crt=/tmp/ca.crt \
             --namespace=$NAMESPACE \
             --dry-run=client -o yaml | kubectl apply -f -
 

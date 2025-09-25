@@ -30,8 +30,8 @@ spec:
           SECRET_NAME="{{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}"
           NAMESPACE="{{ .Release.Namespace }}"
 
-          # Get CA bundle from our self-signed certificate (since it's the CA for itself)
-          CA_BUNDLE=$(kubectl get secret $SECRET_NAME -n $NAMESPACE -o jsonpath='{.data.tls\.crt}')
+          # Get CA bundle from our CA certificate
+          CA_BUNDLE=$(kubectl get secret ${SECRET_NAME}-ca -n $NAMESPACE -o jsonpath='{.data.ca\.crt}')
 
           if [ -z "$CA_BUNDLE" ]; then
             echo "Failed to get CA bundle from secret $SECRET_NAME"
