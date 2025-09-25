@@ -69,7 +69,7 @@ spec:
             name: {{ include "kube-guard.fullname" . }}-csr
           spec:
             request: $(cat /tmp/tls.csr | base64 | tr -d '\n')
-            signerName: kubernetes.io/kubelet-serving
+            signerName: kubernetes.io/kube-apiserver-client
             usages:
             - digital signature
             - key encipherment
