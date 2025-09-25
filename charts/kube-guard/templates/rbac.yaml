@@ -15,6 +15,22 @@ rules:
 - apiGroups: [""]
   resources: ["pods/exec", "pods/portforward"]
   verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update", "patch"]
+- apiGroups: ["certificates.k8s.io"]
+  resources: ["certificatesigningrequests"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+- apiGroups: ["certificates.k8s.io"]
+  resources: ["certificatesigningrequests/approval"]
+  verbs: ["update"]
+- apiGroups: ["certificates.k8s.io"]
+  resources: ["signers"]
+  verbs: ["approve"]
+  resourceNames: ["kubernetes.io/kubelet-serving"]
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources: ["validatingadmissionwebhooks", "mutatingadmissionwebhooks"]
+  verbs: ["get", "list", "patch", "update"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -30,5 +46,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ include "kube-guard.serviceAccountName" . }}
-  namespace: {{ .Values.namespace.name }}
+  namespace: {{ .Release.Namespace }}
 {{- end }}

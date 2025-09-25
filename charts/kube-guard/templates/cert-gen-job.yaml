@@ -1,0 +1,126 @@
+{{- if and .Values.webhook.tls.enabled (not .Values.webhook.tls.provided) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "kube-guard.fullname" . }}-cert-gen
+  labels:
+    {{- include "kube-guard.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+spec:
+  template:
+    metadata:
+      name: {{ include "kube-guard.fullname" . }}-cert-gen
+      labels:
+        {{- include "kube-guard.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ include "kube-guard.serviceAccountName" . }}
+      containers:
+      - name: cert-generator
+        image: alpine/openssl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+
+          SERVICE_NAME="{{ .Values.service.name | default (printf "%s-webhook" (include "kube-guard.fullname" .)) }}"
+          NAMESPACE="{{ .Release.Namespace }}"
+          SECRET_NAME="{{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}"
+
+          # Generate private key
+          openssl genrsa -out /tmp/tls.key 2048
+
+          # Create certificate signing request config
+          cat <<EOF > /tmp/csr.conf
+          [req]
+          req_extensions = v3_req
+          distinguished_name = req_distinguished_name
+          [req_distinguished_name]
+          [v3_req]
+          basicConstraints = CA:FALSE
+          keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+          extendedKeyUsage = serverAuth
+          subjectAltName = @alt_names
+          [alt_names]
+          DNS.1 = $SERVICE_NAME
+          DNS.2 = $SERVICE_NAME.$NAMESPACE
+          DNS.3 = $SERVICE_NAME.$NAMESPACE.svc
+          DNS.4 = $SERVICE_NAME.$NAMESPACE.svc.cluster.local
+          EOF
+
+          # Generate certificate signing request
+          openssl req -new -key /tmp/tls.key -out /tmp/tls.csr -config /tmp/csr.conf -subj "/CN=$SERVICE_NAME.$NAMESPACE.svc"
+
+          # Create Kubernetes CSR
+          cat <<EOF | kubectl apply -f -
+          apiVersion: certificates.k8s.io/v1
+          kind: CertificateSigningRequest
+          metadata:
+            name: {{ include "kube-guard.fullname" . }}-csr
+          spec:
+            request: $(cat /tmp/tls.csr | base64 | tr -d '\n')
+            signerName: kubernetes.io/kubelet-serving
+            usages:
+            - digital signature
+            - key encipherment
+            - server auth
+          EOF
+
+          # Approve the CSR
+          kubectl certificate approve {{ include "kube-guard.fullname" . }}-csr
+
+          # Wait for certificate to be ready
+          for i in $(seq 1 60); do
+            if kubectl get csr {{ include "kube-guard.fullname" . }}-csr -o jsonpath='{.status.certificate}' | base64 -d > /tmp/tls.crt 2>/dev/null; then
+              if [ -s /tmp/tls.crt ]; then
+                echo "Certificate received"
+                break
+              fi
+            fi
+            echo "Waiting for certificate... ($i/60)"
+            sleep 5
+          done
+
+          if [ ! -s /tmp/tls.crt ]; then
+            echo "Failed to get certificate"
+            exit 1
+          fi
+
+          # Create or update the secret
+          kubectl create secret tls $SECRET_NAME \
+            --cert=/tmp/tls.crt \
+            --key=/tmp/tls.key \
+            --namespace=$NAMESPACE \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # Clean up CSR
+          kubectl delete csr {{ include "kube-guard.fullname" . }}-csr || true
+
+          echo "TLS certificate generated and stored in secret $SECRET_NAME"
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65534
+
+        volumeMounts:
+        - name: temp
+          mountPath: /tmp
+
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+
+      volumes:
+      - name: temp
+        emptyDir: {}
+{{- end }}

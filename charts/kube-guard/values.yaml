@@ -1,9 +1,5 @@
 # Default values for kube-guard
 
-# Namespace to deploy KubeGuard into
-namespace:
-  name: kube-guard
-  create: true
 
 # Image configuration
 image:

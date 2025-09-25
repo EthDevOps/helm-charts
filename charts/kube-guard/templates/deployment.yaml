@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "kube-guard.fullname" . }}
-  namespace: {{ .Values.namespace.name }}
   labels:
     {{- include "kube-guard.labels" . | nindent 4 }}
 spec:
@@ -27,7 +26,7 @@ spec:
         - name: CONFIG_MAP_NAME
           value: "{{ include "kube-guard.fullname" . }}-config"
         - name: CONFIG_MAP_NAMESPACE
-          value: {{ .Values.namespace.name | quote }}
+          value: {{ .Release.Namespace | quote }}
         - name: PORT
           value: {{ .Values.deployment.containerPort | quote }}
         livenessProbe:
@@ -48,11 +47,15 @@ spec:
           {{- toYaml .Values.deployment.resources | nindent 10 }}
         securityContext:
           {{- toYaml .Values.deployment.securityContext | nindent 10 }}
+        {{- if .Values.webhook.tls.enabled }}
         volumeMounts:
         - name: tls-certs
           mountPath: /etc/tls
           readOnly: true
+        {{- end }}
       volumes:
+      {{- if .Values.webhook.tls.enabled }}
       - name: tls-certs
         secret:
           secretName: {{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}
+      {{- end }}
