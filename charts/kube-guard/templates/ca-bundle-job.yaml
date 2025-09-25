@@ -27,11 +27,14 @@ spec:
         - |
           set -e
 
-          # Get CA bundle
-          CA_BUNDLE=$(kubectl get configmap -n kube-system extension-apiserver-authentication -o=jsonpath='{.data.client-ca-file}' | base64 | tr -d '\n')
+          SECRET_NAME="{{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}"
+          NAMESPACE="{{ .Release.Namespace }}"
+
+          # Get CA bundle from our self-signed certificate (since it's the CA for itself)
+          CA_BUNDLE=$(kubectl get secret $SECRET_NAME -n $NAMESPACE -o jsonpath='{.data.tls\.crt}')
 
           if [ -z "$CA_BUNDLE" ]; then
-            echo "Failed to get CA bundle"
+            echo "Failed to get CA bundle from secret $SECRET_NAME"
             exit 1
           fi
 
