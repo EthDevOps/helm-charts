@@ -27,6 +27,12 @@ spec:
         - |
           set -e
 
+          # Install kubectl
+          apk add --no-cache curl
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          mv kubectl /usr/local/bin/
+
           SERVICE_NAME="{{ .Values.service.name | default (printf "%s-webhook" (include "kube-guard.fullname" .)) }}"
           NAMESPACE="{{ .Release.Namespace }}"
           SECRET_NAME="{{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}"
