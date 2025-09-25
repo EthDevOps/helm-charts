@@ -7,7 +7,7 @@ namespace:
 
 # Image configuration
 image:
-  repository: kube-guard
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/kube-guard
   pullPolicy: IfNotPresent
   tag: "latest"
 
