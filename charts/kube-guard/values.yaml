@@ -23,6 +23,7 @@ config:
 
   # Namespace to monitor for shell access and port forwarding
   monitoredNamespace: "my-namespace"
+  clusterName: "my-cluster"
 
   # Notification settings
   notifications:
