@@ -1,12 +1,15 @@
 secretName: my-secret
 secretKey: GITHUB_TOKEN
 
-# GitHub repository in format owner/repo
-githubRepo: ""
-# Workflow file name to trigger
-workflowFile: ""
 # Tenant identifier
 tenant: ""
 # Project identifier
 project: ""
-imageVersion: main
+imageVersion: v0.1.0
+
+# semaphore config
+semaphoreUrl: ""
+semaphoreToken: ""
+
+clusterName: ""
+mattermostWebhook: ""
