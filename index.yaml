@@ -2747,6 +2747,16 @@ entries:
   k8s-service-trigger:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2025-12-02T16:54:44.157179854Z"
+    description: Triggers webhooks on service changes
+    digest: 4874a1df275170ce381116ed99a7343e9fa70f8ce462a9bde5c8cf4fdf8a964e
+    name: k8s-service-trigger
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/k8s-service-trigger-0.0.5/k8s-service-trigger-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2025-05-23T08:02:59.368991208Z"
     description: Triggers webhooks on service changes
     digest: 19b88c9f1b043897a078335f26146e0da28e1eea50dd65765580484d75c59a80
@@ -6964,4 +6974,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-10-20T11:49:54.497313921Z"
+generated: "2025-12-02T16:54:44.157761159Z"
