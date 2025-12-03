@@ -25,26 +25,9 @@ spec:
             secretKeyRef:
               name: {{ .Values.secretName }}
               key: {{ .Values.secretKey }}
-        - name: GITHUB_REPO
-          valueFrom:
-            configMapKeyRef:
-              name: {{ .Release.Name }}-config
-              key: GITHUB_REPO
-        - name: WORKFLOW_FILE
-          valueFrom:
-            configMapKeyRef:
-              name: {{ .Release.Name }}-config
-              key: WORKFLOW_FILE
-        - name: TENANT
-          valueFrom:
-            configMapKeyRef:
-              name: {{ .Release.Name }}-config
-              key: TENANT
-        - name: PROJECT
-          valueFrom:
-            configMapKeyRef:
-              name: {{ .Release.Name }}-config
-              key: PROJECT
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config
         resources:
           requests:
             cpu: "100m"

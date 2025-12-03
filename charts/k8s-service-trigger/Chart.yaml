@@ -3,4 +3,4 @@ appVersion: "0.0.1"
 description: Triggers webhooks on service changes
 name: k8s-service-trigger
 type: application
-version: 0.0.5
+version: 0.0.6
