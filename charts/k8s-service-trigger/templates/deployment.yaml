@@ -40,3 +40,9 @@ spec:
           runAsNonRoot: true
           runAsUser: 1000
           readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
