@@ -20,7 +20,7 @@ spec:
         image: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-service-trigger:{{ .Values.imageVersion }}
         imagePullPolicy: Always
         env:
-        - name: GITHUB_TOKEN
+        - name: SEMAPHORE_AUTH_TOKEN
           valueFrom:
             secretKeyRef:
               name: {{ .Values.secretName }}

@@ -4,7 +4,6 @@ metadata:
   name: {{ .Release.Name }}-config
 data:
   SEMAPHORE_URL: {{ .Values.semaphoreUrl | quote }}
-  SEMAPHORE_AUTH_TOKEN: {{ .Values.semaphoreToken | quote }}
   TENANT: {{ .Values.tenant | quote }}
   PROJECT: {{ .Values.project | quote }}
   K8S_CLUSTER_NAME: {{ .Values.clusterName | quote }}
