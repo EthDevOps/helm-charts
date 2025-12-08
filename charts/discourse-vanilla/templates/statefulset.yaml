@@ -33,6 +33,22 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initcontainers:
+        - name: db-migrate
+          image: "{{ .Values.image.repository }}/{{ .Values.forum.name }}:{{ .Values.forum.version | default .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["/bin/bash", "-c"]
+          args:
+            - cd /var/www/discourse && su discourse -c 'bundle exec rake db:migrate'
+          envFrom:
+            - configMapRef:
+                name: {{ include "discourse.fullname" . }}-config
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: discourse-shared
+              mountPath: /shared
+            - name: discourse-logs
+              mountPath: /var/log
+            {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}

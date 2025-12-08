@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "discourse.labels" . | nindent 4 }}
 data:
+  MIGRATE_ON_BOOT: "1"
   RUBY_GC_HEAP_GROWTH_MAX_SLOTS: "40000"
   DISCOURSE_HOSTNAME: "{{ .Values.forum.hostname }}"
   LANG: "en_US.UTF-8"
