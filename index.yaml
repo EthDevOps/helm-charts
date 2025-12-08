@@ -1186,6 +1186,27 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/docmost-0.0.16/docmost-0.0.16.tgz
     version: 0.0.16
+  domainmod:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-12-08T14:13:06.473418441Z"
+    description: A Helm chart for DomainMod - Open Source Domain and Internet Asset
+      Management
+    digest: ed2bad858c30f12c4c27e74342bdc1bd58c6a72d605597bd8387b00d717c1428
+    home: https://domainmod.org
+    keywords:
+    - domainmod
+    - domain
+    - management
+    maintainers:
+    - name: quokkaops
+    name: domainmod
+    sources:
+    - https://github.com/domainmod/domainmod
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/domainmod-0.1.0/domainmod-0.1.0.tgz
+    version: 0.1.0
   github-runner-manager:
   - apiVersion: v2
     appVersion: v0.0.1
@@ -7034,4 +7055,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2025-12-08T10:10:45.758695568Z"
+generated: "2025-12-08T14:13:06.474087693Z"
