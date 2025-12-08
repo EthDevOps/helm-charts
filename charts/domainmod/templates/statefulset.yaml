@@ -1,0 +1,108 @@
+{{- if .Values.database.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "domainmod.db.fullname" . }}
+  labels:
+    {{- include "domainmod.db.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "domainmod.db.fullname" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "domainmod.db.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.database.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "domainmod.db.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.database.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: mariadb
+          {{- with .Values.database.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+          imagePullPolicy: {{ .Values.database.image.pullPolicy }}
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.database.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.dbCredentials.database | quote }}
+            - name: MYSQL_USER
+              value: {{ .Values.dbCredentials.user | quote }}
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "domainmod.secretName" . }}
+                  key: {{ include "domainmod.secretPasswordKey" . }}
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "domainmod.secretName" . }}
+                  key: {{ include "domainmod.secretRootPasswordKey" . }}
+          {{- if .Values.database.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /config
+          {{- end }}
+          {{- with .Values.database.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.database.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.database.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.database.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.database.persistence.enabled }}
+  {{- if not .Values.database.persistence.existingClaim }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        {{- with .Values.database.persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- toYaml .Values.database.persistence.accessModes | nindent 10 }}
+        {{- if .Values.database.persistence.storageClass }}
+        storageClassName: {{ .Values.database.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.database.persistence.size | quote }}
+  {{- else }}
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: {{ .Values.database.persistence.existingClaim }}
+  {{- end }}
+  {{- end }}
+{{- end }}

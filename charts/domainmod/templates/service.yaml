@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "domainmod.fullname" . }}
+  labels:
+    {{- include "domainmod.labels" . | nindent 4 }}
+    {{- with .Values.app.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.app.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.app.service.type }}
+  ports:
+    - port: {{ .Values.app.service.port }}
+      targetPort: {{ .Values.app.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "domainmod.selectorLabels" . | nindent 4 }}

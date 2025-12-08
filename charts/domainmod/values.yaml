@@ -1,0 +1,194 @@
+# DomainMod Helm Chart Values
+
+# -- App configuration
+app:
+  image:
+    repository: domainmod/domainmod
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  # -- Number of replicas (only 1 supported for stateful app)
+  replicaCount: 1
+
+  # -- Resource limits and requests
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  # -- Node selector
+  nodeSelector: {}
+
+  # -- Tolerations
+  tolerations: []
+
+  # -- Affinity
+  affinity: {}
+
+  # -- Pod annotations
+  podAnnotations: {}
+
+  # -- Pod security context
+  podSecurityContext: {}
+    # fsGroup: 1000
+
+  # -- Container security context
+  securityContext: {}
+    # runAsUser: 1000
+    # runAsGroup: 1000
+
+  # -- Environment variables
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: "Europe/Berlin"
+    DOMAINMOD_WEB_ROOT: ""
+
+  # -- Service configuration
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+    # -- Additional labels for the service
+    labels: {}
+    # -- Additional annotations for the service
+    annotations: {}
+
+  # -- Persistence configuration for application data
+  persistence:
+    enabled: true
+    # -- Use an existing PVC
+    existingClaim: ""
+    # -- Storage class for the PVC
+    storageClass: ""
+    # -- Access modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Size of the PVC
+    size: 1Gi
+    # -- Annotations for the PVC
+    annotations: {}
+
+# -- Database configuration
+database:
+  # -- Enable the built-in MariaDB database
+  enabled: true
+
+  image:
+    repository: ghcr.io/linuxserver/mariadb
+    tag: alpine
+    pullPolicy: IfNotPresent
+
+  # -- Resource limits and requests
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  # -- Node selector
+  nodeSelector: {}
+
+  # -- Tolerations
+  tolerations: []
+
+  # -- Affinity
+  affinity: {}
+
+  # -- Pod annotations
+  podAnnotations: {}
+
+  # -- Pod security context
+  podSecurityContext: {}
+
+  # -- Container security context
+  securityContext: {}
+
+  # -- Environment variables
+  env:
+    PUID: "1000"
+    PGID: "1000"
+    TZ: "America/Vancouver"
+
+  # -- Service configuration
+  service:
+    type: ClusterIP
+    port: 3306
+
+  # -- Persistence configuration for database
+  persistence:
+    enabled: true
+    # -- Use an existing PVC
+    existingClaim: ""
+    # -- Storage class for the PVC
+    storageClass: ""
+    # -- Access modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Size of the PVC
+    size: 5Gi
+    # -- Annotations for the PVC
+    annotations: {}
+
+# -- Database credentials
+# Used by both app and database
+dbCredentials:
+  # -- Database host (use release-name-db if using built-in db)
+  host: ""
+  # -- Database name
+  database: domainmod
+  # -- Database user
+  user: domainmod
+  # -- Database password (ignored if existingSecret is set)
+  password: ""
+  # -- MySQL root password (ignored if existingSecret is set)
+  rootPassword: ""
+
+  # -- Use an existing secret for database credentials
+  existingSecret:
+    # -- Name of the existing secret
+    name: ""
+    # -- Key in the secret for database password
+    passwordKey: "password"
+    # -- Key in the secret for root password
+    rootPasswordKey: "root-password"
+
+# -- Image pull secrets
+imagePullSecrets: []
+
+# -- Override the name of the chart
+nameOverride: ""
+
+# -- Override the full name of the chart
+fullnameOverride: ""
+
+# -- Service account configuration
+serviceAccount:
+  # -- Create a service account
+  create: false
+  # -- Annotations for the service account
+  annotations: {}
+  # -- Name of the service account
+  name: ""
+
+# -- Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: domainmod.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+    # - secretName: domainmod-tls
+    #   hosts:
+    #     - domainmod.local

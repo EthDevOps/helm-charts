@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "domainmod.fullname" . }}
+  labels:
+    {{- include "domainmod.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "domainmod.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.app.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "domainmod.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "domainmod.serviceAccountName" . }}
+      {{- end }}
+      {{- with .Values.app.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.app.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.app.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: DOMAINMOD_DATABASE_HOST
+              value: {{ include "domainmod.db.host" . | quote }}
+            - name: DOMAINMOD_DATABASE
+              value: {{ .Values.dbCredentials.database | quote }}
+            - name: DOMAINMOD_USER
+              value: {{ .Values.dbCredentials.user | quote }}
+            - name: DOMAINMOD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "domainmod.secretName" . }}
+                  key: {{ include "domainmod.secretPasswordKey" . }}
+          {{- if .Values.app.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/www/html
+          {{- end }}
+          {{- with .Values.app.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- if .Values.app.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.app.persistence.existingClaim | default (printf "%s-app" (include "domainmod.fullname" .)) }}
+      {{- end }}
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

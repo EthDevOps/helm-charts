@@ -1,0 +1,15 @@
+apiVersion: v2
+name: domainmod
+description: A Helm chart for DomainMod - Open Source Domain and Internet Asset Management
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - domainmod
+  - domain
+  - management
+home: https://domainmod.org
+sources:
+  - https://github.com/domainmod/domainmod
+maintainers:
+  - name: quokkaops
