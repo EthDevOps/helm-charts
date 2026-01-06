@@ -321,6 +321,9 @@ jigasi:
 
   breweryMuc: jigasibrewery
 
+  ## Disable SIP functionality (useful when using Jigasi only for transcription)
+  disableSip: false
+
   ## jigasi XMPP user credentials:
   xmpp:
     user: jigasi

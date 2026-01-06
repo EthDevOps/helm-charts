@@ -8,6 +8,9 @@ metadata:
 data:
   JIGASI_BREWERY_MUC: '{{ .Values.jigasi.breweryMuc }}'
   XMPP_SERVER: '{{ include "jitsi-meet.xmpp.server" . }}'
+  {{- if .Values.jigasi.disableSip }}
+  JIGASI_DISABLE_SIP: "1"
+  {{- end }}
   {{- range $key, $value := .Values.jigasi.extraEnvs }}
   {{- if not (kindIs "invalid" $value) }}
   {{ $key }}: {{ tpl $value $ | quote }}
