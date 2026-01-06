@@ -179,6 +179,11 @@ jicofo:
     password:
     componentSecret:
 
+  rest:
+    enabled: true
+    host: "0.0.0.0"
+    port: 8888
+
   livenessProbe:
     initialDelaySeconds: 30
     tcpSocket:

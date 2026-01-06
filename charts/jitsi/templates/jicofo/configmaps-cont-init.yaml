@@ -11,4 +11,21 @@ data:
     {{- else }}
     # Using jicofo /etc/cont-init.d/10-config from container image
     {{ end }}
+  20-rest-config: |
+    #!/bin/bash
+    {{- if .Values.jicofo.rest.enabled }}
+    # Append REST configuration to jicofo.conf
+    cat >> /config/jicofo.conf << 'EOF'
+
+    jicofo {
+      rest {
+        host = "{{ .Values.jicofo.rest.host }}"
+        port = {{ .Values.jicofo.rest.port }}
+      }
+    }
+    EOF
+    echo "Added REST configuration to jicofo.conf"
+    {{- else }}
+    echo "REST API not enabled, skipping"
+    {{- end }}
 

@@ -44,6 +44,8 @@ spec:
           items:
             - key: 10-config
               path: 10-config
+            - key: 20-rest-config
+              path: 20-rest-config
       - name: custom-defaults
         configMap:
           name: {{ include "jitsi-meet.jicofo.fullname" . }}-defaults
@@ -92,6 +94,11 @@ spec:
           - name: custom-cont-inits
             mountPath: /etc/cont-init.d/10-config
             subPath: 10-config
+          {{- end }}
+          {{- if .Values.jicofo.rest.enabled }}
+          - name: custom-cont-inits
+            mountPath: /etc/cont-init.d/20-rest-config
+            subPath: 20-rest-config
           {{- end }}
           {{- if .Values.jicofo.custom.defaults._jicofo_conf }}
           - name: custom-defaults
