@@ -11,20 +11,33 @@ spec:
       template:
         spec:
           restartPolicy: OnFailure
-          {{- if .Values.useCustomConfig }}
+          {{- if or .Values.useCustomConfig .Values.filters.enabled }}
           volumes:
+            {{- if .Values.useCustomConfig }}
             - name: custom-config-vol
               configMap:
                 name: {{ .Values.customConfig }}
+            {{- end }}
+            {{- if .Values.filters.enabled }}
+            - name: rclone-filters
+              configMap:
+                name: {{ .Release.Name }}-rclone-filters
+            {{- end }}
           {{- end }}
           containers:
           - name: {{ .Release.Name }}-minio-mirror
             image: docker.ethquokkaops.io/ethquokkaops/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
-            {{- if .Values.useCustomConfig }}
+            {{- if or .Values.useCustomConfig .Values.filters.enabled }}
             volumeMounts:
+            {{- if .Values.useCustomConfig }}
             - name: custom-config-vol
               mountPath: "/opt/config.tmpl"
               subPath: "config.tmpl"
+            {{- end }}
+            {{- if .Values.filters.enabled }}
+            - name: rclone-filters
+              mountPath: /etc/rclone-filters
+            {{- end }}
             {{- end }}
             envFrom:
               - configMapRef:
@@ -34,9 +47,9 @@ spec:
                   name: {{ .Release.Name }}-sync-credentials
             {{- end }}
             env:
-            {{- if .Values.extraSyncArgs }}
+            {{- if or .Values.extraSyncArgs .Values.filters.enabled }}
               - name: EXTRA_SYNC_ARGS
-                value: "{{ .Values.extraSyncArgs }}"
+                value: "{{- if .Values.extraSyncArgs }}{{ .Values.extraSyncArgs }}{{ end }}{{- if and .Values.extraSyncArgs .Values.filters.enabled }} {{ end }}{{- if .Values.filters.enabled }}--filter-from=/etc/rclone-filters/filters.txt{{- end }}"
             {{- end }}
             {{- if .Values.existingSourceSecret }}
               - name: SOURCE_ACCESS_KEY

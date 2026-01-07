@@ -35,3 +35,13 @@ enableOverwrite: "0"
 bandwidthLimit: "100M"
 useCustomConfig: true
 customConfig: test.config
+
+# Filter configuration
+# When enabled, creates a ConfigMap with filter rules and mounts it
+filters:
+  enabled: false
+  # Filter rules for rclone (one rule per line)
+  # Example:
+  #   + **/23861500/**
+  #   - *
+  rules: ""

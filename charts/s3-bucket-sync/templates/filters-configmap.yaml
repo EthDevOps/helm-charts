@@ -1,0 +1,9 @@
+{{- if .Values.filters.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-rclone-filters
+data:
+  filters.txt: |
+{{ .Values.filters.rules | indent 4 }}
+{{- end }}
