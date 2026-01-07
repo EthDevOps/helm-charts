@@ -34,6 +34,10 @@ spec:
                   name: {{ .Release.Name }}-sync-credentials
             {{- end }}
             env:
+            {{- if .Values.extraSyncArgs }}
+              - name: EXTRA_SYNC_ARGS
+                value: "{{ .Values.extraSyncArgs }}"
+            {{- end }}
             {{- if .Values.existingSourceSecret }}
               - name: SOURCE_ACCESS_KEY
                 valueFrom:
