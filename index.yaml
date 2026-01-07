@@ -5275,6 +5275,21 @@ entries:
   s3-bucket-sync:
   - apiVersion: v2
     appVersion: v0.11.0
+    created: "2026-01-07T19:05:40.932111405Z"
+    description: Keeps 2 s3 buckets in sync
+    digest: 15ecf26ccc2b65cd6d938a1620995583b003d03e596c8371ab5cdedd66a25b62
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: s3-bucket-sync
+    sources:
+    - https://github.com/EthDevOps/s3-sync-docker
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.23/s3-bucket-sync-0.0.23.tgz
+    version: 0.0.23
+  - apiVersion: v2
+    appVersion: v0.11.0
     created: "2026-01-07T17:04:55.312720307Z"
     description: Keeps 2 s3 buckets in sync
     digest: 3596b69848fd1298bbc9475c04dd64335ebfbb90af30683d408cab8ca005bb0a
@@ -7135,4 +7150,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-01-07T17:04:55.313381279Z"
+generated: "2026-01-07T19:05:40.933308067Z"
