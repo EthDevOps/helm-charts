@@ -6,7 +6,7 @@ metadata:
     app: {{ .Release.Name }}-listmonk
     app.kubernetes.io/component: listmonk
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.listmonk.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/component: listmonk
@@ -42,8 +42,8 @@ spec:
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: PGSSLMODE
           value: "disable"
       - name: check-db-tables
@@ -63,15 +63,15 @@ spec:
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: PGSSLMODE
           value: "disable"
         volumeMounts:
         - name: init-flag
           mountPath: /tmp
       - name: db-init
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.listmonk.image.repository }}:{{ .Values.listmonk.image.tag }}"
         imagePullPolicy: IfNotPresent
         command: ["/bin/sh", "-c"]
         args:
@@ -97,8 +97,8 @@ spec:
         - name: LISTMONK_db__password
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: LISTMONK_db__database
           value: "{{ .Values.postgres.database }}"
         - name: LISTMONK_db__ssl_mode
@@ -108,7 +108,7 @@ spec:
           mountPath: /tmp
       containers:
       - name: {{ .Release.Name }}-listmonk
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.listmonk.image.repository }}:{{ .Values.listmonk.image.tag }}"
         imagePullPolicy: IfNotPresent
         command: ["./listmonk", "--config", "/listmonk/config/app-config.toml"]
         env:
@@ -128,8 +128,8 @@ spec:
         - name: LISTMONK_db__password
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: LISTMONK_db__database
           value: "{{ .Values.postgres.database }}"
         - name: LISTMONK_db__ssl_mode
@@ -158,7 +158,7 @@ spec:
         - name: config
           mountPath: /listmonk/config
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml .Values.listmonk.resources | nindent 10 }}
       volumes:
       - name: uploads
         persistentVolumeClaim:
