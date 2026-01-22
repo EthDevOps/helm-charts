@@ -3686,6 +3686,17 @@ entries:
   listmonk:
   - apiVersion: v2
     appVersion: 5.1.0
+    created: "2026-01-22T21:31:43.524824406Z"
+    description: High performance, self-hosted, newsletter and mailing list manager
+      with a modern dashboard.
+    digest: b9cec975704eb8baa42f6978d91f4284bc8981313abb17975bdd4260c2c9a181
+    name: listmonk
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/listmonk-0.5.0/listmonk-0.5.0.tgz
+    version: 0.5.0
+  - apiVersion: v2
+    appVersion: 5.1.0
     created: "2026-01-22T21:07:08.933511511Z"
     description: High performance, self-hosted, newsletter and mailing list manager
       with a modern dashboard.
@@ -7161,4 +7172,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-01-22T21:07:08.934077306Z"
+generated: "2026-01-22T21:31:43.525613672Z"
