@@ -1,4 +1,4 @@
-hcommonAnnotations: {}
+commonAnnotations: {}
 podAnnotations: {}
 podLabels: {}
 extraInitContainers: {}
@@ -18,24 +18,24 @@ ingress:
 service:
   type: ClusterIP
   annotations: {}
-listmonk:
-  # -- The listmonk image configuration
-  image:
-    # -- the listmonk image repository
-    repository: listmonk/listmonk
-    # -- the listmonk image tag
-    tag: v5.1.0
 
-  # -- the number of listmonk deployment replicas
-  replicas: 1
+# -- The listmonk image configuration
+image:
+  # -- the listmonk image repository
+  repository: listmonk/listmonk
+  # -- the listmonk image tag
+  tag: v5.1.0
 
-  # -- resources for the listmonk deployment
-  resources: {}
+# -- the number of listmonk deployment replicas
+replicas: 1
 
-  # -- Storage configuration for listmonk
-  storage:
-    uploadsSize: "5Gi"
-    staticSize: "1Gi"
+# -- resources for the listmonk deployment
+resources: {}
+
+# -- Storage configuration for listmonk
+storage:
+  uploadsSize: "5Gi"
+  staticSize: "1Gi"
 
 postgres:
   # -- the postgres database name

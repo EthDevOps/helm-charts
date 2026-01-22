@@ -7,7 +7,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.listmonk.storage.uploadsSize | default "5Gi" }}
+      storage: {{ .Values.storage.uploadsSize | default "5Gi" }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -18,4 +18,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.listmonk.storage.staticSize | default "1Gi" }} 
+      storage: {{ .Values.storage.staticSize | default "1Gi" }} 
