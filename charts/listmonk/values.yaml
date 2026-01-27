@@ -44,9 +44,11 @@ postgres:
   enabled: true
   # -- when not enabled, the external postgres service hostname is required
   hostname: ""
-  # -- existing secret name containing postgres password
+  # -- existing secret name containing postgres password (if set, password field is ignored and no secret is created)
   existingSecret: ""
-  # -- the postgres password
+  # -- key in existing secret containing the password (defaults to postgres-password)
+  secretKey: ""
+  # -- the postgres password (ignored if existingSecret is set)
   password: "listmonk"
   # -- the postgres username
   user: "listmonk"

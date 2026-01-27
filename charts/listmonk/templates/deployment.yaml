@@ -42,8 +42,8 @@ spec:
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: PGSSLMODE
           value: "disable"
       - name: check-db-tables
@@ -63,8 +63,8 @@ spec:
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: PGSSLMODE
           value: "disable"
         volumeMounts:
@@ -97,8 +97,8 @@ spec:
         - name: LISTMONK_db__password
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: LISTMONK_db__database
           value: "{{ .Values.postgres.database }}"
         - name: LISTMONK_db__ssl_mode
@@ -128,8 +128,8 @@ spec:
         - name: LISTMONK_db__password
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: LISTMONK_db__database
           value: "{{ .Values.postgres.database }}"
         - name: LISTMONK_db__ssl_mode

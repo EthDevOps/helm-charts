@@ -28,8 +28,8 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: postgres-password
+              name: {{ include "listmonk.postgresSecretName" . }}
+              key: {{ include "listmonk.postgresSecretKey" . }}
         - name: POSTGRES_DB
           value: "{{ .Values.postgres.database }}"
         - name: PGDATA
