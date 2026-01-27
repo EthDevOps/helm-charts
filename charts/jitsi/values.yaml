@@ -44,6 +44,9 @@ geoselector:
     type: ClusterIP 
 auth:
   jwtExpSeconds: 3600
+  ## Use existing secret for JWT credentials instead of creating one
+  ## The secret must contain: JWT_APP_ID, JWT_APP_SECRET
+  existingSecret: ""
 
 image:
   pullPolicy: IfNotPresent
@@ -178,6 +181,9 @@ jicofo:
   xmpp:
     password:
     componentSecret:
+    ## Use existing secret for Jicofo XMPP credentials instead of creating one
+    ## The secret must contain: JICOFO_AUTH_USER, JICOFO_AUTH_PASSWORD, JICOFO_COMPONENT_SECRET
+    existingSecret: ""
 
   rest:
     enabled: true
@@ -212,6 +218,9 @@ jvb:
   xmpp:
     user: jvb
     password:
+    ## Use existing secret for JVB XMPP credentials instead of creating one
+    ## The secret must contain: JVB_AUTH_USER, JVB_AUTH_PASSWORD
+    existingSecret: ""
 
   ## Set public IP addresses to be advertised by JVB.
   #  You can specify your nodes' IP addresses,
@@ -328,6 +337,9 @@ jigasi:
   xmpp:
     user: jigasi
     password:
+    ## Use existing secret for Jigasi XMPP credentials instead of creating one
+    ## The secret must contain: JIGASI_XMPP_USER, JIGASI_XMPP_PASSWORD
+    existingSecret: ""
 
   livenessProbe:
     tcpSocket:
@@ -428,6 +440,9 @@ jibri:
   xmpp:
     user: jibri
     password:
+    ## Use existing secret for Jibri XMPP credentials instead of creating one
+    ## The secret must contain: JIBRI_XMPP_USER, JIBRI_XMPP_PASSWORD, JIBRI_RECORDER_USER, JIBRI_RECORDER_PASSWORD
+    existingSecret: ""
 
   ## recorder XMPP user credentials:
   recorder:
@@ -492,6 +507,9 @@ prosody:
   enabled: true
   useExternalProsody: false
   server:
+  ## extraEnvFrom references secrets created by this chart.
+  ## When using existingSecret for components, update these references accordingly.
+  ## For example, if jvb.xmpp.existingSecret: "my-jvb-secret", change the jvb secretRef name.
   extraEnvFrom:
   - secretRef:
       name: '{{ include "prosody.fullname" . }}-jibri'
@@ -501,6 +519,9 @@ prosody:
       name: '{{ include "prosody.fullname" . }}-jigasi'
   - secretRef:
       name: '{{ include "prosody.fullname" . }}-jvb'
+  - secretRef:
+      name: '{{ include "prosody.fullname" . }}-auth'
+      optional: true
   - configMapRef:
       name: '{{ include "prosody.fullname" . }}-common'
   customPluginUrls:

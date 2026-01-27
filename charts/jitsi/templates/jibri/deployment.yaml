@@ -59,7 +59,7 @@ spec:
 
         envFrom:
         - secretRef:
-            name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-jibri
+            name: {{ include "jitsi-meet.jibri.secretName" . }}
         - configMapRef:
             name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-common
         - configMapRef:

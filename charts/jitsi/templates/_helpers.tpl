@@ -110,3 +110,58 @@ Create the name of the service account to use
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Get the JVB secret name
+*/}}
+{{- define "jitsi-meet.jvb.secretName" -}}
+{{- if .Values.jvb.xmpp.existingSecret -}}
+  {{- .Values.jvb.xmpp.existingSecret -}}
+{{- else -}}
+  {{- include "call-nested" (list . "prosody" "prosody.fullname") -}}-jvb
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the Jicofo secret name
+*/}}
+{{- define "jitsi-meet.jicofo.secretName" -}}
+{{- if .Values.jicofo.xmpp.existingSecret -}}
+  {{- .Values.jicofo.xmpp.existingSecret -}}
+{{- else -}}
+  {{- include "call-nested" (list . "prosody" "prosody.fullname") -}}-jicofo
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the Jibri secret name
+*/}}
+{{- define "jitsi-meet.jibri.secretName" -}}
+{{- if .Values.jibri.xmpp.existingSecret -}}
+  {{- .Values.jibri.xmpp.existingSecret -}}
+{{- else -}}
+  {{- include "call-nested" (list . "prosody" "prosody.fullname") -}}-jibri
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the Jigasi secret name
+*/}}
+{{- define "jitsi-meet.jigasi.secretName" -}}
+{{- if .Values.jigasi.xmpp.existingSecret -}}
+  {{- .Values.jigasi.xmpp.existingSecret -}}
+{{- else -}}
+  {{- include "call-nested" (list . "prosody" "prosody.fullname") -}}-jigasi
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the Auth/JWT secret name
+*/}}
+{{- define "jitsi-meet.auth.secretName" -}}
+{{- if .Values.auth.existingSecret -}}
+  {{- .Values.auth.existingSecret -}}
+{{- else -}}
+  {{- include "call-nested" (list . "prosody" "prosody.fullname") -}}-auth
+{{- end -}}
+{{- end -}}

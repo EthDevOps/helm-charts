@@ -62,11 +62,15 @@ spec:
           imagePullPolicy: {{ pluck "pullPolicy" .Values.jicofo.image .Values.image | first }}
           envFrom:
           - secretRef:
-              name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-jicofo
+              name: {{ include "jitsi-meet.jicofo.secretName" . }}
           - configMapRef:
               name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-common
           - configMapRef:
               name: {{ include "jitsi-meet.jicofo.fullname" . }}
+          {{- if .Values.enableAuth }}
+          - secretRef:
+              name: {{ include "jitsi-meet.auth.secretName" . }}
+          {{- end }}
           {{- if .Values.global.releaseSecretsOverride.enabled }}
           {{- range .Values.global.releaseSecretsOverride.extraEnvFrom }}
           - {{ tpl (toYaml . ) $ | indent 12 | trim }}

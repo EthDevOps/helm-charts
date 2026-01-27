@@ -8,8 +8,6 @@ data:
   ENABLE_AUTH: {{ ternary "1" "0" .Values.enableAuth | quote }}
   {{- if .Values.enableAuth }}
   AUTH_TYPE: {{ .Values.auth.type }}
-  JWT_APP_ID: {{ .Values.auth.jwtAppId }}
-  JWT_APP_SECRET: {{ .Values.auth.jwtAppSecret }}
   ADAPTER_INTERNAL_URL: http://{{ .Release.Name }}-keycloak-adapter-svc:9000
   JWT_ALLOW_EMPTY: "1"
   JICOFO_AUTH_TYPE: "internal"
