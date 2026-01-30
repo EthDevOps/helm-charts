@@ -19,6 +19,10 @@ s3AccessKey: "1234abc"
 s3SecretKey: "1234abc"
 s3Endpoint: "http://localhost:9000"
 
+enableArchive: false
+
+archiveServers: []
+
 ### PGP Keys
 pgpKeys:
   default.asc: |

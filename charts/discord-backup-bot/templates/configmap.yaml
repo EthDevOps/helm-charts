@@ -10,3 +10,8 @@ data:
   S3_ENDPOINT: "{{ .Values.s3Endpoint}}"
   SIGN_KEY_PEM: "/var/sign-secret/private_key.pem"
   HEARTBEAT_URL: "{{ .Values.heartbeatUrl }}"
+  {{- if .Values.enableArchive }}
+  GIT_ARCHIVE_ENABLED: "1"
+  GIT_ARCHIVE_CLONE_PATH: "/var/git-clones"
+  GIT_ARCHIVE_CONFIG_PATH: "/etc/archive_config.json"
+  {{- end }}

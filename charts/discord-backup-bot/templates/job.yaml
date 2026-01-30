@@ -19,6 +19,13 @@ spec:
                 - name: {{ .Release.Name }}-pgp-keys-vol
                   mountPath: /var/keys
                   readOnly: true
+                {{- if .Values.enableArchive }}
+                - name: {{ .Release.Name }}-git-repos
+                  mountPath: /var/git-clones
+                - name: {{ .Release.Name }}-archive-config
+                  mountPath: /etc/archive_config.json
+                  subPath: config.json 
+                {{- end }}
               envFrom:
                 - configMapRef:
                     name: {{ .Release.Name }}-bot-config
@@ -32,3 +39,10 @@ spec:
             - name: {{ .Release.Name }}-pgp-keys-vol
               secret:
                 secretName: {{ .Release.Name }}-pgp-keys
+            {{- if .Values.enableArchive }}
+            - name: {{ .Release.Name }}-git-repos
+              emptydir: {}
+            - name: {{ .Release.Name }}-archive-config
+              configMap:
+                name: {{ .Release.Name }}-archive-config 
+            {{- end }}

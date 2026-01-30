@@ -1,0 +1,24 @@
+{{- if .Values.enableArchive }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-archive-config
+data:
+  config.json: |
+    {
+      "default_branch": "main",
+      "commit_batch_size": 50,
+      "servers": {
+        {{- range .Values.archiveServers }}
+        "{{ .server }}": {
+          "enabled": true,
+          "repo_url": "{{ .repo }}",
+          "branch": "main",
+          "allowed_categories": [],
+          "excluded_channels": [],
+          "include_attachments": true
+        },
+        {{- end }}
+      }
+    }
+{{- end }}
