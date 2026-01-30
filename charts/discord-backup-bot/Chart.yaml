@@ -3,7 +3,7 @@ name: discord-backup-bot
 description: A Helm chart for the discord backup bot
 type: application
 
-version: 0.3.1
+version: 0.3.2
 
 # App metadata
 appVersion: "v0.10.0"

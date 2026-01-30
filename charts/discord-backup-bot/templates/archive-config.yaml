@@ -9,15 +9,16 @@ data:
       "default_branch": "main",
       "commit_batch_size": 50,
       "servers": {
-        {{- range .Values.archiveServers }}
-        "{{ .server }}": {
+        {{- $servers := .Values.archiveServers }}
+        {{- range $index, $server := $servers }}
+        "{{ $server.server }}": {
           "enabled": true,
-          "repo_url": "{{ .repo }}",
-          "branch": "main",
+          "repo_url": "{{ $server.repo }}",
+          "branch": "{{ $server.branch }}",
           "allowed_categories": [],
           "excluded_channels": [],
           "include_attachments": true
-        },
+        }{{- if lt (add $index 1) (len $servers) }},{{- end }}
         {{- end }}
       }
     }
