@@ -15,6 +15,9 @@ postgresql:
     postgresPassword: runners
 ingress:
   enabled: true
+observability:
+  otelExporterEndpoint: ""
+  pyroscopeServerAddress: ""
 service:
   type: ClusterIP
   annotations: {}
