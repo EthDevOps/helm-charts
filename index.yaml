@@ -1255,6 +1255,26 @@ entries:
   github-runner-manager:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2026-02-12T13:06:55.098372261Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.3
+    description: Managed self-hosted runners for GitHub
+    digest: 825eb957996032287cfd675594e124436c3f7d71ef4abc01aab58e670e2a34e1
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: github-runner-manager
+    sources:
+    - https://github.com/EthDevOps/github-actions-autoscaler
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-1.3.1/github-runner-manager-1.3.1.tgz
+    version: 1.3.1
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2026-02-12T09:06:44.708785967Z"
     dependencies:
     - condition: postgresql.enabled
@@ -7267,4 +7287,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-02-12T09:06:44.709444295Z"
+generated: "2026-02-12T13:06:55.098976451Z"
