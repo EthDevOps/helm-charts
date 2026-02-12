@@ -37,12 +37,56 @@ spec:
             value: {{ .Values.observability.otelExporterEndpoint | quote }}
           - name: OTEL_SERVICE_NAME
             value: "github-actions-orchestrator"
+          {{- if or .Values.observability.otelAuth.user .Values.observability.otelAuth.existingSecret }}
+          - name: OTEL_EXPORTER_OTLP_AUTH_USER
+            {{- if .Values.observability.otelAuth.existingSecret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.observability.otelAuth.existingSecret }}
+                key: {{ .Values.observability.otelAuth.userKey }}
+            {{- else }}
+            value: {{ .Values.observability.otelAuth.user | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if or .Values.observability.otelAuth.password .Values.observability.otelAuth.existingSecret }}
+          - name: OTEL_EXPORTER_OTLP_AUTH_PASSWORD
+            {{- if .Values.observability.otelAuth.existingSecret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.observability.otelAuth.existingSecret }}
+                key: {{ .Values.observability.otelAuth.passwordKey }}
+            {{- else }}
+            value: {{ .Values.observability.otelAuth.password | quote }}
+            {{- end }}
+          {{- end }}
           {{- end }}
           {{- if .Values.observability.pyroscopeServerAddress }}
           - name: PYROSCOPE_SERVER_ADDRESS
             value: {{ .Values.observability.pyroscopeServerAddress | quote }}
           - name: PYROSCOPE_APPLICATION_NAME
             value: "github-actions-orchestrator"
+          {{- if or .Values.observability.pyroscopeAuth.user .Values.observability.pyroscopeAuth.existingSecret }}
+          - name: PYROSCOPE_BASIC_AUTH_USER
+            {{- if .Values.observability.pyroscopeAuth.existingSecret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.observability.pyroscopeAuth.existingSecret }}
+                key: {{ .Values.observability.pyroscopeAuth.userKey }}
+            {{- else }}
+            value: {{ .Values.observability.pyroscopeAuth.user | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if or .Values.observability.pyroscopeAuth.password .Values.observability.pyroscopeAuth.existingSecret }}
+          - name: PYROSCOPE_BASIC_AUTH_PASSWORD
+            {{- if .Values.observability.pyroscopeAuth.existingSecret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.observability.pyroscopeAuth.existingSecret }}
+                key: {{ .Values.observability.pyroscopeAuth.passwordKey }}
+            {{- else }}
+            value: {{ .Values.observability.pyroscopeAuth.password | quote }}
+            {{- end }}
+          {{- end }}
           {{- end }}
           envFrom:
           - secretRef:

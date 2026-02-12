@@ -17,7 +17,19 @@ ingress:
   enabled: true
 observability:
   otelExporterEndpoint: ""
+  otelAuth:
+    user: ""
+    password: ""
+    existingSecret: ""
+    userKey: "user"
+    passwordKey: "password"
   pyroscopeServerAddress: ""
+  pyroscopeAuth:
+    user: ""
+    password: ""
+    existingSecret: ""
+    userKey: "user"
+    passwordKey: "password"
 service:
   type: ClusterIP
   annotations: {}
