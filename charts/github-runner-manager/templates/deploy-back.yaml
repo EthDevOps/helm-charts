@@ -65,6 +65,10 @@ spec:
             value: {{ .Values.observability.pyroscopeServerAddress | quote }}
           - name: PYROSCOPE_APPLICATION_NAME
             value: "github-actions-orchestrator"
+          {{- if .Values.observability.pyroscopeLogLevel }}
+          - name: PYROSCOPE_LOG_LEVEL
+            value: {{ .Values.observability.pyroscopeLogLevel | quote }}
+          {{- end }}
           {{- if or .Values.observability.pyroscopeAuth.user .Values.observability.pyroscopeAuth.existingSecret }}
           - name: PYROSCOPE_BASIC_AUTH_USER
             {{- if .Values.observability.pyroscopeAuth.existingSecret }}

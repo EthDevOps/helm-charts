@@ -24,6 +24,7 @@ observability:
     userKey: "user"
     passwordKey: "password"
   pyroscopeServerAddress: ""
+  pyroscopeLogLevel: ""
   pyroscopeAuth:
     user: ""
     password: ""
