@@ -190,14 +190,18 @@ jicofo:
     host: "0.0.0.0"
     port: 8888
 
+  strategy: {}
+
   livenessProbe:
     initialDelaySeconds: 30
-    tcpSocket:
+    httpGet:
+      path: /about/health
       port: 8888
 
   readinessProbe:
     initialDelaySeconds: 30
-    tcpSocket:
+    httpGet:
+      path: /about/health
       port: 8888
 
   podLabels: {}
