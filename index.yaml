@@ -2309,6 +2309,16 @@ entries:
   jitsi-meet:
   - apiVersion: v2
     appVersion: stable-10655
+    created: "2026-02-23T15:44:46.927594083Z"
+    description: Jitsi Meet packaged for Kubernetes
+    digest: 6b8bfa4f1dbe3a4f9254d02a7c5da5ec91ab1e031c988fda924f8f4983e9e2ac
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-meet-1.7.1/jitsi-meet-1.7.1.tgz
+    version: 1.7.1
+  - apiVersion: v2
+    appVersion: stable-10655
     created: "2026-01-27T15:18:51.905705355Z"
     description: Jitsi Meet packaged for Kubernetes
     digest: 0bbb1d79b1b9066b99464051361c6cd0a5c7f8c435e132c551e25db3e0cab27e
@@ -7307,4 +7317,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-02-23T13:49:49.866467392Z"
+generated: "2026-02-23T15:44:46.928238567Z"
