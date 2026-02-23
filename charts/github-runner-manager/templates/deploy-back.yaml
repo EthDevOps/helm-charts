@@ -32,6 +32,8 @@ spec:
           env:
           - name: CONFIG_DIR
             value: "/data/config"
+          - name: ALLOW_PRODUCTION_PREFIX 
+            value: "true"
           {{- if .Values.observability.otelExporterEndpoint }}
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: {{ .Values.observability.otelExporterEndpoint | quote }}
