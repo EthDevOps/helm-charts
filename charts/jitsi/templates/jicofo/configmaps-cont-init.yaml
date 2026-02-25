@@ -18,6 +18,9 @@ data:
     cat >> /config/jicofo.conf << 'EOF'
 
     jicofo {
+      health {
+        enabled = true
+      }
       rest {
         host = "{{ .Values.jicofo.rest.host }}"
         port = {{ .Values.jicofo.rest.port }}
