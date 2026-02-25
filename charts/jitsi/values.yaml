@@ -505,6 +505,9 @@ xmpp:
   internalMucDomain:
   guestDomain:
 
+## Extra environment variables shared across all components (via common ConfigMap).
+## Example: add custom modules to auth domain:
+##   XMPP_AUTH_DOMAIN_MODULES: "module1,module2"
 extraCommonEnvs: {}
 
 prosody:

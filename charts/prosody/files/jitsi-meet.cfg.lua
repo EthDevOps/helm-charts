@@ -278,8 +278,11 @@ VirtualHost "{{ $XMPP_AUTH_DOMAIN }}"
         certificate = "/config/certs/{{ $XMPP_AUTH_DOMAIN }}.crt";
     }
     modules_enabled = {
-        "limits_exception";
         "ping";
+        "smacks";
+        {{ if .Env.XMPP_AUTH_DOMAIN_MODULES }}
+        "{{ join "\";\n        \"" (splitList "," .Env.XMPP_AUTH_DOMAIN_MODULES) }}";
+        {{ end }}
     }
     authentication = "internal_hashed"
 
