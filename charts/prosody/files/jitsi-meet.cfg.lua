@@ -78,6 +78,7 @@ muc_mapper_domain_base = "{{ $XMPP_DOMAIN }}";
 muc_mapper_domain_prefix = "{{ $XMPP_MUC_DOMAIN_PREFIX }}";
 
 http_default_host = "{{ $XMPP_DOMAIN }}"
+smacks_hibernation_time = 60;
 
 {{ if .Env.TURN_CREDENTIALS -}}
 external_service_secret = "{{.Env.TURN_CREDENTIALS}}";
@@ -263,6 +264,7 @@ VirtualHost "{{ $XMPP_GUEST_DOMAIN }}"
     authentication = "{{ $GUEST_AUTH_TYPE }}"
     modules_enabled = {
         "ping";
+        "smacks";
     }
 
     c2s_require_encryption = false
