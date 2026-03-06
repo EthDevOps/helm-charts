@@ -1,4 +1,5 @@
 {{- if .Values.transcription.enabled }}
+{{- if eq (default "vosk" .Values.transcription.type) "vosk" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,11 +26,42 @@ spec:
           {{- toYaml .Values.transcription.resources | nindent 12 }}
         ports:
         - containerPort: 2700
+{{- else if eq .Values.transcription.type "whisper" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-skynet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-skynet
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-skynet
+    spec:
+      tolerations:
+      - key: "ethquokkaops.io/jitsi"
+        operator: "Equal"
+        value: "transcription"
+        effect: "NoSchedule"
+      containers:
+      - name: {{ .Release.Name }}-skynet
+        image: "{{ .Values.transcription.whisper.image.repository }}:{{ .Values.transcription.whisper.image.tag }}"
+        env:
+        - name: ENABLED_MODULES
+          value: "streaming_whisper"
+        - name: WHISPER_MODEL_NAME
+          value: {{ .Values.transcription.whisper.modelName | quote }}
+        - name: BYPASS_AUTHORIZATION
+          value: "1"
         resources:
-          requests:
-            memory: "8Gi"
-            cpu: "250m"
-          limits:
-            memory: "12Gi"
-            cpu: "2"
+          {{- toYaml .Values.transcription.resources | nindent 12 }}
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 8001
+          name: metrics
+{{- end }}
 {{- end }}

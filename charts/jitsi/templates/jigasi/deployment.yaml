@@ -42,8 +42,15 @@ spec:
           image: "{{ .Values.jigasi.image.repository }}:{{ default .Chart.AppVersion .Values.jigasi.image.tag }}"
           imagePullPolicy: {{ pluck "pullPolicy" .Values.jigasi.image .Values.image | first }}
           env:
+            - name: TRANSCRIPTION_TYPE
+              value: {{ default "vosk" .Values.transcription.type | quote }}
+            {{- if eq (default "vosk" .Values.transcription.type) "vosk" }}
             - name: VOSK_SVC
               value: {{ .Release.Name }}-vosk-server-svc
+            {{- else if eq .Values.transcription.type "whisper" }}
+            - name: WHISPER_SVC
+              value: {{ .Release.Name }}-skynet-svc
+            {{- end }}
           envFrom:
           - secretRef:
               name: {{ include "jitsi-meet.jigasi.secretName" . }}

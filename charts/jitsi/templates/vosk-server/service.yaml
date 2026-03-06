@@ -1,4 +1,5 @@
 {{- if .Values.transcription.enabled }}
+{{- if eq (default "vosk" .Values.transcription.type) "vosk" }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,4 +12,19 @@ spec:
       port: 2700
       targetPort: 2700
   type: ClusterIP
+{{- else if eq .Values.transcription.type "whisper" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-skynet-svc
+spec:
+  selector:
+    app: {{ .Release.Name }}-skynet
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      name: http
+  type: ClusterIP
+{{- end }}
 {{- end }}
