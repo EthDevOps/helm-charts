@@ -51,7 +51,7 @@ spec:
         image: "{{ .Values.transcription.whisper.image.repository }}:{{ .Values.transcription.whisper.image.tag }}"
         command: ["/bin/sh", "-c"]
         args:
-        - pip install --no-cache-dir --target /extra-packages websockets
+        - /app/.venv/bin/pip install --no-cache-dir --target /extra-packages websockets
         volumeMounts:
         - name: extra-packages
           mountPath: /extra-packages
