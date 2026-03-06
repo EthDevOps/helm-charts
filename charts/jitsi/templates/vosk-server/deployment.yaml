@@ -51,12 +51,10 @@ spec:
         image: "{{ .Values.transcription.whisper.image.repository }}:{{ .Values.transcription.whisper.image.tag }}"
         command: ["/bin/sh", "-c"]
         args:
-        - |
-          cp -a /app/.venv /app-venv/.venv
-          /app-venv/.venv/bin/pip install --no-cache-dir websockets
+        - pip install --no-cache-dir --target /extra-packages websockets
         volumeMounts:
-        - name: venv
-          mountPath: /app-venv
+        - name: extra-packages
+          mountPath: /extra-packages
         securityContext:
           runAsUser: 0
       containers:
@@ -66,12 +64,14 @@ spec:
         args:
         - |
           cd /app
-          . /app-venv/.venv/bin/activate
+          . .venv/bin/activate
           exec python -m skynet.main
         volumeMounts:
-        - name: venv
-          mountPath: /app-venv
+        - name: extra-packages
+          mountPath: /extra-packages
         env:
+        - name: PYTHONPATH
+          value: "/extra-packages"
         - name: ENABLED_MODULES
           value: "streaming_whisper"
         - name: WHISPER_MODEL_NAME
@@ -86,7 +86,7 @@ spec:
         - containerPort: 8001
           name: metrics
       volumes:
-      - name: venv
+      - name: extra-packages
         emptyDir: {}
 {{- end }}
 {{- end }}
