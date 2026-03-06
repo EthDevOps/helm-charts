@@ -49,6 +49,13 @@ spec:
       containers:
       - name: {{ .Release.Name }}-skynet
         image: "{{ .Values.transcription.whisper.image.repository }}:{{ .Values.transcription.whisper.image.tag }}"
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          cd /app
+          . .venv/bin/activate
+          pip install --no-cache-dir websockets >/dev/null 2>&1
+          exec python -m skynet.main
         env:
         - name: ENABLED_MODULES
           value: "streaming_whisper"

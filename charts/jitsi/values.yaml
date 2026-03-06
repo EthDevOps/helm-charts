@@ -507,7 +507,7 @@ transcription:
   whisper:
     image:
       repository: jitsi/skynet
-      tag: latest
+      tag: latest-cpu
     ## Whisper model name (e.g., "tiny.en", "base.en", "small.en", "medium.en")
     modelName: "small.en"
 
