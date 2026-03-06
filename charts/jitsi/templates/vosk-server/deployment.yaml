@@ -46,6 +46,19 @@ spec:
         operator: "Equal"
         value: "transcription"
         effect: "NoSchedule"
+      initContainers:
+      - name: install-websockets
+        image: "{{ .Values.transcription.whisper.image.repository }}:{{ .Values.transcription.whisper.image.tag }}"
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          cp -a /app/.venv /app-venv/.venv
+          /app-venv/.venv/bin/pip install --no-cache-dir websockets
+        volumeMounts:
+        - name: venv
+          mountPath: /app-venv
+        securityContext:
+          runAsUser: 0
       containers:
       - name: {{ .Release.Name }}-skynet
         image: "{{ .Values.transcription.whisper.image.repository }}:{{ .Values.transcription.whisper.image.tag }}"
@@ -53,9 +66,11 @@ spec:
         args:
         - |
           cd /app
-          . .venv/bin/activate
-          pip install --no-cache-dir websockets >/dev/null 2>&1
+          . /app-venv/.venv/bin/activate
           exec python -m skynet.main
+        volumeMounts:
+        - name: venv
+          mountPath: /app-venv
         env:
         - name: ENABLED_MODULES
           value: "streaming_whisper"
@@ -70,5 +85,8 @@ spec:
           name: http
         - containerPort: 8001
           name: metrics
+      volumes:
+      - name: venv
+        emptyDir: {}
 {{- end }}
 {{- end }}
