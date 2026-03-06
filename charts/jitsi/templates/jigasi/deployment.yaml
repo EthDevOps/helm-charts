@@ -58,11 +58,17 @@ spec:
               name: {{ include "call-nested" (list . "prosody" "prosody.fullname") }}-common
           - configMapRef:
               name: {{ include "jitsi-meet.jigasi.fullname" . }}
-          {{- if .Values.transcription.enabled }}
+          {{- if or .Values.transcription.enabled .Values.jigasi.persistence.enabled }}
           volumeMounts:
+          {{- if .Values.transcription.enabled }}
           - name: sipconfig
             mountPath: /defaults/sip-communicator.properties
             subPath: sip-communicator.properties
+          {{- end }}
+          {{- if .Values.jigasi.persistence.enabled }}
+          - name: transcripts-data
+            mountPath: /tmp/transcripts
+          {{- end }}
           {{- end }}
           {{- with .Values.jigasi.livenessProbe }}
           livenessProbe:
@@ -91,4 +97,11 @@ spec:
       - name: sipconfig
         configMap:
           name: {{ .Release.Name }}-custom-sipconfig
+      - name: transcripts-data
+        {{- if .Values.jigasi.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.jigasi.persistence.existingClaim | default (include "jitsi-meet.jigasi.fullname" .) }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
 {{- end }}

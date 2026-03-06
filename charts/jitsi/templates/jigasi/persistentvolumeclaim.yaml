@@ -1,0 +1,18 @@
+{{- if and .Values.jigasi.enabled .Values.jigasi.persistence.enabled (not .Values.jigasi.persistence.existingClaim) (not .Values.jigasi.useExternalJigasi) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "jitsi-meet.jigasi.fullname" . }}
+  labels:
+    {{- include "jitsi-meet.jigasi.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.jigasi.persistence.size | quote }}
+  {{- with .Values.jigasi.persistence.storageClassName }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+{{- end -}}

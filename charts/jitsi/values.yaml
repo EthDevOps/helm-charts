@@ -362,6 +362,16 @@ jigasi:
   affinity: {}
   extraEnvs: {}
 
+  ## Enable persistent storage for transcripts.
+  ## If disabled, jigasi pod will use a transient
+  ## emptyDir-backed storage instead.
+  persistence:
+    enabled: false
+    size: 2Gi
+    ## Set this to existing PVC name if you have one.
+    existingClaim:
+    storageClassName:
+
 
 jibri:
   ## Enabling Jibri will allow users to record
