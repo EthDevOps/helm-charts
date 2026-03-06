@@ -4923,6 +4923,26 @@ entries:
   postgresql:
   - apiVersion: v2
     appVersion: "16.0"
+    created: "2026-03-06T09:11:10.059484402Z"
+    description: PostgreSQL object-relational database system
+    digest: d40caf23e20a603a9d730d14da87f1121c3136ad02b3a553faf704147c1d8347
+    home: https://www.postgresql.org/
+    keywords:
+    - postgresql
+    - postgres
+    - database
+    - sql
+    maintainers:
+    - name: QuokkaOps
+    name: postgresql
+    sources:
+    - https://github.com/postgres/postgres
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/postgresql-1.1.5/postgresql-1.1.5.tgz
+    version: 1.1.5
+  - apiVersion: v2
+    appVersion: "16.0"
     created: "2025-08-18T08:54:13.958233212Z"
     description: PostgreSQL object-relational database system
     digest: 7c1d4066e4f6c3eb1be377455313c97c9c490ee93946023b93a8261174823303
@@ -7377,4 +7397,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-03-02T17:22:40.256159686Z"
+generated: "2026-03-06T09:11:10.060152718Z"
