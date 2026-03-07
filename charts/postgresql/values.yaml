@@ -555,6 +555,14 @@ customStartupProbe: {}
 ##
 lifecycleHooks: {}
 
+## @param args Override default container args (e.g. to pass -c flags to postgres)
+## e.g:
+## args:
+##   - -c
+##   - wal_level=logical
+##
+args: []
+
 ## @param extraEnvVars Array with extra environment variables to add to PostgreSQL nodes
 ## e.g:
 ## extraEnvVars:

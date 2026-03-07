@@ -34,6 +34,10 @@ spec:
             {{- end }}
           image: {{ include "postgresql.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.args }}
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
+          {{- end }}
           ports:
             - name: tcp-postgresql
               containerPort: 5432
