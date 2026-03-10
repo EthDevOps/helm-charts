@@ -118,7 +118,7 @@ config:
     redirectUri: "http://localhost:3000/oauth2callback"
     # Optional: Google Drive folder ID where recordings should be uploaded
     uploadFolderId: ""
-  
+  transcriptsPath: "/transcripts"  
   # Jibri settings
   jibri:
     # Path where recordings will be mounted in the container
