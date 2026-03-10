@@ -19,3 +19,4 @@ data:
   WATCH_INTERVAL: {{ .Values.config.app.watchInterval | quote }}
   MAX_RETRIES: {{ .Values.config.app.maxRetries | quote }}
   CLEANUP_AFTER_UPLOAD: {{ .Values.config.app.cleanupAfterUpload | quote }}
+  MODE: {{ .Values.config.mode | quote }}

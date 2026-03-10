@@ -112,6 +112,7 @@ credentials:
 
 # Application configuration
 config:
+  mode: recordings
   # Google Drive settings
   googleDrive:
     redirectUri: "http://localhost:3000/oauth2callback"
@@ -126,7 +127,9 @@ config:
     pvcName: "jibri-recordings-pvc"
     # Whether the PVC should be mounted read-only
     readOnly: true
-  
+
+
+
   # Application settings
   app:
     logLevel: "info"
