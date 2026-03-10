@@ -510,6 +510,10 @@ transcription:
       tag: latest-cpu
     ## Whisper model name (e.g., "tiny.en", "base.en", "small.en", "medium.en")
     modelName: "small.en"
+    ## External websocket URL for Whisper transcription server
+    ## When set, uses this URL instead of the internal skynet service
+    ## e.g., "ws://external-whisper.example.com:8000/streaming-whisper/ws"
+    websocketUrl: ""
 
 serviceAccount:
   # Specifies whether a service account should be created

@@ -50,6 +50,10 @@ spec:
             {{- else if eq .Values.transcription.type "whisper" }}
             - name: WHISPER_SVC
               value: {{ .Release.Name }}-skynet-svc
+            {{- if .Values.transcription.whisper.websocketUrl }}
+            - name: WHISPER_WEBSOCKET_URL
+              value: {{ .Values.transcription.whisper.websocketUrl | quote }}
+            {{- end }}
             {{- end }}
           envFrom:
           - secretRef:
