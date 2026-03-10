@@ -2893,6 +2893,31 @@ entries:
       category: MediaProcessing
     apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-03-10T14:47:30.947955464Z"
+    description: A Helm chart for Jitsi Recording Uploader - automatically uploads
+      Jibri recordings to Google Drive
+    digest: 28d3069845b5b715191b5fc1be26747577f9875ccdc42eaaa3fb6e9b8f70ea26
+    home: https://github.com/your-org/jitsi-recording-uploader
+    keywords:
+    - jitsi
+    - jibri
+    - recording
+    - google-drive
+    - upload
+    maintainers:
+    - email: your-email@example.com
+      name: Your Name
+    name: jitsi-recording-uploader
+    sources:
+    - https://github.com/your-org/jitsi-recording-uploader
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-recording-uploader-1.1.0/jitsi-recording-uploader-1.1.0.tgz
+    version: 1.1.0
+  - annotations:
+      category: MediaProcessing
+    apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-07-23T13:29:05.869915982Z"
     description: A Helm chart for Jitsi Recording Uploader - automatically uploads
       Jibri recordings to Google Drive
@@ -7487,4 +7512,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-03-10T11:48:32.029730028Z"
+generated: "2026-03-10T14:47:30.948607784Z"
