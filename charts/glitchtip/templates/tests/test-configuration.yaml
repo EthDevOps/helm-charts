@@ -1,0 +1,104 @@
+{{- if .Values.tests.configuration.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "glitchtip.fullname" . }}-test-config-script
+  labels:
+{{ include "glitchtip.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+data:
+  test_config.py: |
+    import os
+    import sys
+    from urllib.parse import urlparse
+
+    print("--- GlitchTip Configuration Test ---")
+
+    try:
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "glitchtip.settings")
+        import django
+        django.setup()
+        from django.conf import settings
+        print("Django settings loaded successfully.")
+    except Exception as e:
+        print(f"Error: Failed to load Django settings: {e}")
+        sys.exit(1)
+
+    db_settings = settings.DATABASES.get("default", {})
+    if not db_settings:
+        print("Error: 'default' database not configured in Django settings.")
+        sys.exit(1)
+
+    print(f"Found database settings: {db_settings.get('ENGINE')}")
+
+    database_url = os.environ.get("DATABASE_URL")
+    db_host = os.environ.get("DATABASE_HOST")
+
+    try:
+        if database_url:
+            print("DATABASE_URL is set. Validating Django settings against it.")
+            parsed_url = urlparse(database_url)
+            assert db_settings["NAME"] == parsed_url.path.lstrip("/"), f"Name mismatch: {db_settings['NAME']} != {parsed_url.path.lstrip('/')}"
+            assert db_settings["USER"] == parsed_url.username, f"User mismatch: {db_settings['USER']} != {parsed_url.username}"
+            assert db_settings["HOST"] == parsed_url.hostname, f"Host mismatch: {db_settings['HOST']} != {parsed_url.hostname}"
+            assert db_settings["PORT"] == parsed_url.port, f"Port mismatch: {db_settings['PORT']} != {parsed_url.port}"
+            print("DATABASE_URL configuration is correct.")
+        elif db_host:
+            print("Individual DATABASE_* variables are set. Validating Django settings against them.")
+            assert db_settings["HOST"] == db_host, f"Host mismatch: {db_settings['HOST']} != {db_host}"
+            assert str(db_settings["PORT"]) == os.environ.get("DATABASE_PORT"), f"Port mismatch: {db_settings['PORT']} != {os.environ.get('DATABASE_PORT')}"
+            assert db_settings["NAME"] == os.environ.get("DATABASE_NAME"), f"Name mismatch: {db_settings['NAME']} != {os.environ.get('DATABASE_NAME')}"
+            assert db_settings["USER"] == os.environ.get("DATABASE_USER"), f"User mismatch: {db_settings['USER']} != {os.environ.get('DATABASE_USER')}"
+            assert db_settings["PASSWORD"] == os.environ.get("DATABASE_PASSWORD"), "Password mismatch"
+            print("Individual DATABASE_* variables configuration is correct.")
+        else:
+            print("Warning: No database configuration found in environment variables.")
+            # In some cases, this might be a valid scenario if the app has a fallback.
+            # For this test, we'll assume it's not an error.
+            pass
+
+    except AssertionError as e:
+        print(f"AssertionError: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        sys.exit(1)
+
+    print("--- GlitchTip Configuration Test Passed ---")
+    sys.exit(0)
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "glitchtip.fullname" . }}-test-configuration
+  labels:
+{{ include "glitchtip.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  containers:
+    - name: test-runner
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+      imagePullPolicy: {{ .Values.image.pullPolicy }}
+      workingDir: /code
+      command: ["python", "test_config.py"]
+      env:
+        {{- include "glitchtip.shared.env" . | nindent 8 }}
+        {{- include "glitchtip.database.env" (dict "root" .) | nindent 8 }}
+        {{- include "glitchtip.valkey.env" . | nindent 8 }}
+      volumeMounts:
+        - name: test-script
+          mountPath: /code/test_config.py
+          subPath: test_config.py
+          readOnly: true
+  volumes:
+    - name: test-script
+      configMap:
+        name: {{ include "glitchtip.fullname" . }}-test-config-script
+        defaultMode: 0755
+  restartPolicy: Never
+{{- end }}

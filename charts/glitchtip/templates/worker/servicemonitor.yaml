@@ -1,0 +1,25 @@
+{{- if and .Values.worker.enabled .Values.monitoring.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "glitchtip.fullname" . }}-worker
+  labels:
+    {{- include "glitchtip.labels" . | nindent 4 }}
+    {{- if .Values.monitoring.labels }}
+    {{- toYaml .Values.monitoring.labels | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "glitchtip.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  endpoints:
+  - port: metrics
+    path: /
+    {{- if .Values.monitoring.interval }}
+    interval: {{ .Values.monitoring.interval }}
+    {{- end }}
+    {{- if .Values.monitoring.scrapeTimeout }}
+    scrapeTimeout: {{ .Values.monitoring.scrapeTimeout }}
+    {{- end }}
+{{- end }}

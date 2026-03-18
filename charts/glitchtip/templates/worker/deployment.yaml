@@ -1,0 +1,107 @@
+{{- if .Values.worker.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "glitchtip.fullname" . }}-worker
+  labels:
+    {{- include "glitchtip.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "glitchtip.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.valkey.enabled }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- end }}
+        tag: "{{ .Values.image.tag }}"
+        {{- if .Values.worker.podAnnotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.worker.podAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "glitchtip.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "glitchtip.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if .Values.worker.command }}
+          command: {{- toYaml .Values.worker.command | nindent 10}}
+          {{- end }}
+          {{- if .Values.worker.args }}
+          args: {{- toYaml .Values.worker.args | nindent 10}}
+          {{- end }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.worker.metricsPort | default 9100 }}
+              protocol: TCP
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.worker.livenessProbe }}
+          livenessProbe:
+            {{- .Values.worker.livenessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+          env:
+            - name: SERVER_ROLE
+              value: "worker"
+            {{- if .Values.monitoring.enabled }}
+            - name: VTASKS_METRICS_PORT
+              value: {{ .Values.worker.metricsPort | default 9100 | quote }}
+            {{- end }}
+            {{- if and .Values.worker.livenessProbe .Values.worker.livenessProbe.exec }}
+            - name: VTASKS_HEALTH_CHECK_FILE
+              value: "/tmp/worker_health"
+            {{- end }}
+            {{- include "glitchtip.shared.env" . | nindent 12 }}
+            {{- include "glitchtip.database.env" (dict "root" . "component" .Values.worker) | nindent 12 }}
+            {{- include "glitchtip.valkey.env" . | nindent 12 }}
+            {{- with .Values.extraEnvVars }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.worker.extraEnvVars }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if or .Values.extraEnvFrom .Values.worker.extraEnvFrom }}
+          envFrom:
+            {{- with .Values.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.worker.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- with .Values.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+      {{- with .Values.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.worker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      {{- with .Values.extraVolumes }}
+      volumes:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+{{- end }}

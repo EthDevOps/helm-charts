@@ -1,0 +1,19 @@
+{{- if .Values.worker.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "glitchtip.fullname" . }}-worker
+  labels:
+    {{- include "glitchtip.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9100
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "glitchtip.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+{{- end }}

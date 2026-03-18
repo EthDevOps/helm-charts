@@ -1,0 +1,19 @@
+{{- if .Values.postgresql.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "glitchtip.fullname" . }}-pg
+  labels:
+    {{- include "glitchtip.labels" . | nindent 4 }}
+spec:
+  instances: {{ .Values.postgresql.cluster.instances }}
+  storage:
+    size: {{ .Values.postgresql.cluster.storage.size }}
+{{- with .Values.postgresql.cluster.storage.storageClass }}
+    storageClass: {{ . }}
+{{- end }}
+  bootstrap:
+    initdb:
+      database: glitchtip
+      owner: glitchtip
+{{- end }}

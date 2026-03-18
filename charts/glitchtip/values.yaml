@@ -1,0 +1,279 @@
+# Default values for glitchtip.
+image:
+  repository: glitchtip/glitchtip
+  tag: 6.0.10
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Security contexts applied to all pods/containers
+podSecurityContext: {}
+  # fsGroup: 1000
+securityContext: {}
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# Extra environment variables applied to all components (web, worker, migrationJob)
+# Component-specific extraEnvVars are appended after these
+extraEnvVars: []
+  # - name: SENTRY_DSN
+  #   value: https://...
+
+# Extra envFrom sources applied to all components (web, worker, migrationJob)
+# Component-specific extraEnvFrom are appended after these
+extraEnvFrom: []
+  # - secretRef:
+  #     name: my-existing-secret
+  # - configMapRef:
+  #     name: my-configmap
+
+# Extra volumes and mounts applied to web, worker, and migration job
+extraVolumes: []
+  # - name: my-config
+  #   configMap:
+  #     name: my-configmap
+extraVolumeMounts: []
+  # - name: my-config
+  #   mountPath: /etc/myconfig
+  #   readOnly: true
+
+# Global glitchtip configuration shared between components
+glitchtip:
+  # -- (string) Secret key of the application. Set here or via existingSecret, not both.
+  secretKey: ~
+
+  # -- Use an existing secret containing the SECRET_KEY (ignores secretKey if set)
+  existingSecret: ~
+  # -- Key within the existingSecret that contains the SECRET_KEY value
+  existingSecretKey: SECRET_KEY
+
+  # -- (string) The domain name for the GlitchTip instance, used to generate absolute URLs
+  domain: ~
+
+  # Database configuration - required if postgresql.enabled is false
+  database:
+    # -- Existing secret containing the DATABASE_URL
+    existingSecret: ~
+    # -- Key within the existingSecret that contains the DATABASE_URL
+    existingSecretKey: DATABASE_URL
+
+  # Read-only Database configuration (optional)
+  readOnlyDatabase:
+    # -- Existing secret containing the READ_ONLY_DATABASE_URL
+    existingSecret: ~
+    # -- Key within the existingSecret that contains the READ_ONLY_DATABASE_URL
+    existingSecretKey: READ_ONLY_DATABASE_URL
+
+  # Maintenance Database configuration (optional)
+  # Used for migrations and worker maintenance tasks (e.g., partition creation/deletion).
+  # Allows using a database user with elevated privileges for maintenance operations
+  # while the main DATABASE_URL uses a more restricted user.
+  maintenanceDatabase:
+    # -- Existing secret containing the MAINTENANCE_DATABASE_URL
+    existingSecret: ~
+    # -- Key within the existingSecret that contains the MAINTENANCE_DATABASE_URL
+    existingSecretKey: MAINTENANCE_DATABASE_URL
+
+  # Valkey/Redis configuration - required if valkey.enabled is false
+  valkey:
+    # -- Existing secret containing the REDIS_URL
+    existingSecret: ~
+    # -- Key within the existingSecret that contains the REDIS_URL
+    existingSecretKey: REDIS_URL
+
+migrationJob:
+  enabled: true
+  command: ["bin/run-migrate.sh"]
+  activeDeadlineSeconds: 900
+  podAnnotations: {}
+  # Optional: use a different database secret for migrations (e.g., a user with schema-alter privileges)
+  # If not set, falls back to glitchtip.database.existingSecret
+  database:
+    existingSecret: ~
+    existingSecretKey: DATABASE_URL
+  extraEnvVars: []
+  extraEnvFrom: []
+
+web:
+  # -- Embed the worker process in the web container (all-in-one mode).
+  # When true, sets GLITCHTIP_EMBED_WORKER=true so the web process also runs background tasks.
+  # Can be used with worker.enabled=false to run everything in a single deployment,
+  # or with worker.enabled=true to run both embedded and dedicated workers.
+  embedWorker: false
+  replicaCount: 2
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPU: 80
+    # targetMemory: 80
+  budget:
+    minAvailable: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  nodeSelector: {}
+  tolerations: []
+  podAnnotations: {}
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - web # Change this as needed
+            topologyKey: kubernetes.io/hostname
+  livenessProbe:
+    failureThreshold: 5
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+  readinessProbe:
+    failureThreshold: 10
+    initialDelaySeconds: 5
+    timeoutSeconds: 2
+  terminationGracePeriodSeconds: 30
+  lifecycle:
+    preStop:
+      sleep:
+        seconds: 5
+  # Container port for the web server
+  port: 8000
+  service:
+    type: ClusterIP
+    port: 80
+  extraEnvVars: []
+    # - name: ENABLE_SOCIAL_AUTH
+    #   value: "false"
+    # - name: SOME_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: my-secret
+    #       key: secret-key
+  extraEnvFrom: []
+    # - secretRef:
+    #     name: my-web-secret
+
+  ingress:
+    enabled: false
+    # -- Ingress class name (e.g., nginx, traefik)
+    className: ""
+    annotations: {}
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+worker:
+  enabled: true
+  replicaCount: 1
+  # -- Port for Prometheus metrics (VTASKS_METRICS_PORT)
+  metricsPort: 9100
+  # Optional: use a different database secret for worker (e.g., for partition management privileges)
+  # If not set, falls back to glitchtip.database.existingSecret
+  database:
+    existingSecret: ~
+    existingSecretKey: DATABASE_URL
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPU: 100
+    # targetMemory: 100
+  livenessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 10
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - "test -f /tmp/worker_health && [ $(($(date +%s) - $(stat -c %Y /tmp/worker_health))) -lt 15 ]"
+
+  resources:
+    limits:
+      cpu: 900m
+      memory: 768Mi
+    requests:
+      cpu: 100m
+      memory: 350Mi
+  nodeSelector: {}
+  tolerations: []
+  podAnnotations: {}
+  affinity: {}
+  extraEnvVars: []
+  extraEnvFrom: []
+    # - secretRef:
+    #     name: my-worker-secret
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account (e.g., for IAM roles)
+  annotations: {}
+    # eks.amazonaws.com/role-arn: arn:aws:iam::123456789:role/my-role
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+# For configuration options, see https://github.com/valkey-io/valkey-helm
+valkey:
+  enabled: true
+  # For most users, Valkey is used as a transient cache and doesn't require
+  # persistent storage or high availability. The data stored in Valkey is
+  # not critical, and losing it would only result in users being logged out
+  # and pending background tasks being lost.
+  # The following values are recommended for a small GlitchTip installation.
+  # For larger instances, you may need to increase these values. For example,
+  # for a medium-sized instance, you might use 1GB or 2GB of RAM.
+  replicaCount: 1
+  dataStorage:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Default to disabled, use a managed database service. But can be enabled here.
+# When enabled, a CloudNativePG cluster will be created.
+# The CloudNativePG operator must be installed in the cluster.
+postgresql:
+  enabled: false
+  # When enabled, a Cluster resource is created.
+  # See https://cloudnative-pg.io/documentation/current/cloudnative-pg.v1/#postgresql-cnpg-io-v1-Cluster
+  cluster:
+    instances: 1
+    storage:
+      size: 1Gi
+      # Optional storageClass. Leave empty to use the cluster's default.
+      storageClass:
+
+tests:
+  configuration:
+    enabled: true
+
+monitoring:
+  enabled: false
+  path: /metrics
+  # labels:
+  #   release: kube-prometheus-stack
+  interval: 30s
+  scrapeTimeout: 10s
