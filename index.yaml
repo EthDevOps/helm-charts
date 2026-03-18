@@ -1803,6 +1803,23 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-0.0.1/github-runner-manager-0.0.1.tgz
     version: 0.0.1
+  glitchtip:
+  - apiVersion: v2
+    appVersion: 6.0.10
+    created: "2026-03-18T11:38:03.009473519Z"
+    dependencies:
+    - condition: valkey.enabled
+      name: valkey
+      repository: https://valkey.io/valkey-helm/
+      version: ~0.9.2
+    description: Open source error tracking that is compatible with Sentry
+    digest: 92616dde3b48e1ff4130fb3f7291271b19728fb40bfdd5c5009554af47c360f2
+    icon: https://glitchtip.gitlab.io/glitchtip-helm-chart/icon.svg
+    name: glitchtip
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/glitchtip-8.1.1/glitchtip-8.1.1.tgz
+    version: 8.1.1
   gnosis-safe:
   - apiVersion: v2
     appVersion: main
@@ -7537,4 +7554,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-03-10T15:18:07.451535273Z"
+generated: "2026-03-18T11:38:03.010072644Z"
