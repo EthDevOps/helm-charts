@@ -1,0 +1,61 @@
+{{- if .Values.mariadb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-bookstack-mariadb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-bookstack-mariadb
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-bookstack-mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: {{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}
+          env:
+            - name: PUID
+              value: {{ .Values.mariadb.puid | quote }}
+            - name: PGID
+              value: {{ .Values.mariadb.pgid | quote }}
+            - name: TZ
+              value: {{ .Values.mariadb.timezone | quote }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mariadb.database | quote }}
+            - name: MYSQL_USER
+              value: {{ .Values.mariadb.username | quote }}
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mariadb.existingSecret.name }}
+                  name: {{ .Values.mariadb.existingSecret.name }}
+                  key: {{ .Values.mariadb.existingSecret.passwordKey }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-bookstack-db
+                  key: DB_PASSWORD
+                  {{- end }}
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mariadb.existingSecret.name }}
+                  name: {{ .Values.mariadb.existingSecret.name }}
+                  key: {{ .Values.mariadb.existingSecret.rootPasswordKey }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-bookstack-db
+                  key: MYSQL_ROOT_PASSWORD
+                  {{- end }}
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mariadb-storage
+              mountPath: /config
+      volumes:
+        - name: mariadb-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-bookstack-mariadb-pvc
+{{- end }}

@@ -1,0 +1,65 @@
+replicaCount: 1
+appDomain: bookstack.example.com
+
+image:
+  repository: lscr.io/linuxserver/bookstack
+  tag: version-v25.12.3
+  pullPolicy: IfNotPresent
+
+bookstack:
+  puid: 1000
+  pgid: 1000
+  timezone: Etc/UTC
+  # APP_KEY is required. Generate one with:
+  # docker run -it --rm --entrypoint /bin/bash lscr.io/linuxserver/bookstack:latest appkey
+  appKey: ""
+  # Use an existing secret for sensitive values (APP_KEY)
+  existingSecret:
+    # Name of an existing secret containing the APP_KEY
+    name: ""
+    appKeyKey: APP_KEY
+
+mariadb:
+  enabled: true
+  image:
+    repository: lscr.io/linuxserver/mariadb
+    tag: "11.4.8"
+    pullPolicy: IfNotPresent
+  puid: 1000
+  pgid: 1000
+  timezone: Etc/UTC
+  database: bookstack
+  username: bookstack
+  # Passwords - set these or use existingSecret
+  password: ""
+  rootPassword: ""
+  existingSecret:
+    # Name of an existing secret containing DB credentials
+    name: ""
+    passwordKey: DB_PASSWORD
+    rootPasswordKey: MYSQL_ROOT_PASSWORD
+  persistence:
+    size: 5Gi
+
+# External database configuration (used when mariadb.enabled is false)
+externalDatabase:
+  host: ""
+  port: 3306
+  database: bookstack
+  username: bookstack
+  existingSecret:
+    name: ""
+    passwordKey: DB_PASSWORD
+
+persistence:
+  size: 2Gi
+
+ingress:
+  enabled: false
+  annotations: {}
+  tls:
+    secretName: bookstack-tls
+
+service:
+  type: ClusterIP
+  annotations: {}

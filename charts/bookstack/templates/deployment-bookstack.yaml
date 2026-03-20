@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-bookstack
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-bookstack
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-bookstack
+    spec:
+      containers:
+        - name: bookstack
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          env:
+            - name: PUID
+              value: {{ .Values.bookstack.puid | quote }}
+            - name: PGID
+              value: {{ .Values.bookstack.pgid | quote }}
+            - name: TZ
+              value: {{ .Values.bookstack.timezone | quote }}
+            - name: APP_URL
+              value: "https://{{ .Values.appDomain }}"
+            {{- if .Values.bookstack.existingSecret.name }}
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bookstack.existingSecret.name }}
+                  key: {{ .Values.bookstack.existingSecret.appKeyKey }}
+            {{- else }}
+            - name: APP_KEY
+              value: {{ .Values.bookstack.appKey | quote }}
+            {{- end }}
+            {{- if .Values.mariadb.enabled }}
+            - name: DB_HOST
+              value: {{ .Release.Name }}-bookstack-mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: {{ .Values.mariadb.database | quote }}
+            - name: DB_USERNAME
+              value: {{ .Values.mariadb.username | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mariadb.existingSecret.name }}
+                  name: {{ .Values.mariadb.existingSecret.name }}
+                  key: {{ .Values.mariadb.existingSecret.passwordKey }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-bookstack-db
+                  key: DB_PASSWORD
+                  {{- end }}
+            {{- else }}
+            - name: DB_HOST
+              value: {{ .Values.externalDatabase.host | quote }}
+            - name: DB_PORT
+              value: {{ .Values.externalDatabase.port | quote }}
+            - name: DB_DATABASE
+              value: {{ .Values.externalDatabase.database | quote }}
+            - name: DB_USERNAME
+              value: {{ .Values.externalDatabase.username | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret.name }}
+                  key: {{ .Values.externalDatabase.existingSecret.passwordKey }}
+            {{- end }}
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: bookstack-storage
+              mountPath: /config
+      volumes:
+        - name: bookstack-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-bookstack-pvc

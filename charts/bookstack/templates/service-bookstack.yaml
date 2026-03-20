@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-bookstack-app
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  selector:
+    app: {{ .Release.Name }}-bookstack
