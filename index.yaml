@@ -49,6 +49,20 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/argocd-cluster-watcher-0.0.1/argocd-cluster-watcher-0.0.1.tgz
     version: 0.0.1
+  bookstack:
+  - apiVersion: v2
+    appVersion: v25.12.3
+    created: "2026-03-20T08:28:56.332213704Z"
+    description: BookStack - A platform for organising and storing information
+    digest: b58de7391c2d62b8309ffafd855be919647096e18c3659f8a20d25ec967844a4
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: bookstack
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/bookstack-0.1.0/bookstack-0.1.0.tgz
+    version: 0.1.0
   ceph-csi:
   - apiVersion: v2
     appVersion: 1.0.0
@@ -7576,4 +7590,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-03-20T08:00:13.264360048Z"
+generated: "2026-03-20T08:28:56.333128153Z"
