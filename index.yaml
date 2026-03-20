@@ -52,6 +52,19 @@ entries:
   bookstack:
   - apiVersion: v2
     appVersion: v25.12.3
+    created: "2026-03-20T09:06:14.991890492Z"
+    description: BookStack - A platform for organising and storing information
+    digest: 9bc54599cf604a3732058dfb45ac8533d4d3bc39b7e7c76b20d4f161ac1399f6
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: bookstack
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/bookstack-0.1.1/bookstack-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v25.12.3
     created: "2026-03-20T08:28:56.332213704Z"
     description: BookStack - A platform for organising and storing information
     digest: b58de7391c2d62b8309ffafd855be919647096e18c3659f8a20d25ec967844a4
@@ -7590,4 +7603,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-03-20T08:28:56.333128153Z"
+generated: "2026-03-20T09:06:14.992920396Z"
