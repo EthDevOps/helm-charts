@@ -20,6 +20,19 @@ redis:
 persistence:
   size: 1Gi
 
+mail:
+  enabled: false
+  driver: smtp
+  host: ""
+  port: ""
+  secure: ""
+  fromAddress: "hello@example.com"
+  fromName: "Docmost"
+  existingSecret:
+    name: ""
+    usernameKey: SMTP_USERNAME
+    passwordKey: SMTP_PASSWORD
+
 ingress:
   enabled: true
   annotations: {}

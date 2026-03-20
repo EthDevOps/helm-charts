@@ -4,6 +4,8 @@ metadata:
   name: {{ .Release.Name }}-docmost
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ .Release.Name }}-docmost
@@ -24,6 +26,30 @@ spec:
               value: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:{{ .Values.postgresql.auth.password }}@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql}}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}?schema=public"
             - name: REDIS_URL
               value: "redis://{{ printf "%s-master" (include "common.names.fullname" .Subcharts.redis) }}:{{ .Values.redis.master.service.ports.redis }}"
+          {{- if .Values.mail.enabled }}
+            - name: MAIL_DRIVER
+              value: {{ .Values.mail.driver | quote }}
+            - name: SMTP_HOST
+              value: {{ .Values.mail.host | quote }}
+            - name: SMTP_PORT
+              value: {{ .Values.mail.port | quote }}
+            - name: SMTP_SECURE
+              value: {{ .Values.mail.secure | quote }}
+            - name: MAIL_FROM_ADDRESS
+              value: {{ .Values.mail.fromAddress | quote }}
+            - name: MAIL_FROM_NAME
+              value: {{ .Values.mail.fromName | quote }}
+            - name: SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mail.existingSecret.name }}
+                  key: {{ .Values.mail.existingSecret.usernameKey }}
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mail.existingSecret.name }}
+                  key: {{ .Values.mail.existingSecret.passwordKey }}
+          {{- end }}
           ports:
             - containerPort: 3000
           volumeMounts:
