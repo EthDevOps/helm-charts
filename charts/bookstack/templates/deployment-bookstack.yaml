@@ -70,6 +70,44 @@ spec:
                   name: {{ .Values.externalDatabase.existingSecret.name }}
                   key: {{ .Values.externalDatabase.existingSecret.passwordKey }}
             {{- end }}
+          {{- if .Values.oidc.enabled }}
+            - name: AUTH_METHOD
+              value: "oidc"
+            - name: AUTH_AUTO_INITIATE
+              value: {{ .Values.oidc.autoInitiate | quote }}
+            - name: OIDC_NAME
+              value: {{ .Values.oidc.name | quote }}
+            - name: OIDC_DISPLAY_NAME_CLAIMS
+              value: {{ .Values.oidc.displayNameClaims | quote }}
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oidc.existingSecret.name }}
+                  key: {{ .Values.oidc.existingSecret.clientIdKey }}
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oidc.existingSecret.name }}
+                  key: {{ .Values.oidc.existingSecret.clientSecretKey }}
+            - name: OIDC_ISSUER
+              value: {{ .Values.oidc.issuer | quote }}
+            - name: OIDC_END_SESSION_ENDPOINT
+              value: {{ .Values.oidc.endSessionEndpoint | quote }}
+            - name: OIDC_FETCH_AVATAR
+              value: {{ .Values.oidc.fetchAvatar | quote }}
+            - name: OIDC_ISSUER_DISCOVER
+              value: {{ .Values.oidc.issuerDiscover | quote }}
+            {{- if not .Values.oidc.issuerDiscover }}
+            - name: OIDC_PUBLIC_KEY
+              value: {{ .Values.oidc.publicKey | quote }}
+            - name: OIDC_AUTH_ENDPOINT
+              value: {{ .Values.oidc.authEndpoint | quote }}
+            - name: OIDC_TOKEN_ENDPOINT
+              value: {{ .Values.oidc.tokenEndpoint | quote }}
+            - name: OIDC_USERINFO_ENDPOINT
+              value: {{ .Values.oidc.userinfoEndpoint | quote }}
+            {{- end }}
+          {{- end }}
           ports:
             - containerPort: 80
           volumeMounts:

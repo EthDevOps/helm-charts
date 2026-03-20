@@ -3,7 +3,7 @@ name: bookstack
 description: BookStack - A platform for organising and storing information
 type: application
 
-version: 0.1.0
+version: 0.1.1
 
 # App metadata
 appVersion: "v25.12.3"

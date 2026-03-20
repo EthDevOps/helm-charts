@@ -51,6 +51,25 @@ externalDatabase:
     name: ""
     passwordKey: DB_PASSWORD
 
+oidc:
+  enabled: false
+  autoInitiate: false
+  name: SSO
+  displayNameClaims: name
+  issuer: ""
+  issuerDiscover: true
+  endSessionEndpoint: false
+  fetchAvatar: false
+  # Only needed if issuerDiscover is false
+  publicKey: ""
+  authEndpoint: ""
+  tokenEndpoint: ""
+  userinfoEndpoint: ""
+  existingSecret:
+    name: ""
+    clientIdKey: OIDC_CLIENT_ID
+    clientSecretKey: OIDC_CLIENT_SECRET
+
 persistence:
   size: 2Gi
 
