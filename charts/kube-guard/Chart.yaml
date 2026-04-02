@@ -1,7 +1,7 @@
 apiVersion: v2
 name: kube-guard
 description: A Kubernetes admission controller that monitors shell access, port forwarding, PVC mounts, privileged pods, host access, RBAC changes, and namespace deletions
-version: 0.2.0
+version: 0.2.1
 appVersion: "1.0.0"
 keywords:
   - security

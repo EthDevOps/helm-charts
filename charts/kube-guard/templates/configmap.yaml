@@ -17,6 +17,11 @@ data:
       - {{ . | quote }}
     {{- end }}
 
+    ignored_users:
+    {{- range .Values.config.ignoredUsers }}
+      - {{ . | quote }}
+    {{- end }}
+
     notifications:
       shell_access: {{ .Values.config.notifications.shellAccess }}
       port_forward: {{ .Values.config.notifications.portForward }}

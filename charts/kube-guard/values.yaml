@@ -28,6 +28,10 @@ config:
   monitoredNamespaces:
     - "*"
 
+  # Users to exclude from notifications (e.g. service accounts, CI bots)
+  # Example: ["system:serviceaccount:kube-system:replicaset-controller", "ci-bot"]
+  ignoredUsers: []
+
   # Notification settings - toggle individual detection types
   notifications:
     # kubectl exec into pods
