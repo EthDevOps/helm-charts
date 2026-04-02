@@ -21,14 +21,29 @@ config:
     # Mattermost channel name (without #)
     channel: "alerts"
 
-  # Namespace to monitor for shell access and port forwarding
-  monitoredNamespace: "my-namespace"
+  # Cluster name shown in alert messages
   clusterName: "my-cluster"
 
-  # Notification settings
+  # Namespaces to monitor. Use ["*"] to monitor all namespaces.
+  monitoredNamespaces:
+    - "*"
+
+  # Notification settings - toggle individual detection types
   notifications:
+    # kubectl exec into pods
     shellAccess: true
+    # kubectl port-forward to pods
     portForward: true
+    # Pod creation with PVC mounts (detects data exfiltration via ad-hoc pods)
+    pvcMount: true
+    # Privileged container creation
+    privilegedPod: true
+    # Pods with hostPath, hostNetwork, hostPID, or hostIPC
+    hostAccess: true
+    # ClusterRole/ClusterRoleBinding/Role/RoleBinding changes
+    rbacChange: true
+    # Namespace deletion
+    namespaceDelete: true
 
 # Deployment configuration
 deployment:

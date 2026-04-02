@@ -10,9 +10,18 @@ data:
       webhook_url: {{ .Values.config.mattermost.webhookUrl | quote }}
       channel: {{ .Values.config.mattermost.channel | quote }}
 
-    monitored_namespace: {{ .Values.config.monitoredNamespace | quote }}
     cluster_name: {{ .Values.config.clusterName | quote }}
+
+    monitored_namespaces:
+    {{- range .Values.config.monitoredNamespaces }}
+      - {{ . | quote }}
+    {{- end }}
 
     notifications:
       shell_access: {{ .Values.config.notifications.shellAccess }}
       port_forward: {{ .Values.config.notifications.portForward }}
+      pvc_mount: {{ .Values.config.notifications.pvcMount }}
+      privileged_pod: {{ .Values.config.notifications.privilegedPod }}
+      host_access: {{ .Values.config.notifications.hostAccess }}
+      rbac_change: {{ .Values.config.notifications.rbacChange }}
+      namespace_delete: {{ .Values.config.notifications.namespaceDelete }}

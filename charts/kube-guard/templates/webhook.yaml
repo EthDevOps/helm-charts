@@ -19,6 +19,18 @@ webhooks:
     apiGroups: [""]
     apiVersions: ["v1"]
     resources: ["pods/exec", "pods/portforward"]
+  - operations: ["CREATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: ["rbac.authorization.k8s.io"]
+    apiVersions: ["v1"]
+    resources: ["clusterroles", "clusterrolebindings", "roles", "rolebindings"]
+  - operations: ["DELETE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["namespaces"]
   admissionReviewVersions: ["v1", "v1beta1"]
   sideEffects: None
   failurePolicy: {{ .Values.webhook.failurePolicy }}
