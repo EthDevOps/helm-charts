@@ -65,7 +65,7 @@ aiProvider:
     auth:
       token: "test-token"
 
-aiPostgresql:
+ai-postgresql:
   enabled: true
   image:
     tag: 16-alpine

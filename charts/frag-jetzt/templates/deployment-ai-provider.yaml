@@ -1,4 +1,5 @@
 {{- if .Values.aiProvider.enabled }}
+{{- $aiPg := index .Subcharts "ai-postgresql" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,15 +34,15 @@ spec:
             - name: ROOT_PATH
               value: "/ai"
             - name: POSTGRES_HOST
-              value: {{ include "postgresql.v1.primary.fullname" .Subcharts.aiPostgresql | quote }}
+              value: {{ include "postgresql.v1.primary.fullname" $aiPg | quote }}
             - name: POSTGRES_PORT
-              value: {{ include "postgresql.v1.service.port" .Subcharts.aiPostgresql | quote }}
+              value: {{ include "postgresql.v1.service.port" $aiPg | quote }}
             - name: POSTGRES_USER
-              value: {{ include "postgresql.v1.username" .Subcharts.aiPostgresql | quote }}
+              value: {{ include "postgresql.v1.username" $aiPg | quote }}
             - name: POSTGRES_PASSWORD
-              value: {{ .Values.aiPostgresql.auth.password | quote }}
+              value: {{ (index .Values "ai-postgresql").auth.password | quote }}
             - name: POSTGRES_DB
-              value: {{ include "postgresql.v1.database" .Subcharts.aiPostgresql | quote }}
+              value: {{ include "postgresql.v1.database" $aiPg | quote }}
             - name: CHROMA_HOST
               value: {{ .Release.Name }}-ai-chroma
             - name: CHROMA_PORT
