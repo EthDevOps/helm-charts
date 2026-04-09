@@ -16,6 +16,15 @@ data:
       gzip on;
       gzip_types application/javascript application/json text/css image/svg+xml;
 
+      location /auth {
+        proxy_pass {{ include "frag-jetzt.keycloak.url" . }};
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+      }
+
       location /api {
         proxy_pass http://{{ include "frag-jetzt.backend.fullname" . }}:{{ .Values.backend.port }};
         proxy_http_version 1.1;
