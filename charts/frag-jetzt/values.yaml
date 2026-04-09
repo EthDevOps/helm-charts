@@ -54,17 +54,6 @@ aiProvider:
   port: 8080
   origins: ""
   secretKey: ""
-  postgres:
-    image:
-      repository: postgres
-      tag: "16-alpine"
-      pullPolicy: IfNotPresent
-    auth:
-      username: langchain
-      password: langchain
-      database: langchain
-    persistence:
-      size: 5Gi
   chroma:
     image:
       repository: chromadb/chroma
@@ -74,6 +63,15 @@ aiProvider:
       size: 5Gi
     auth:
       token: "test-token"
+
+aiPostgresql:
+  enabled: true
+  image:
+    tag: 16-alpine
+  auth:
+    username: langchain
+    password: langchain
+    database: langchain
 
 keycloak:
   url: https://keycloak.ethquokkaops.io
