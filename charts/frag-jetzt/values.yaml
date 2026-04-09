@@ -6,6 +6,11 @@ frontend:
     repository: arsnova/frag.jetzt
     tag: master
     pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+    nodePort: ""
+    annotations: {}
 
 backend:
   image:

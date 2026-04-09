@@ -47,6 +47,11 @@ oidc:
     name: ""
     clientSecretKey: OIDC_CLIENT_SECRET
 
+service:
+  type: ClusterIP
+  annotations: {}
+  nodePort: ""
+
 ingress:
   enabled: true
   annotations: {}
