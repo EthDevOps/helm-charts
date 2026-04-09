@@ -35,7 +35,10 @@ spec:
             - name: ORIGINS
               value: {{ .Values.aiProvider.origins | default (include "frag-jetzt.serverRootUrl" .) | quote }}
             - name: SECRET_KEY
-              value: {{ .Values.aiProvider.secretKey | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "frag-jetzt.secretName" . }}
+                  key: {{ .Values.auth.existingSecret.jwtSecretKey | default "jwt-secret" }}
             - name: SECRET_ALGORITHM
               value: {{ .Values.aiProvider.secretAlgorithm | quote }}
             - name: ROOT_PATH
