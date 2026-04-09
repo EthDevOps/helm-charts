@@ -1,0 +1,47 @@
+{{- if .Values.aiProvider.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-ai-chroma
+  labels:
+    {{- include "frag-jetzt.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-ai-chroma
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-ai-chroma
+    spec:
+      containers:
+        - name: chroma
+          image: {{ .Values.aiProvider.chroma.image.repository }}:{{ .Values.aiProvider.chroma.image.tag }}
+          imagePullPolicy: {{ .Values.aiProvider.chroma.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: IS_PERSISTENT
+              value: "TRUE"
+            - name: ANONYMIZED_TELEMETRY
+              value: "FALSE"
+            - name: CHROMA_SERVER_AUTH_CREDENTIALS
+              value: {{ .Values.aiProvider.chroma.auth.token | quote }}
+            - name: CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER
+              value: "chromadb.auth.token.TokenConfigServerAuthCredentialsProvider"
+            - name: CHROMA_SERVER_AUTH_TOKEN_TRANSPORT_HEADER
+              value: "AUTHORIZATION"
+            - name: CHROMA_SERVER_AUTH_PROVIDER
+              value: "chromadb.auth.token.TokenAuthServerProvider"
+          volumeMounts:
+            - name: ai-chroma-data
+              mountPath: /chroma/chroma
+          resources: {}
+      volumes:
+        - name: ai-chroma-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-ai-chroma-pvc
+{{- end }}

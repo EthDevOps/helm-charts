@@ -46,8 +46,34 @@ rabbitmq:
       passwordKey: rabbitmq-password
 
 aiProvider:
-  dummy:
-    enabled: true
+  enabled: true
+  image:
+    repository: rubenbim/fragjetzt-ai-provider
+    tag: master
+    pullPolicy: IfNotPresent
+  port: 8080
+  origins: ""
+  secretKey: ""
+  postgres:
+    image:
+      repository: postgres
+      tag: "16-alpine"
+      pullPolicy: IfNotPresent
+    auth:
+      username: langchain
+      password: langchain
+      database: langchain
+    persistence:
+      size: 5Gi
+  chroma:
+    image:
+      repository: chromadb/chroma
+      tag: "0.5.17"
+      pullPolicy: IfNotPresent
+    persistence:
+      size: 5Gi
+    auth:
+      token: "test-token"
 
 keycloak:
   url: https://keycloak.ethquokkaops.io

@@ -1,0 +1,50 @@
+{{- if .Values.aiProvider.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-ai-provider
+  labels:
+    {{- include "frag-jetzt.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-ai-provider
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-ai-provider
+    spec:
+      containers:
+        - name: ai-provider
+          image: {{ .Values.aiProvider.image.repository }}:{{ .Values.aiProvider.image.tag }}
+          imagePullPolicy: {{ .Values.aiProvider.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.aiProvider.port }}
+          env:
+            - name: ORIGINS
+              value: {{ .Values.aiProvider.origins | default (include "frag-jetzt.serverRootUrl" .) | quote }}
+            - name: SECRET_KEY
+              value: {{ .Values.aiProvider.secretKey | quote }}
+            - name: ROOT_PATH
+              value: "/ai"
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-ai-postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              value: {{ .Values.aiProvider.postgres.auth.username | quote }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.aiProvider.postgres.auth.password | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.aiProvider.postgres.auth.database | quote }}
+            - name: CHROMA_HOST
+              value: {{ .Release.Name }}-ai-chroma
+            - name: CHROMA_PORT
+              value: "8000"
+            - name: CHROMA_SERVER_AUTH_CREDENTIALS
+              value: {{ .Values.aiProvider.chroma.auth.token | quote }}
+          resources: {}
+{{- end }}
