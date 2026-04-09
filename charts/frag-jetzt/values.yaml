@@ -3,7 +3,7 @@ appDomain: fragjetzt.example.com
 
 frontend:
   image:
-    repository: arsnova/frag.jetzt
+    repository: git-registry.arsnova.eu/arsnova/frag.jetzt
     tag: master
     pullPolicy: IfNotPresent
   service:
@@ -14,7 +14,7 @@ frontend:
 
 backend:
   image:
-    repository: arsnova/frag.jetzt-backend
+    repository: git-registry.arsnova.eu/arsnova/frag.jetzt-backend
     tag: master
     pullPolicy: IfNotPresent
   port: 8888
@@ -22,7 +22,7 @@ backend:
 
 wsGateway:
   image:
-    repository: arsnova/arsnova-ws-gateway
+    repository: git-registry.arsnova.eu/arsnova/arsnova-ws-gateway
     tag: frag-jetzt
     pullPolicy: IfNotPresent
   port: 8080
