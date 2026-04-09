@@ -44,8 +44,8 @@ data:
       }
 
       location ^~ /auth {
-        proxy_pass http://fragjetzt-keycloak:8080;
-        proxy_set_header Host $host;
+        proxy_pass {{ include "frag-jetzt.keycloak.url" . }};
+        proxy_set_header Host {{ .Values.keycloak.url | trimPrefix "https://" | trimPrefix "http://" }};
         proxy_set_header Forwarded $proxy_add_forwarded;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;

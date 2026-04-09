@@ -3,7 +3,7 @@ name: frag-jetzt
 description: Frag.jetzt - Anonymous Q&A platform for lectures and events
 type: application
 
-version: 0.1.8
+version: 0.1.9
 
 appVersion: "master"
 home: https://frag.jetzt
