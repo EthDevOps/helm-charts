@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-claper
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-claper
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-claper
+    spec:
+      containers:
+        - name: claper
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          env:
+            - name: BASE_URL
+              value: "https://{{ .Values.appDomain }}"
+            - name: SECRET_KEY_BASE
+              value: "{{ .Values.secretKeyBase }}"
+            - name: DATABASE_URL
+              value: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:{{ .Values.postgresql.auth.password }}@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql }}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}"
+            - name: PRESENTATION_STORAGE
+              value: {{ .Values.presentationStorage.type | quote }}
+            - name: PRESENTATION_STORAGE_DIR
+              value: {{ .Values.presentationStorage.dir | quote }}
+            - name: ENABLE_ACCOUNT_CREATION
+              value: {{ .Values.accountCreation.enabled | quote }}
+            - name: EMAIL_CONFIRMATION
+              value: {{ .Values.accountCreation.emailConfirmation | quote }}
+          {{- if .Values.maxFileSizeMb }}
+            - name: MAX_FILE_SIZE_MB
+              value: {{ .Values.maxFileSizeMb | quote }}
+          {{- end }}
+          {{- if .Values.mail.enabled }}
+            - name: MAIL_TRANSPORT
+              value: {{ .Values.mail.transport | quote }}
+            - name: MAIL_FROM
+              value: {{ .Values.mail.from | quote }}
+            - name: SMTP_RELAY
+              value: {{ .Values.mail.smtpRelay | quote }}
+            - name: SMTP_PORT
+              value: {{ .Values.mail.smtpPort | quote }}
+            - name: SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mail.existingSecret.name }}
+                  key: {{ .Values.mail.existingSecret.usernameKey }}
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mail.existingSecret.name }}
+                  key: {{ .Values.mail.existingSecret.passwordKey }}
+          {{- end }}
+          {{- if .Values.oidc.enabled }}
+            - name: OIDC_ISSUER
+              value: {{ .Values.oidc.issuer | quote }}
+            - name: OIDC_CLIENT_ID
+              value: {{ .Values.oidc.clientId | quote }}
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oidc.existingSecret.name }}
+                  key: {{ .Values.oidc.existingSecret.clientSecretKey }}
+          {{- end }}
+          ports:
+            - containerPort: 4000
+          volumeMounts:
+            - name: claper-storage
+              mountPath: /app/uploads
+      volumes:
+        - name: claper-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-claper-pvc

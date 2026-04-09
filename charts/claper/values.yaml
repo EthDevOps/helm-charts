@@ -1,0 +1,54 @@
+replicaCount: 1
+appDomain: claper.example.com
+secretKeyBase: ""
+image:
+  repository: ghcr.io/claperco/claper
+  tag: latest
+  pullPolicy: IfNotPresent
+
+postgresql:
+  enabled: true
+  image:
+    tag: 15-alpine
+  auth:
+    username: claper
+    password: claper
+    database: claper
+
+persistence:
+  size: 1Gi
+
+presentationStorage:
+  type: "local"
+  dir: "/app/uploads"
+
+maxFileSizeMb: ""
+
+accountCreation:
+  enabled: true
+  emailConfirmation: false
+
+mail:
+  enabled: false
+  transport: "smtp"
+  from: ""
+  smtpRelay: ""
+  smtpPort: ""
+  existingSecret:
+    name: ""
+    usernameKey: SMTP_USERNAME
+    passwordKey: SMTP_PASSWORD
+
+oidc:
+  enabled: false
+  issuer: ""
+  clientId: ""
+  existingSecret:
+    name: ""
+    clientSecretKey: OIDC_CLIENT_SECRET
+
+ingress:
+  enabled: true
+  annotations: {}
+  tls:
+    secretName: claper-tls

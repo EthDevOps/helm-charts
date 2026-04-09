@@ -1,0 +1,95 @@
+replicaCount: 1
+appDomain: fragjetzt.example.com
+
+frontend:
+  image:
+    repository: arsnova/frag.jetzt
+    tag: master
+    pullPolicy: IfNotPresent
+
+backend:
+  image:
+    repository: arsnova/frag.jetzt-backend
+    tag: master
+    pullPolicy: IfNotPresent
+  port: 8888
+  loggingLevel: ERROR
+
+wsGateway:
+  image:
+    repository: arsnova/arsnova-ws-gateway
+    tag: frag-jetzt
+    pullPolicy: IfNotPresent
+  port: 8080
+  loggingLevel: ERROR
+
+rabbitmq:
+  image:
+    repository: rabbitmq
+    tag: "3.8"
+    pullPolicy: IfNotPresent
+  persistence:
+    size: 5Gi
+  plugins:
+    - rabbitmq_prometheus
+    - rabbitmq_stomp
+  auth:
+    username: guest
+    password: ""
+    existingSecret:
+      name: ""
+      passwordKey: rabbitmq-password
+
+keycloak:
+  url: https://keycloak.ethquokkaops.io
+  realm: fragjetzt
+  eventPassword: ""
+  existingSecret:
+    name: ""
+    eventPasswordKey: keycloak-event-password
+
+auth:
+  jwtSecret: ""
+  existingSecret:
+    name: ""
+    jwtSecretKey: jwt-secret
+
+mail:
+  enabled: false
+  host: ""
+  port: "587"
+  senderAddress: "noreply@example.com"
+  existingSecret:
+    name: ""
+    usernameKey: SMTP_USERNAME
+    passwordKey: SMTP_PASSWORD
+
+vapid:
+  enabled: false
+  publicKey: ""
+  privateKey: ""
+  subject: ""
+  existingSecret:
+    name: ""
+    publicKeyKey: vapid-public-key
+    privateKeyKey: vapid-private-key
+
+postgresql:
+  enabled: true
+  image:
+    tag: 16-alpine
+  auth:
+    username: fragjetzt
+    password: fragjetzt
+    database: fragjetzt
+
+redis:
+  enabled: true
+  architecture: standalone
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+  tls:
+    secretName: frag-jetzt-tls

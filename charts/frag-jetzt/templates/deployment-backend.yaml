@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "frag-jetzt.backend.fullname" . }}
+  labels:
+    {{- include "frag-jetzt.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ include "frag-jetzt.backend.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "frag-jetzt.backend.fullname" . }}
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          env:
+            - name: SERVER_ROOT_URL
+              value: {{ include "frag-jetzt.serverRootUrl" . | quote }}
+            - name: STOMP_RELAY_HOST
+              value: {{ include "frag-jetzt.rabbitmq.fullname" . | quote }}
+            - name: SPRING_RABBITMQ_HOST
+              value: {{ include "frag-jetzt.rabbitmq.fullname" . | quote }}
+            - name: SPRING_RABBITMQ_USERNAME
+              value: {{ .Values.rabbitmq.auth.username | quote }}
+            - name: SPRING_RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "frag-jetzt.secretName" . }}
+                  key: {{ .Values.rabbitmq.auth.existingSecret.passwordKey | default "rabbitmq-password" }}
+            - name: SPRING_R2DBC_HOST
+              value: {{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql | quote }}
+            - name: SPRING_R2DBC_URL
+              value: {{ printf "r2dbc:postgresql://%s:%s/%s" (include "postgresql.v1.primary.fullname" .Subcharts.postgresql) (include "postgresql.v1.service.port" .Subcharts.postgresql) (include "postgresql.v1.database" .Subcharts.postgresql) | quote }}
+            - name: SPRING_R2DBC_USERNAME
+              value: {{ include "postgresql.v1.username" .Subcharts.postgresql | quote }}
+            - name: SPRING_R2DBC_PASSWORD
+              value: {{ .Values.postgresql.auth.password | quote }}
+            - name: SPRING_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "frag-jetzt.secretName" . }}
+                  key: {{ .Values.auth.existingSecret.jwtSecretKey | default "jwt-secret" }}
+            - name: KEYCLOAK_URL
+              value: {{ include "frag-jetzt.keycloak.url" . | quote }}
+            - name: KEYCLOAK_REALM
+              value: {{ .Values.keycloak.realm | quote }}
+            - name: LOGGING_LEVEL_ROOT
+              value: {{ .Values.backend.loggingLevel | quote }}
+            {{- if .Values.mail.enabled }}
+            - name: APP_MAIL_HOST
+              value: {{ .Values.mail.host | quote }}
+            - name: APP_MAIL_PORT
+              value: {{ .Values.mail.port | quote }}
+            - name: APP_MAIL_SENDER_ADDRESS
+              value: {{ .Values.mail.senderAddress | quote }}
+            {{- end }}
+            {{- if .Values.vapid.enabled }}
+            - name: APP_WEB_PUSH_VAPID_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "frag-jetzt.secretName" . }}
+                  key: {{ .Values.vapid.existingSecret.publicKeyKey | default "vapid-public-key" }}
+            - name: APP_WEB_PUSH_VAPID_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "frag-jetzt.secretName" . }}
+                  key: {{ .Values.vapid.existingSecret.privateKeyKey | default "vapid-private-key" }}
+            - name: APP_WEB_PUSH_VAPID_SUBJECT
+              value: {{ .Values.vapid.subject | quote }}
+            {{- end }}
+          resources: {}

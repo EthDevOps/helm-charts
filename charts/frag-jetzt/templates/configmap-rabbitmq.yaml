@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-rabbitmq-plugins
+  labels:
+    {{- include "frag-jetzt.labels" . | nindent 4 }}
+data:
+  enabled_plugins: |
+    [{{ join "," .Values.rabbitmq.plugins }}].

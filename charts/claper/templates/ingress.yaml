@@ -1,0 +1,26 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-claper-ingress
+  {{- if or .Values.commonAnnotations .Values.ingress.annotations }}
+  annotations: {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+  - hosts:
+    - {{ .Values.appDomain }}
+    secretName: {{ .Values.ingress.tls.secretName }}
+  rules:
+    - host: {{ .Values.appDomain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}-claper-app
+                port:
+                  number: 4000
+{{- end }}

@@ -1,0 +1,23 @@
+apiVersion: v2
+name: frag-jetzt
+description: Frag.jetzt - Anonymous Q&A platform for lectures and events
+type: application
+
+version: 0.1.0
+
+appVersion: "master"
+home: https://frag.jetzt
+sources:
+  - https://github.com/thm-projects/frag.jetzt
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org
+dependencies:
+- name: postgresql
+  version: 1.1.6
+  repository: https://ethdevops.github.io/helm-charts
+  condition: postgresql.enabled
+- name: redis
+  version: "1.0.5"
+  repository: https://ethdevops.github.io/helm-charts
+  condition: redis.enabled

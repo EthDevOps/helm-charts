@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "frag-jetzt.rabbitmq.fullname" . }}
+  labels:
+    {{- include "frag-jetzt.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: stomp
+      port: 61613
+      targetPort: 61613
+  selector:
+    app: {{ include "frag-jetzt.rabbitmq.fullname" . }}

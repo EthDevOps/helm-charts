@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "frag-jetzt.ws-gateway.fullname" . }}
+  labels:
+    {{- include "frag-jetzt.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ include "frag-jetzt.ws-gateway.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "frag-jetzt.ws-gateway.fullname" . }}
+    spec:
+      containers:
+        - name: ws-gateway
+          image: {{ .Values.wsGateway.image.repository }}:{{ .Values.wsGateway.image.tag }}
+          imagePullPolicy: {{ .Values.wsGateway.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.wsGateway.port }}
+          env:
+            - name: SERVER_PORT
+              value: {{ .Values.wsGateway.port | quote }}
+            - name: STOMP_RELAY_HOST
+              value: {{ include "frag-jetzt.rabbitmq.fullname" . | quote }}
+            - name: STOMP_RELAY_USER
+              value: {{ .Values.rabbitmq.auth.username | quote }}
+            - name: STOMP_RELAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "frag-jetzt.secretName" . }}
+                  key: {{ .Values.rabbitmq.auth.existingSecret.passwordKey | default "rabbitmq-password" }}
+            - name: RABBITMQ_HOST
+              value: {{ include "frag-jetzt.rabbitmq.fullname" . | quote }}
+            - name: RABBITMQ_USER
+              value: {{ .Values.rabbitmq.auth.username | quote }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "frag-jetzt.secretName" . }}
+                  key: {{ .Values.rabbitmq.auth.existingSecret.passwordKey | default "rabbitmq-password" }}
+            - name: SECURITY_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "frag-jetzt.secretName" . }}
+                  key: {{ .Values.auth.existingSecret.jwtSecretKey | default "jwt-secret" }}
+            - name: ALLOWEDORIGINS
+              value: {{ include "frag-jetzt.serverRootUrl" . | quote }}
+            - name: LOGGING_LEVEL_ROOT
+              value: {{ .Values.wsGateway.loggingLevel | quote }}
+          resources: {}
