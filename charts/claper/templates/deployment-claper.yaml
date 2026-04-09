@@ -59,13 +59,41 @@ spec:
           {{- if .Values.oidc.enabled }}
             - name: OIDC_ISSUER
               value: {{ .Values.oidc.issuer | quote }}
+            {{- if .Values.oidc.existingSecret.name }}
             - name: OIDC_CLIENT_ID
-              value: {{ .Values.oidc.clientId | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oidc.existingSecret.name }}
+                  key: {{ .Values.oidc.existingSecret.clientIdKey }}
             - name: OIDC_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.oidc.existingSecret.name }}
                   key: {{ .Values.oidc.existingSecret.clientSecretKey }}
+            {{- else }}
+            - name: OIDC_CLIENT_ID
+              value: {{ .Values.oidc.clientId | quote }}
+            - name: OIDC_CLIENT_SECRET
+              value: {{ .Values.oidc.clientSecret | quote }}
+            {{- end }}
+            - name: OIDC_SCOPES
+              value: {{ .Values.oidc.scopes | quote }}
+            {{- if .Values.oidc.providerName }}
+            - name: OIDC_PROVIDER_NAME
+              value: {{ .Values.oidc.providerName | quote }}
+            {{- end }}
+            {{- if .Values.oidc.logoUrl }}
+            - name: OIDC_LOGO_URL
+              value: {{ .Values.oidc.logoUrl | quote }}
+            {{- end }}
+            {{- if .Values.oidc.propertyMappings }}
+            - name: OIDC_PROPERTY_MAPPINGS
+              value: {{ .Values.oidc.propertyMappings | quote }}
+            {{- end }}
+            - name: OIDC_AUTO_REDIRECT_LOGIN
+              value: {{ .Values.oidc.autoRedirectLogin | quote }}
+            - name: ALLOW_UNLINK_EXTERNAL_PROVIDER
+              value: {{ .Values.oidc.allowUnlinkExternalProvider | quote }}
           {{- end }}
           ports:
             - containerPort: 4000

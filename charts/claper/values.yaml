@@ -43,8 +43,16 @@ oidc:
   enabled: false
   issuer: ""
   clientId: ""
+  clientSecret: ""
+  scopes: "openid email profile"
+  providerName: ""
+  logoUrl: ""
+  propertyMappings: ""
+  autoRedirectLogin: false
+  allowUnlinkExternalProvider: false
   existingSecret:
     name: ""
+    clientIdKey: OIDC_CLIENT_ID
     clientSecretKey: OIDC_CLIENT_SECRET
 
 service:

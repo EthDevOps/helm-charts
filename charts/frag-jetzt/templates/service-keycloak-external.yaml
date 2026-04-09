@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fragjetzt-keycloak
+  labels:
+    {{- include "frag-jetzt.labels" . | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ .Values.keycloak.url | trimPrefix "https://" | trimPrefix "http://" }}
