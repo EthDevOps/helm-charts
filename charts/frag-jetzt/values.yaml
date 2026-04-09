@@ -53,7 +53,8 @@ aiProvider:
     pullPolicy: IfNotPresent
   port: 8080
   origins: ""
-  secretKey: ""
+  secretKey: "changeme"
+  secretAlgorithm: "HS256"
   chroma:
     image:
       repository: chromadb/chroma

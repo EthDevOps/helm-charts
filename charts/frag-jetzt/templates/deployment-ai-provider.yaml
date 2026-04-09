@@ -28,6 +28,8 @@ spec:
               value: {{ .Values.aiProvider.origins | default (include "frag-jetzt.serverRootUrl" .) | quote }}
             - name: SECRET_KEY
               value: {{ .Values.aiProvider.secretKey | quote }}
+            - name: SECRET_ALGORITHM
+              value: {{ .Values.aiProvider.secretAlgorithm | quote }}
             - name: ROOT_PATH
               value: "/ai"
             - name: POSTGRES_HOST
