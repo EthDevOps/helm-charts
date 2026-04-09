@@ -73,6 +73,9 @@ ai-postgresql:
     username: langchain
     password: langchain
     database: langchain
+  replication:
+    user: replicator
+    password: replication_password
 
 keycloak:
   url: https://keycloak.ethquokkaops.io

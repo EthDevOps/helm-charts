@@ -1,0 +1,97 @@
+{{- if .Values.aiProvider.enabled }}
+{{- $aiPg := index .Subcharts "ai-postgresql" }}
+{{- $aiPgValues := index .Values "ai-postgresql" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-ai-pg-init
+  labels:
+    {{- include "frag-jetzt.labels" . | nindent 4 }}
+data:
+  init-replication.sh: |
+    #!/bin/bash
+    set -e
+
+    MAIN_HOST="{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql }}"
+    MAIN_DB="{{ include "postgresql.v1.database" .Subcharts.postgresql }}"
+    REPL_USER="{{ $aiPgValues.replication.user }}"
+    REPL_PASS="{{ $aiPgValues.replication.password }}"
+
+    AI_HOST="{{ include "postgresql.v1.primary.fullname" $aiPg }}"
+    AI_DB="{{ include "postgresql.v1.database" $aiPg }}"
+    AI_USER="{{ include "postgresql.v1.username" $aiPg }}"
+    AI_PASS="{{ $aiPgValues.auth.password }}"
+
+    # Step 1: Create utility functions on AI postgres (matches startup_replica1_langchain.sh)
+    echo "Creating utility functions..."
+    PGPASSWORD="$AI_PASS" psql -h "$AI_HOST" -U "$AI_USER" -d "$AI_DB" <<'EOSQL'
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+    CREATE OR REPLACE FUNCTION trigger_timestamp_create_update_func()
+        RETURNS trigger AS
+    $$
+    DECLARE
+    BEGIN
+        IF (TG_OP = 'INSERT') THEN
+            NEW.created_at = NOW();
+            NEW.updated_at = NULL;
+            RETURN NEW;
+        ELSEIF (TG_OP = 'UPDATE') THEN
+            IF (OLD.created_at <> NEW.created_at) THEN
+                NEW.created_at = OLD.created_at;
+            END IF;
+            NEW.updated_at = NOW();
+            RETURN NEW;
+        ELSEIF (TG_OP = 'DELETE') THEN
+            RETURN OLD;
+        END IF;
+        RETURN NULL;
+    END;
+    $$ LANGUAGE plpgsql;
+    EOSQL
+
+    # Step 2: Wait for main database
+    echo "Waiting for main database..."
+    until pg_isready -h "$MAIN_HOST" -U "$REPL_USER" -d "$MAIN_DB" -t 5 2>/dev/null; do
+      echo "Retry..."
+      sleep 2
+    done
+
+    # Step 3: Wait for backend migrations (flyway)
+    echo "Waiting for backend migrations..."
+    COUNT="N"
+    re='^[0-9]+$'
+    while ! [[ $COUNT =~ $re ]]; do
+      sleep 2
+      COUNT=$(PGPASSWORD="$REPL_PASS" psql -h "$MAIN_HOST" -U "$REPL_USER" -d "$MAIN_DB" -t -c "SELECT COUNT(*) FROM flyway_schema_history;" 2>/dev/null | tr -d ' ' || echo "N")
+    done
+    echo "Backend migrations done (count=$COUNT)."
+
+    # Step 4: Check if tables already exist (idempotent)
+    TABLE_EXISTS=$(PGPASSWORD="$AI_PASS" psql -h "$AI_HOST" -U "$AI_USER" -d "$AI_DB" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_name = 'account';" | tr -d ' ')
+    if [ "$TABLE_EXISTS" = "1" ]; then
+      echo "Tables already exist, skipping schema dump."
+      exit 0
+    fi
+
+    # Step 5: Drop old replication slot if exists
+    echo "Dropping old replication slot if exists..."
+    PGPASSWORD="$REPL_PASS" psql -h "$MAIN_HOST" -U "$REPL_USER" -d "$MAIN_DB" \
+      -c "SELECT pg_drop_replication_slot('fragjetzt_subscription_replica_1');" 2>/dev/null || echo "No existing slot."
+
+    # Step 6: Dump table schemas from main DB into AI DB
+    echo "Dumping table schemas from main database..."
+    PGPASSWORD="$REPL_PASS" pg_dump -h "$MAIN_HOST" -U "$REPL_USER" -d "$MAIN_DB" -s \
+      -t room -t account -t room_access -t account_keycloak_role -O -x | \
+      PGPASSWORD="$AI_PASS" psql -h "$AI_HOST" -U "$AI_USER" -d "$AI_DB"
+
+    # Step 7: Create logical subscription
+    echo "Creating subscription..."
+    PGPASSWORD="$AI_PASS" psql -h "$AI_HOST" -U "$AI_USER" -d "$AI_DB" <<EOSQL
+    CREATE SUBSCRIPTION fragjetzt_subscription_replica_1
+    CONNECTION 'host=$MAIN_HOST port=5432 dbname=$MAIN_DB user=$REPL_USER password=$REPL_PASS'
+    PUBLICATION fragjetzt_primary_publication;
+    EOSQL
+
+    echo "Replication setup complete."
+{{- end }}
