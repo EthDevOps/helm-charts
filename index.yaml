@@ -1359,6 +1359,31 @@ entries:
   frag-jetzt:
   - apiVersion: v2
     appVersion: master
+    created: "2026-04-09T16:39:25.15744578Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.6
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.5
+    description: Frag.jetzt - Anonymous Q&A platform for lectures and events
+    digest: 992d0dfd32fd19a81698c58fe154ee40d106883522b59ca12db0a204babce311
+    home: https://frag.jetzt
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: frag-jetzt
+    sources:
+    - https://github.com/thm-projects/frag.jetzt
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/frag-jetzt-0.1.11/frag-jetzt-0.1.11.tgz
+    version: 0.1.11
+  - apiVersion: v2
+    appVersion: master
     created: "2026-04-09T15:44:53.765684754Z"
     dependencies:
     - condition: postgresql.enabled
@@ -7978,4 +8003,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-04-09T15:44:53.766275305Z"
+generated: "2026-04-09T16:39:25.158875486Z"
