@@ -6,6 +6,22 @@ metadata:
     {{- include "frag-jetzt.labels" . | nindent 4 }}
 data:
   default.conf: |
+    map $http_upgrade $connection_upgrade {
+      default upgrade;
+      ''      close;
+    }
+
+    map $remote_addr $proxy_forwarded_elem {
+        ~^[0-9.]+$          "for=$remote_addr";
+        ~^[0-9A-Fa-f:.]+$   "for=\"[$remote_addr]\"";
+        default             "for=unknown";
+    }
+
+    map $http_forwarded $proxy_add_forwarded {
+        "~^(,[ \\t]*)*([!#$%&'*+.^_`|~0-9A-Za-z-]+=([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"([\\t \\x21\\x23-\\x5B\\x5D-\\x7E\\x80-\\xFF]|\\\\[\\t \\x21-\\x7E\\x80-\\xFF])*\"))?(;([!#$%&'*+.^_`|~0-9A-Za-z-]+=([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"([\\t \\x21\\x23-\\x5B\\x5D-\\x7E\\x80-\\xFF]|\\\\[\\t \\x21-\\x7E\\x80-\\xFF])*\"))?)*([ \\t]*,([ \\t]*([!#$%&'*+.^_`|~0-9A-Za-z-]+=([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"([\\t \\x21\\x23-\\x5B\\x5D-\\x7E\\x80-\\xFF]|\\\\[\\t \\x21-\\x7E\\x80-\\xFF])*\"))?(;([!#$%&'*+.^_`|~0-9A-Za-z-]+=([!#$%&'*+.^_`|~0-9A-Za-z-]+|\"([\\t \\x21\\x23-\\x5B\\x5D-\\x7E\\x80-\\xFF]|\\\\[\\t \\x21-\\x7E\\x80-\\xFF])*\"))?)*)?)*$" "$http_forwarded, $proxy_forwarded_elem";
+        default "$proxy_forwarded_elem";
+    }
+
     server {
       listen 80;
       server_name _;
@@ -13,48 +29,78 @@ data:
       root /var/www/frag.jetzt;
       index index.csr.html;
 
-      gzip on;
-      gzip_types application/javascript application/json text/css image/svg+xml;
+      location / {
+        gzip on;
+        gzip_types application/javascript application/json text/css image/svg+xml;
+        gzip_vary on;
+      }
 
-      location /auth {
-        proxy_pass {{ include "frag-jetzt.keycloak.url" . }};
-        proxy_http_version 1.1;
+      location ~ ^/(creator|participant|home|imprint|user|moderator|data-protection|introduction|admin).*$ {
+        gzip on;
+        gzip_types application/javascript application/json text/css image/svg+xml;
+        gzip_vary on;
+        alias /var/www/frag.jetzt/;
+        try_files $uri $uri/ /index.csr.html /index.html;
+      }
+
+      location ^~ /auth {
+        proxy_pass http://fragjetzt-keycloak:8080;
         proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Forwarded $proxy_add_forwarded;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+      }
+
+      location ^~ /arsnova-click {
+        return 307 https://arsnova.click;
+      }
+
+      location ^~ /gateway-api {
+        rewrite ^/gateway-api(.*) $1 break;
+
+        proxy_pass http://{{ include "frag-jetzt.ws-gateway.fullname" . }}:{{ .Values.wsGateway.port }};
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+      }
+
+      location ^~ /gateway/ws/websocket {
+        rewrite ^/gateway(.*) $1 break;
+
+        proxy_pass http://{{ include "frag-jetzt.ws-gateway.fullname" . }}:{{ .Values.wsGateway.port }};
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_http_version 1.1;
       }
 
       location /api {
+        rewrite ^/api(.*) $1 break;
+
         proxy_pass http://{{ include "frag-jetzt.backend.fullname" . }}:{{ .Values.backend.port }};
-        proxy_http_version 1.1;
+
         proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
       }
 
-      location /gateway-api {
-        proxy_pass http://{{ include "frag-jetzt.ws-gateway.fullname" . }}:{{ .Values.wsGateway.port }};
-        proxy_http_version 1.1;
+      location /ai {
+        rewrite ^/ai(.*) $1 break;
+
+        proxy_pass http://fragjetzt-ai-provider:8080;
+
         proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
       }
 
-      location /gateway/ws/websocket {
-        proxy_pass http://{{ include "frag-jetzt.ws-gateway.fullname" . }}:{{ .Values.wsGateway.port }};
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-      }
-
-      location / {
-        try_files $uri $uri/ /index.html;
+      location = /favicon.ico {
+        alias /var/www/frag.jetzt/assets/icons/favicon.ico;
       }
     }

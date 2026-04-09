@@ -45,6 +45,10 @@ rabbitmq:
       name: ""
       passwordKey: rabbitmq-password
 
+aiProvider:
+  dummy:
+    enabled: true
+
 keycloak:
   url: https://keycloak.ethquokkaops.io
   realm: fragjetzt
