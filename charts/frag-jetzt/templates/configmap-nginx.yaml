@@ -11,7 +11,7 @@ data:
       server_name _;
 
       root /var/www/frag.jetzt;
-      index index.html;
+      index index.csr.html;
 
       gzip on;
       gzip_types application/javascript application/json text/css image/svg+xml;
