@@ -197,6 +197,24 @@ entries:
   claper:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-04-09T11:13:49.104579529Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.3
+    description: OpenSource interactive presentation tool
+    digest: e49e0d2ffa448d05b10b8d81c683f4d31b95437ea5aa6995e0a61ac82832ed69
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: claper
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/claper-0.1.2/claper-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-04-09T09:22:01.526259412Z"
     dependencies:
     - condition: postgresql.enabled
@@ -1339,6 +1357,31 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/domainmod-0.1.0/domainmod-0.1.0.tgz
     version: 0.1.0
   frag-jetzt:
+  - apiVersion: v2
+    appVersion: master
+    created: "2026-04-09T11:13:49.243904375Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.6
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.5
+    description: Frag.jetzt - Anonymous Q&A platform for lectures and events
+    digest: 23e3b5cdc0a3e928b4f7781c44e32c607144bb237b78b597371060d4221d9547
+    home: https://frag.jetzt
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: frag-jetzt
+    sources:
+    - https://github.com/thm-projects/frag.jetzt
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/frag-jetzt-0.1.5/frag-jetzt-0.1.5.tgz
+    version: 0.1.5
   - apiVersion: v2
     appVersion: master
     created: "2026-04-09T10:44:09.826991628Z"
@@ -7810,4 +7853,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-04-09T10:44:09.827555934Z"
+generated: "2026-04-09T11:13:49.244620038Z"
