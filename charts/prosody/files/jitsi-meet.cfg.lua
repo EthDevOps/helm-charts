@@ -345,7 +345,7 @@ Component "{{ $XMPP_MUC_DOMAIN }}" "muc"
         "lobby_autostart";
     }
     -- token_affiliation: cascade to override Jicofo's auto-promotion
-    token_affiliation_disable_cascading_set = false;
+    disable_cascading_set = false;
 
     {{ if $ENABLE_RATE_LIMITS -}}
     -- Max allowed join/login rate in events per second.
