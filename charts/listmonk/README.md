@@ -1,87 +1,42 @@
-# Listmonk Helm Chart
+# listmonk
 
-This Helm chart installs [Listmonk](https://listmonk.app/), a high performance, self-hosted newsletter and mailing list manager with a modern dashboard.
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.1.0](https://img.shields.io/badge/AppVersion-5.1.0-informational?style=flat-square)
 
-## Prerequisites
+High performance, self-hosted, newsletter and mailing list manager with a modern dashboard.
 
-- Kubernetes 1.16+
-- Helm 3.0+
-- PV provisioner support in the underlying infrastructure (for PostgreSQL persistence)
+## Values
 
-## Installing the Chart
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| extraInitContainers | object | `{}` |  |
+| hcommonAnnotations | object | `{}` |  |
+| ingress.annotations | object | `{}` | annotations for the ingress |
+| ingress.className | string | `""` | ingress class name |
+| ingress.enabled | bool | `false` | enable the ingress |
+| ingress.host | string | `"listmonk.local"` | host for the ingress |
+| ingress.tls | list | `[]` | tls configuration for the ingress |
+| listmonk.image | object | `{"repository":"listmonk/listmonk","tag":"v5.1.0"}` | The listmonk image configuration |
+| listmonk.image.repository | string | `"listmonk/listmonk"` | the listmonk image repository |
+| listmonk.image.tag | string | `"v5.1.0"` | the listmonk image tag |
+| listmonk.replicas | int | `1` | the number of listmonk deployment replicas |
+| listmonk.resources | object | `{}` | resources for the listmonk deployment |
+| listmonk.storage | object | `{"staticSize":"1Gi","uploadsSize":"5Gi"}` | Storage configuration for listmonk |
+| podAnnotations | object | `{}` |  |
+| podLabels | object | `{}` |  |
+| postgres.database | string | `"listmonk"` | the postgres database name |
+| postgres.enabled | bool | `true` | enable postgres |
+| postgres.existingSecret | string | `""` | existing secret name containing postgres password (if set, password field is ignored and no secret is created) |
+| postgres.hostname | string | `""` | when not enabled, the external postgres service hostname is required |
+| postgres.image | object | `{"repository":"postgres","tag":"16-alpine"}` | the postgres image configuration |
+| postgres.image.repository | string | `"postgres"` | the postgres image repository |
+| postgres.image.tag | string | `"16-alpine"` | the postgres image tag |
+| postgres.password | string | `"listmonk"` | the postgres password (ignored if existingSecret is set) |
+| postgres.resources | object | `{}` | resources configuration for the postgres statefulset |
+| postgres.secretKey | string | `""` | key in existing secret containing the password (defaults to postgres-password) |
+| postgres.storage | object | `{"size":"10Gi"}` | storage configuration for postgres |
+| postgres.user | string | `"listmonk"` | the postgres username |
+| service.annotations | object | `{}` |  |
+| service.type | string | `"ClusterIP"` |  |
 
-To install the chart with the release name `my-listmonk`:
-
-```bash
-helm install my-listmonk ./charts/listmonk
-```
-
-## Uninstalling the Chart
-
-To uninstall/delete the `my-listmonk` deployment:
-
-```bash
-helm delete my-listmonk
-```
-
-## Configuration
-
-The following table lists the configurable parameters of the Listmonk chart and their default values.
-
-### Common Settings
-
-| Parameter             | Description                          | Default |
-| --------------------- | ------------------------------------ | ------- |
-| `commonAnnotations`   | Common annotations for all resources | `{}`    |
-| `podAnnotations`      | Pod annotations                      | `{}`    |
-| `podLabels`           | Pod labels                           | `{}`    |
-| `extraInitContainers` | Extra init containers                | `{}`    |
-
-### Listmonk
-
-| Parameter                      | Description                         | Default             |
-| ------------------------------ | ----------------------------------- | ------------------- |
-| `listmonk.image.repository`    | Listmonk image repository           | `listmonk/listmonk` |
-| `listmonk.image.tag`           | Listmonk image tag                  | `v4.1.0`            |
-| `listmonk.replicas`            | Number of Listmonk replicas         | `1`                 |
-| `listmonk.resources`           | CPU/Memory resource requests/limits | `{}`                |
-| `listmonk.storage.uploadsSize` | PVC size for uploads                | `5Gi`               |
-| `listmonk.storage.staticSize`  | PVC size for static content         | `1Gi`               |
-
-### PostgreSQL
-
-| Parameter                   | Description                              | Default     |
-| --------------------------- | ---------------------------------------- | ----------- |
-| `postgres.enabled`          | Enable PostgreSQL deployment             | `true`      |
-| `postgres.hostname`         | External PostgreSQL hostname             | `""`        |
-| `postgres.existingSecret`   | Existing secret with PostgreSQL password | `""`        |
-| `postgres.database`         | PostgreSQL database name                 | `listmonk`  |
-| `postgres.user`             | PostgreSQL username                      | `listmonk`  |
-| `postgres.password`         | PostgreSQL password                      | `listmonk`  |
-| `postgres.image.repository` | PostgreSQL image repository              | `postgres`  |
-| `postgres.image.tag`        | PostgreSQL image tag                     | `16-alpine` |
-| `postgres.storage.size`     | PVC size for PostgreSQL data             | `10Gi`      |
-| `postgres.resources`        | CPU/Memory resource requests/limits      | `{}`        |
-
-### Ingress
-
-| Parameter             | Description         | Default          |
-| --------------------- | ------------------- | ---------------- |
-| `ingress.enabled`     | Enable ingress      | `false`          |
-| `ingress.className`   | Ingress class name  | `""`             |
-| `ingress.annotations` | Ingress annotations | `{}`             |
-| `ingress.host`        | Ingress host        | `listmonk.local` |
-| `ingress.tls`         | TLS configuration   | `[]`             |
-
-## Persistence
-
-Listmonk uses PostgreSQL for database storage. The chart mounts persistent volumes for the PostgreSQL data, as well as for Listmonk's uploads and static content. These volumes will be created through PersistentVolumeClaims which will be created when you deploy the chart.
-
-## Security Considerations
-
-By default, this chart sets up a PostgreSQL instance with a default password. In production environments, you should:
-
-1. Change the default database passwords
-2. Consider using an external PostgreSQL database
-3. Use `postgres.existingSecret` to provide credentials from a pre-existing secret
-4. Enable TLS for ingress if exposing the service externally
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)

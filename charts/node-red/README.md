@@ -1,6 +1,6 @@
 # node-red ⚙
 
-![Version: 0.34.0](https://img.shields.io/badge/Version-0.34.0-informational?style=for-the-badge) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=for-the-badge) ![AppVersion: 4.0.8](https://img.shields.io/badge/AppVersion-4.0.8-informational?style=for-the-badge)
+![Version: 0.34.0](https://img.shields.io/badge/Version-0.34.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.0.8](https://img.shields.io/badge/AppVersion-4.0.8-informational?style=flat-square)
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/node-red&style=for-the-badge)](https://artifacthub.io/packages/search?repo=node-red)
 [![SIT](https://img.shields.io/badge/SIT-awesome-blueviolet.svg?style=for-the-badge)](https://jobs.schwarz)
@@ -100,7 +100,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | npmrc.content | string | `"# Custom npmrc config\n"` | Configuration to add custom npmrc config |
 | npmrc.enabled | bool | `false` | Enable custom npmrc config |
 | npmrc.registry | string | `"https://registry.npmjs.org"` | Configuration to use any compatible registry |
-| persistence.accessMode | string | `"ReadWriteOnce"` | Persistence access mode |
+| persistence.accessMode | string | `"ReadWriteOnce"` |  |
 | persistence.enabled | bool | `false` | Use persistent volume to store data |
 | persistence.keepPVC | bool | `false` | ## Keep a created Persistent volume claim when uninstalling the helm chart (default: false) |
 | persistence.size | string | `"5Gi"` | Size of persistent volume claim |
@@ -115,11 +115,12 @@ The command removes all the Kubernetes components associated with the chart and 
 | resources | object | `{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | CPU/Memory resource requests/limits |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":10003,"runAsNonRoot":true,"runAsUser":10003,"seccompProfile":{"type":"RuntimeDefault"}}` | Security Context see [values.yaml](values.yaml) |
 | service.annotations | object | `{}` | Annotations for the service |
+| service.labels | object | `{}` | Labels for the service |
 | service.port | int | `1880` | Kubernetes port where service is exposed |
 | service.type | string | `"ClusterIP"` | Kubernetes service type |
-| serviceAccount.annotations | object | `{}` | Additional ServiceAccount annotations |
-| serviceAccount.create | bool | `true` | Create service account |
-| serviceAccount.name | string | `""` | Service account name to use, when empty will be set to created account if |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `""` |  |
 | settings | object | `{}` | You can configure node-red using a settings file. default: {} |
 | sidecar.enabled | bool | `false` | Enable the sidecar |
 | sidecar.env.label | string | `"node-red-settings"` | Label that should be used for filtering |
@@ -209,5 +210,5 @@ Apache License, Version 2.0
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| dirien | <engin@pulumi.com> | <https://pulumi.com> |
-| Kaktor | <felix.kammerer@mail.schwarz> | <https://jobs.schwarz> |
+| dirien | engin@pulumi.com | https://pulumi.com |
+| Kaktor | felix.kammerer@mail.schwarz | https://jobs.schwarz |
