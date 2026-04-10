@@ -41,9 +41,11 @@ spec:
         - name: filebeat-certs
           secret:
             secretName: filebeat-tls
+        {{- if .Values.wazuh.googleWorkspace.existingSecret }}
         - name: gws-secrets
           secret:
-            secretName: {{ .Values.wazuh.googleWorkspace.existingSecret | default "wazuh-gws-secrets" }}
+            secretName: {{ .Values.wazuh.googleWorkspace.existingSecret }}
+        {{- end }}
         - name: wazuh-authd-pass
           secret:
             secretName: {{ .Values.wazuh.authd.existingSecret | default "wazuh-authd-pass" }} 
@@ -53,6 +55,7 @@ spec:
           emptyDir: {}
 
       initContainers:
+        {{- if .Values.wazuh.googleWorkspace.existingSecret }}
         - name: install-wodle-gworkspace
           image: alpine
           volumeMounts:
@@ -80,7 +83,7 @@ spec:
               # Copy only the wodle directory to the shared volume
               mkdir -p /var/ossec/wodles/gworkspace
               cp -r /tmp/wazuh-gworkspace/wodle/* /var/ossec/wodles/gworkspace/
-
+        {{- end }}
         - name: update-index
           image: alpine
           command: 
@@ -144,9 +147,11 @@ spec:
               name: result-config
             - name: scripts-volume
               mountPath: /entrypoint-scripts
+            {{- if .Values.wazuh.googleWorkspace.existingSecret }}
             - mountPath: /gws-secrets/
               name: gws-secrets
               readOnly: true
+            {{- end }}
             # Certs
             - mountPath: /etc/ssl/root-ca.pem
               name: filebeat-certs
