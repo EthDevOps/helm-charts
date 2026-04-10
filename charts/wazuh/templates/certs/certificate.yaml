@@ -85,6 +85,10 @@ spec:
   isCA: false
 
   commonName: indexer
+  dnsNames:
+    - indexer
+    - indexer.wazuh.svc
+    - indexer.wazuh.svc.cluster.local
   subject:
     organizations:
       - Company
