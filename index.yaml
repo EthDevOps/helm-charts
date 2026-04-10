@@ -5934,6 +5934,16 @@ entries:
   prosody:
   - apiVersion: v2
     appVersion: stable-10741
+    created: "2026-04-10T09:27:34.429470516Z"
+    description: Prosody XMPP server for Jitsi Meet on Kubernetes
+    digest: a87b3ef16685ce7097e448281f7781cc3963400bcfd35bb4c0e576b04a557718
+    name: prosody
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/prosody-1.4.10/prosody-1.4.10.tgz
+    version: 1.4.10
+  - apiVersion: v2
+    appVersion: stable-10741
     created: "2026-04-10T09:14:30.014901912Z"
     description: Prosody XMPP server for Jitsi Meet on Kubernetes
     digest: 9c23f678d5c17aaa9be8aa976139d1703623df12ae437fd13b396c9b4b61a862
@@ -8203,4 +8213,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-04-10T09:14:30.015981552Z"
+generated: "2026-04-10T09:27:34.430082744Z"
