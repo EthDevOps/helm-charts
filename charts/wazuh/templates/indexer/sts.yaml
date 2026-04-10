@@ -104,11 +104,11 @@ spec:
               subPath: tls.key
             # Config
             - name: indexer-conf
-              mountPath: /usr/share/wazuh-indexer/opensearch.yml
+              mountPath: /usr/share/wazuh-indexer/config/opensearch.yml
               subPath: opensearch.yml
               readOnly: true
             - name: indexer-conf
-              mountPath: /usr/share/wazuh-indexer/opensearch-security/internal_users.yml
+              mountPath: /usr/share/wazuh-indexer/config/opensearch-security/internal_users.yml
               subPath: internal_users.yml
               readOnly: true
           ports:
