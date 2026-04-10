@@ -10,6 +10,7 @@ data:
   AUTH_TYPE: {{ .Values.auth.type }}
   ADAPTER_INTERNAL_URL: http://{{ .Release.Name }}-keycloak-adapter-svc:9000
   JWT_ALLOW_EMPTY: "1"
+  JICOFO_AUTH_TYPE: "internal"
   JICOFO_AUTH_LIFETIME: "100 milliseconds"
   PROSODY_AUTH_TYPE: "jwt"
   ENABLE_AUTO_LOGIN: "0"
