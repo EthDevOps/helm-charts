@@ -341,6 +341,7 @@ Component "{{ $XMPP_MUC_DOMAIN }}" "muc"
         {{ end }}
         "muc_password_whitelist";
         "token_affiliation";
+        "token_lobby_bypass";
     }
 
     {{ if $ENABLE_RATE_LIMITS -}}
