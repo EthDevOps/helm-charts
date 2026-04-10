@@ -2,17 +2,15 @@ apiVersion: v2
 name: wazuh
 description: Wazuh is a free and open source security platform that unifies XDR and SIEM protection for endpoints and cloud workloads.
 type: application
-appVersion: 4.10.1
-version: 0.0.18
+appVersion: 4.14.4
+version: 0.1.0
 home: https://wazuh.com/
 sources:
+  - https://github.com/EthDevOps/helm-charts
   - https://github.com/morgoved/wazuh-helm
 maintainers:
-  - name: Dani
-    email: andre.gomes@promptlyhealth.com
-    url: https://github.com/Ca-moes
-  - name: Morgoved
-    url: https://github.com/morgoved
+  - name: EthDevOps
+    url: https://github.com/EthDevOps
 icon: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/icon.png
 keywords:
   - security

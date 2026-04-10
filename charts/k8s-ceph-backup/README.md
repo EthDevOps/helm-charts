@@ -1,0 +1,83 @@
+# k8s-ceph-backup
+
+![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+
+Creates backups of PVC via CEPH
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| backups[0].namespace | string | `"production"` |  |
+| backups[0].schedule | string | `"0 2 * * *"` |  |
+| config.backup.tempDir | string | `"/tmp/k8s-ceph-backup"` |  |
+| config.ceph.configPath | string | `"/etc/ceph/ceph.conf"` |  |
+| config.ceph.keyringPath | string | `"/etc/ceph/keyring"` |  |
+| config.ceph.rbdPath | string | `"rbd"` |  |
+| config.gpg.path | string | `"gpg"` |  |
+| config.gpg.recipient | string | `"backup@example.com"` |  |
+| config.gpg.trustModel | string | `"always"` |  |
+| config.logging.format | string | `"text"` |  |
+| config.logging.level | string | `"info"` |  |
+| config.minio.bucketName | string | `"k8s-ceph-backups"` |  |
+| config.minio.endpoint | string | `"minio.example.com:9000"` |  |
+| config.minio.useSsl | bool | `true` |  |
+| cronjob.concurrencyPolicy | string | `"Forbid"` |  |
+| cronjob.failedJobsHistoryLimit | int | `1` |  |
+| cronjob.restartPolicy | string | `"OnFailure"` |  |
+| cronjob.schedule | string | `"0 2 * * *"` |  |
+| cronjob.successfulJobsHistoryLimit | int | `3` |  |
+| cronjob.suspend | bool | `false` |  |
+| cronjob.timeZone | string | `"UTC"` |  |
+| externalSecrets.ceph.enabled | bool | `false` |  |
+| externalSecrets.ceph.keys.cephConf.key | string | `"ceph/config"` |  |
+| externalSecrets.ceph.keys.cephConf.property | string | `"ceph.conf"` |  |
+| externalSecrets.ceph.keys.keyring.key | string | `"ceph/keyring"` |  |
+| externalSecrets.ceph.keys.keyring.property | string | `"keyring"` |  |
+| externalSecrets.ceph.refreshInterval | string | `"1h"` |  |
+| externalSecrets.ceph.secretName | string | `""` |  |
+| externalSecrets.enabled | bool | `false` |  |
+| externalSecrets.gpg.enabled | bool | `false` |  |
+| externalSecrets.gpg.keys.pubkey.key | string | `"gpg/pubkey"` |  |
+| externalSecrets.gpg.keys.pubkey.property | string | `"pubkey.asc"` |  |
+| externalSecrets.gpg.keys.trustdb.key | string | `"gpg/trustdb"` |  |
+| externalSecrets.gpg.keys.trustdb.property | string | `"trustdb.gpg"` |  |
+| externalSecrets.gpg.refreshInterval | string | `"1h"` |  |
+| externalSecrets.gpg.secretName | string | `""` |  |
+| externalSecrets.minio.enabled | bool | `false` |  |
+| externalSecrets.minio.keys.accessKey.key | string | `"minio/credentials"` |  |
+| externalSecrets.minio.keys.accessKey.property | string | `"access-key"` |  |
+| externalSecrets.minio.keys.secretKey.key | string | `"minio/credentials"` |  |
+| externalSecrets.minio.keys.secretKey.property | string | `"secret-key"` |  |
+| externalSecrets.minio.refreshInterval | string | `"1h"` |  |
+| externalSecrets.minio.secretName | string | `""` |  |
+| externalSecrets.secretStore.kind | string | `"SecretStore"` |  |
+| externalSecrets.secretStore.name | string | `""` |  |
+| fullnameOverride | string | `""` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-ceph-backup"` |  |
+| image.tag | string | `"v0.0.2"` |  |
+| nameOverride | string | `""` |  |
+| namespace | string | `""` |  |
+| resources.limits.cpu | string | `"500m"` |  |
+| resources.limits.memory | string | `"512Mi"` |  |
+| resources.requests.cpu | string | `"250m"` |  |
+| resources.requests.memory | string | `"64Mi"` |  |
+| secrets.ceph.cephConf | string | `"[global]\n    auth_client_required = cephx\n    auth_cluster_required = cephx\n    auth_service_required = cephx\n    mon_allow_pool_delete = true\n    ms_bind_ipv4 = true\n    ms_bind_ipv6 = false\n    osd_pool_default_min_size = 2\n    osd_pool_default_size = 3\n[client]\n    keyring = /etc/ceph/keyring\n"` |  |
+| secrets.ceph.external | bool | `false` |  |
+| secrets.ceph.keyring | string | `"[client.admin]\n    caps mds = \"allow *\"\n    caps mgr = \"allow *\"\n    caps mon = \"allow *\"\n    caps osd = \"allow *\"\n"` |  |
+| secrets.ceph.secretName | string | `""` |  |
+| secrets.gpg.external | bool | `false` |  |
+| secrets.gpg.pubkey | string | `"-----BEGIN PGP PUBLIC KEY BLOCK-----\n-----END PGP PUBLIC KEY BLOCK-----\n"` |  |
+| secrets.gpg.secretName | string | `""` |  |
+| secrets.gpg.trustdb | string | `""` |  |
+| secrets.minio.accessKey | string | `"your-access-key"` |  |
+| secrets.minio.external | bool | `false` |  |
+| secrets.minio.secretKey | string | `"your-secret-key"` |  |
+| secrets.minio.secretName | string | `""` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `""` |  |
+| tempStorage.sizeLimit | string | `"10Gi"` |  |
+
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)
