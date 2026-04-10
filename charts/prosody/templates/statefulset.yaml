@@ -38,7 +38,7 @@ spec:
       initContainers:
         - name: download-plugins
           image: alpine
-          command: ['sh', '-c', 'apk add wget && wget -i /urls/plugins.txt -P /prosody-plugins-custom']
+          command: ['sh', '-c', 'apk add wget && wget -i /urls/plugins.txt -P /prosody-plugins-custom && sed -i "s/create-persistent-lobby-room/create-lobby-room/g" /prosody-plugins-custom/mod_lobby_autostart.lua 2>/dev/null; true']
           volumeMounts:
           - name: custom-plugins
             mountPath: /prosody-plugins-custom
