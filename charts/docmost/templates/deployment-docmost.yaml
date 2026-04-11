@@ -14,6 +14,15 @@ spec:
       labels:
         app: {{ .Release.Name }}-docmost
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox:latest
+          command: ["sh", "-c", "chown -R 1000:1000 /app/data/storage"]
+          volumeMounts:
+            - name: docmost-storage
+              mountPath: /app/data/storage
+          securityContext:
+            runAsUser: 0
       containers:
         - name: docmost
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
