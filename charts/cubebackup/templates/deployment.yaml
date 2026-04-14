@@ -35,10 +35,7 @@ spec:
             - name: vol-index
               mountPath: /opt/cubebackup/index
           {{- if .Values.maintenance }}
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/sh", "-c", "touch /cubebackup_maintenance"]
+          command: ["/bin/sh", "-c", "touch /cubebackup_maintenance && exec /opt/cubebackup/bin/start.sh"]
           {{- end }}
       nodeSelector:
         kubernetes.io/os: linux
