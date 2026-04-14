@@ -3,6 +3,28 @@ entries:
   appflowy:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-04-14T15:40:00.597067291Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.6
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.5
+    description: AppFlowy Cloud - Collaborative workspace platform
+    digest: e2083b850b0218d2708cd138ed0e92bc747a20716f2715638f1be6bec99ea30c
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: appflowy
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/appflowy-0.1.1/appflowy-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-04-14T14:43:44.866206746Z"
     dependencies:
     - condition: postgresql.enabled
@@ -8598,4 +8620,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-04-14T14:43:44.866993544Z"
+generated: "2026-04-14T15:40:00.5987209Z"
