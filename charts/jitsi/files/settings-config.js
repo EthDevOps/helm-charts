@@ -454,6 +454,11 @@ config.videoQuality.maxBitratesVideo.AV1 = { low: {{ .Env.VIDEOQUALITY_BITRATE_A
  // Reactions
 config.disableReactions = {{ $DISABLE_REACTIONS }};
 
+// Disabled sounds
+{{ if .Env.DISABLED_SOUNDS -}}
+config.disabledSounds = [ '{{ join "','" (splitList "," .Env.DISABLED_SOUNDS) }}' ];
+{{ end -}}
+
 // Polls
 config.disablePolls = {{ $DISABLE_POLLS }};
 
