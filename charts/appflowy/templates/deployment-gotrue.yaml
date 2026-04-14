@@ -40,9 +40,23 @@ spec:
             - name: GOTRUE_MAILER_AUTOCONFIRM
               value: {{ .Values.gotrue.mailerAutoconfirm | quote }}
             - name: GOTRUE_ADMIN_EMAIL
+              {{- if .Values.gotrue.existingSecret.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gotrue.existingSecret.name }}
+                  key: {{ .Values.gotrue.existingSecret.adminEmailKey }}
+              {{- else }}
               value: {{ .Values.gotrue.adminEmail | quote }}
+              {{- end }}
             - name: GOTRUE_ADMIN_PASSWORD
+              {{- if .Values.gotrue.existingSecret.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gotrue.existingSecret.name }}
+                  key: {{ .Values.gotrue.existingSecret.adminPasswordKey }}
+              {{- else }}
               value: {{ .Values.gotrue.adminPassword | quote }}
+              {{- end }}
             - name: GOTRUE_JWT_SECRET
               valueFrom:
                 secretKeyRef:

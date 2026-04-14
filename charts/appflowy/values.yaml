@@ -21,9 +21,14 @@ gotrue:
     port: 9999
     nodePort: ""
     annotations: {}
-  # -- GoTrue admin credentials
+  # -- GoTrue admin credentials (ignored if existingSecret is set)
   adminEmail: ""
   adminPassword: ""
+  # -- Existing secret for admin credentials
+  existingSecret:
+    name: ""
+    adminEmailKey: GOTRUE_ADMIN_EMAIL
+    adminPasswordKey: GOTRUE_ADMIN_PASSWORD
   # -- Disable new user signups
   disableSignup: false
   # -- Auto-confirm email addresses
