@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-admin
+spec:
+  replicas: {{ .Values.admin.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-admin
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-admin
+    spec:
+      containers:
+        - name: admin-frontend
+          image: {{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag }}
+          imagePullPolicy: {{ .Values.admin.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: APPFLOWY_BASE_URL
+              value: {{ include "appflowy.baseUrl" . | quote }}
+            - name: APPFLOWY_GOTRUE_BASE_URL
+              value: "{{ include "appflowy.baseUrl" . }}/gotrue"
+          {{- with .Values.admin.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

@@ -1,0 +1,21 @@
+{{- if .Values.search.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-search-app
+  {{- with .Values.search.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.search.service.type | default "ClusterIP" }}
+  ports:
+    - name: http
+      port: {{ .Values.search.service.port }}
+      targetPort: 4002
+      {{- if and (eq .Values.search.service.type "NodePort") .Values.search.service.nodePort }}
+      nodePort: {{ .Values.search.service.nodePort }}
+      {{- end }}
+  selector:
+    app: {{ .Release.Name }}-search
+{{- end }}

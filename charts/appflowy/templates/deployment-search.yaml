@@ -1,0 +1,68 @@
+{{- if .Values.search.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-search
+spec:
+  replicas: {{ .Values.search.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-search
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-search
+    spec:
+      containers:
+        - name: appflowy-search
+          image: {{ .Values.search.image.repository }}:{{ .Values.search.image.tag }}
+          imagePullPolicy: {{ .Values.search.image.pullPolicy }}
+          ports:
+            - containerPort: 4002
+          env:
+            - name: RUST_LOG
+              value: "info"
+            - name: APPFLOWY_SEARCH_HOST
+              value: "[::]"
+            - name: APPFLOWY_SEARCH_PORT
+              value: "4002"
+            - name: APPFLOWY_SEARCH_DATABASE_URL
+              value: {{ include "appflowy.databaseUrl" . | quote }}
+            - name: APPFLOWY_SEARCH_REDIS_URL
+              value: {{ include "appflowy.redisUrl" . | quote }}
+            - name: APPFLOWY_GOTRUE_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret.name }}
+                  key: {{ .Values.existingSecret.jwtSecretKey }}
+            - name: APPFLOWY_BACKGROUND_INDEXER_ENABLED
+              value: {{ .Values.search.backgroundIndexerEnabled | quote }}
+            - name: APPFLOWY_INDEXER_DATABASE_ENABLED
+              value: {{ .Values.search.databaseIndexerEnabled | quote }}
+            - name: APPFLOWY_KEYWORD_SEARCH_ENABLED
+              value: {{ .Values.search.keywordSearchEnabled | quote }}
+            - name: APPFLOWY_KEYWORD_WORKER_ENABLED
+              value: "true"
+            - name: APPFLOWY_KEYWORD_INDEX_MAP_SIZE_BYTES
+              value: {{ .Values.search.keywordIndexMapSizeBytes | quote }}
+            - name: APPFLOWY_KEYWORD_INDEX_DIR
+              value: "/var/lib/appflowy/keyword_index"
+            {{- if .Values.openai.existingSecret.name }}
+            - name: AI_OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.openai.existingSecret.name }}
+                  key: {{ .Values.openai.existingSecret.apiKeyKey }}
+            {{- end }}
+          volumeMounts:
+            - name: keyword-index
+              mountPath: /var/lib/appflowy/keyword_index
+          {{- with .Values.search.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: keyword-index
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-search-pvc
+{{- end }}

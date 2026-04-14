@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-gotrue
+spec:
+  replicas: {{ .Values.gotrue.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-gotrue
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-gotrue
+    spec:
+      containers:
+        - name: gotrue
+          image: {{ .Values.gotrue.image.repository }}:{{ .Values.gotrue.image.tag }}
+          imagePullPolicy: {{ .Values.gotrue.image.pullPolicy }}
+          ports:
+            - containerPort: 9999
+          env:
+            - name: GOTRUE_DB_DRIVER
+              value: "postgres"
+            - name: DATABASE_URL
+              value: {{ include "appflowy.databaseUrl" . | quote }}
+            - name: PORT
+              value: "9999"
+            - name: GOTRUE_SITE_URL
+              value: {{ include "appflowy.baseUrl" . | quote }}
+            - name: GOTRUE_URI_ALLOW_LIST
+              value: "**"
+            - name: API_EXTERNAL_URL
+              value: "{{ include "appflowy.baseUrl" . }}/gotrue"
+            - name: GOTRUE_JWT_EXP
+              value: {{ .Values.gotrue.jwtExp | quote }}
+            - name: GOTRUE_JWT_ADMIN_GROUP_NAME
+              value: "supabase_admin"
+            - name: GOTRUE_DISABLE_SIGNUP
+              value: {{ .Values.gotrue.disableSignup | quote }}
+            - name: GOTRUE_MAILER_AUTOCONFIRM
+              value: {{ .Values.gotrue.mailerAutoconfirm | quote }}
+            - name: GOTRUE_ADMIN_EMAIL
+              value: {{ .Values.gotrue.adminEmail | quote }}
+            - name: GOTRUE_ADMIN_PASSWORD
+              value: {{ .Values.gotrue.adminPassword | quote }}
+            - name: GOTRUE_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret.name }}
+                  key: {{ .Values.existingSecret.jwtSecretKey }}
+            - name: GOTRUE_MAILER_URLPATHS_CONFIRMATION
+              value: "/gotrue/verify"
+            - name: GOTRUE_MAILER_URLPATHS_INVITE
+              value: "/gotrue/verify"
+            - name: GOTRUE_MAILER_URLPATHS_RECOVERY
+              value: "/gotrue/verify"
+            - name: GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE
+              value: "/gotrue/verify"
+          {{- if .Values.smtp.enabled }}
+            - name: GOTRUE_SMTP_HOST
+              value: {{ .Values.smtp.host | quote }}
+            - name: GOTRUE_SMTP_PORT
+              value: {{ .Values.smtp.port | quote }}
+            - name: GOTRUE_SMTP_USER
+              value: {{ .Values.smtp.username | quote }}
+            - name: GOTRUE_SMTP_ADMIN_EMAIL
+              value: {{ .Values.smtp.fromAddress | quote }}
+            - name: GOTRUE_SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.smtp.existingSecret.name }}
+                  key: {{ .Values.smtp.existingSecret.passwordKey }}
+          {{- end }}
+          {{- if .Values.oauth.google.enabled }}
+            - name: GOTRUE_EXTERNAL_GOOGLE_ENABLED
+              value: "true"
+            - name: GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI
+              value: {{ .Values.oauth.google.redirectUri | quote }}
+            - name: GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oauth.google.existingSecret.name }}
+                  key: {{ .Values.oauth.google.existingSecret.clientIdKey }}
+            - name: GOTRUE_EXTERNAL_GOOGLE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oauth.google.existingSecret.name }}
+                  key: {{ .Values.oauth.google.existingSecret.clientSecretKey }}
+          {{- end }}
+          {{- if .Values.oauth.github.enabled }}
+            - name: GOTRUE_EXTERNAL_GITHUB_ENABLED
+              value: "true"
+            - name: GOTRUE_EXTERNAL_GITHUB_REDIRECT_URI
+              value: {{ .Values.oauth.github.redirectUri | quote }}
+            - name: GOTRUE_EXTERNAL_GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oauth.github.existingSecret.name }}
+                  key: {{ .Values.oauth.github.existingSecret.clientIdKey }}
+            - name: GOTRUE_EXTERNAL_GITHUB_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oauth.github.existingSecret.name }}
+                  key: {{ .Values.oauth.github.existingSecret.clientSecretKey }}
+          {{- end }}
+          {{- if .Values.oauth.discord.enabled }}
+            - name: GOTRUE_EXTERNAL_DISCORD_ENABLED
+              value: "true"
+            - name: GOTRUE_EXTERNAL_DISCORD_REDIRECT_URI
+              value: {{ .Values.oauth.discord.redirectUri | quote }}
+            - name: GOTRUE_EXTERNAL_DISCORD_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oauth.discord.existingSecret.name }}
+                  key: {{ .Values.oauth.discord.existingSecret.clientIdKey }}
+            - name: GOTRUE_EXTERNAL_DISCORD_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.oauth.discord.existingSecret.name }}
+                  key: {{ .Values.oauth.discord.existingSecret.clientSecretKey }}
+          {{- end }}
+          {{- with .Values.gotrue.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9999
+            initialDelaySeconds: 40
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9999
+            initialDelaySeconds: 10
+            periodSeconds: 5

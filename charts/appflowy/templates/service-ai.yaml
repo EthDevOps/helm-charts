@@ -1,0 +1,21 @@
+{{- if .Values.ai.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-ai-app
+  {{- with .Values.ai.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.ai.service.type | default "ClusterIP" }}
+  ports:
+    - name: http
+      port: {{ .Values.ai.service.port }}
+      targetPort: 5001
+      {{- if and (eq .Values.ai.service.type "NodePort") .Values.ai.service.nodePort }}
+      nodePort: {{ .Values.ai.service.nodePort }}
+      {{- end }}
+  selector:
+    app: {{ .Release.Name }}-ai
+{{- end }}

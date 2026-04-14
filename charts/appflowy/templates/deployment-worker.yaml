@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-worker
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-worker
+    spec:
+      containers:
+        - name: appflowy-worker
+          image: {{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          env:
+            - name: RUST_LOG
+              value: "info"
+            - name: APPFLOWY_ENVIRONMENT
+              value: "production"
+            - name: APPFLOWY_WORKER_ENVIRONMENT
+              value: "production"
+            - name: APPFLOWY_WORKER_DATABASE_URL
+              value: {{ include "appflowy.databaseUrl" . | quote }}
+            - name: APPFLOWY_WORKER_DATABASE_NAME
+              value: {{ .Values.postgresql.auth.database | quote }}
+            - name: APPFLOWY_WORKER_REDIS_URL
+              value: {{ include "appflowy.redisUrl" . | quote }}
+            - name: APPFLOWY_WORKER_IMPORT_TICK_INTERVAL
+              value: {{ .Values.worker.importTickInterval | quote }}
+            - name: APPFLOWY_S3_USE_MINIO
+              value: {{ .Values.s3.useMinio | quote }}
+            {{- if .Values.s3.endpoint }}
+            - name: APPFLOWY_S3_MINIO_URL
+              value: {{ .Values.s3.endpoint | quote }}
+            {{- end }}
+            - name: APPFLOWY_S3_BUCKET
+              value: {{ .Values.s3.bucket | quote }}
+            - name: APPFLOWY_S3_REGION
+              value: {{ .Values.s3.region | quote }}
+            - name: APPFLOWY_S3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret.name }}
+                  key: {{ .Values.s3.existingSecret.accessKeyIdKey }}
+            - name: APPFLOWY_S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret.name }}
+                  key: {{ .Values.s3.existingSecret.secretAccessKeyKey }}
+          {{- if .Values.smtp.enabled }}
+            - name: APPFLOWY_MAILER_SMTP_HOST
+              value: {{ .Values.smtp.host | quote }}
+            - name: APPFLOWY_MAILER_SMTP_PORT
+              value: {{ .Values.smtp.port | quote }}
+            - name: APPFLOWY_MAILER_SMTP_USERNAME
+              value: {{ .Values.smtp.username | quote }}
+            - name: APPFLOWY_MAILER_SMTP_EMAIL
+              value: {{ .Values.smtp.fromAddress | quote }}
+            - name: APPFLOWY_MAILER_SMTP_TLS_KIND
+              value: {{ .Values.smtp.tlsKind | quote }}
+            - name: APPFLOWY_MAILER_SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.smtp.existingSecret.name }}
+                  key: {{ .Values.smtp.existingSecret.passwordKey }}
+          {{- end }}
+          {{- with .Values.worker.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

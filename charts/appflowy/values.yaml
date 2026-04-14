@@ -1,0 +1,211 @@
+# -- Domain name for the AppFlowy instance
+appDomain: appflowy.example.com
+
+# -- Existing secret containing GOTRUE_JWT_SECRET
+existingSecret:
+  # -- Name of the secret
+  name: ""
+  # -- Key in the secret containing the JWT secret
+  jwtSecretKey: GOTRUE_JWT_SECRET
+
+# -- GoTrue authentication service
+gotrue:
+  image:
+    repository: appflowyinc/gotrue
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources: {}
+  service:
+    type: NodePort
+    port: 9999
+    nodePort: ""
+    annotations: {}
+  # -- GoTrue admin credentials
+  adminEmail: ""
+  adminPassword: ""
+  # -- Disable new user signups
+  disableSignup: false
+  # -- Auto-confirm email addresses
+  mailerAutoconfirm: false
+  # -- JWT expiry in seconds
+  jwtExp: "7200"
+
+# -- AppFlowy Cloud core backend
+cloud:
+  image:
+    repository: appflowyinc/appflowy_cloud
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources: {}
+  service:
+    type: NodePort
+    port: 8000
+    nodePort: ""
+    annotations: {}
+  # -- Max database connections
+  databaseMaxConnections: "40"
+
+# -- AppFlowy background worker
+worker:
+  image:
+    repository: appflowyinc/appflowy_worker
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources: {}
+  # -- Import tick interval in seconds
+  importTickInterval: "30"
+
+# -- AppFlowy web frontend
+web:
+  image:
+    repository: appflowyinc/appflowy_web
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources: {}
+  service:
+    type: NodePort
+    port: 80
+    nodePort: ""
+    annotations: {}
+
+# -- Admin frontend dashboard
+admin:
+  image:
+    repository: appflowyinc/admin_frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources: {}
+  service:
+    type: NodePort
+    port: 3000
+    nodePort: ""
+    annotations: {}
+
+# -- Search service (optional)
+search:
+  enabled: false
+  image:
+    repository: appflowyinc/appflowy_search
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources: {}
+  service:
+    type: NodePort
+    port: 4002
+    nodePort: ""
+    annotations: {}
+  persistence:
+    size: 5Gi
+  # -- Enable background indexer
+  backgroundIndexerEnabled: true
+  # -- Enable database indexer
+  databaseIndexerEnabled: false
+  # -- Enable keyword search
+  keywordSearchEnabled: true
+  # -- Keyword index map size in bytes (default 2GB)
+  keywordIndexMapSizeBytes: "2147483648"
+
+# -- AI service (optional)
+ai:
+  enabled: false
+  image:
+    repository: appflowyinc/appflowy_ai
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources: {}
+  service:
+    type: NodePort
+    port: 5001
+    nodePort: ""
+    annotations: {}
+
+# -- PostgreSQL subchart configuration (pgvector required for AppFlowy)
+postgresql:
+  enabled: true
+  image:
+    repository: pgvector/pgvector
+    tag: pg16
+  auth:
+    username: appflowy
+    password: appflowy
+    database: appflowy
+
+# -- Redis subchart configuration
+redis:
+  enabled: true
+  architecture: standalone
+  master:
+    service:
+      ports:
+        redis: 6379
+
+# -- S3 storage configuration (uses existing S3, no minio)
+s3:
+  # -- Create bucket on startup
+  createBucket: true
+  # -- Use minio-compatible endpoint
+  useMinio: false
+  # -- S3 bucket name
+  bucket: appflowy
+  # -- S3 region
+  region: us-east-1
+  # -- S3 endpoint URL
+  endpoint: ""
+  # -- Presigned URL endpoint (if different from endpoint)
+  presignedUrlEndpoint: ""
+  # -- Existing secret with S3 credentials
+  existingSecret:
+    name: ""
+    accessKeyIdKey: AWS_ACCESS_KEY_ID
+    secretAccessKeyKey: AWS_SECRET_ACCESS_KEY
+
+# -- SMTP mail configuration
+smtp:
+  enabled: false
+  host: ""
+  port: "587"
+  username: ""
+  fromAddress: "noreply@example.com"
+  fromName: "AppFlowy"
+  # -- TLS kind: none, starttls, tls
+  tlsKind: "starttls"
+  existingSecret:
+    name: ""
+    passwordKey: SMTP_PASSWORD
+
+# -- OAuth provider configuration
+oauth:
+  google:
+    enabled: false
+    redirectUri: ""
+    existingSecret:
+      name: ""
+      clientIdKey: GOOGLE_CLIENT_ID
+      clientSecretKey: GOOGLE_CLIENT_SECRET
+  github:
+    enabled: false
+    redirectUri: ""
+    existingSecret:
+      name: ""
+      clientIdKey: GITHUB_CLIENT_ID
+      clientSecretKey: GITHUB_CLIENT_SECRET
+  discord:
+    enabled: false
+    redirectUri: ""
+    existingSecret:
+      name: ""
+      clientIdKey: DISCORD_CLIENT_ID
+      clientSecretKey: DISCORD_CLIENT_SECRET
+
+# -- OpenAI configuration (for search and AI services)
+openai:
+  existingSecret:
+    name: ""
+    apiKeyKey: OPENAI_API_KEY
