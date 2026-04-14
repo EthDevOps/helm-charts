@@ -31,6 +31,8 @@ spec:
               value: {{ include "appflowy.redisUrl" . | quote }}
             - name: APPFLOWY_WORKER_IMPORT_TICK_INTERVAL
               value: {{ .Values.worker.importTickInterval | quote }}
+            - name: APPFLOWY_S3_CREATE_BUCKET
+              value: {{ .Values.s3.createBucket | quote }}
             - name: APPFLOWY_S3_USE_MINIO
               value: {{ .Values.s3.useMinio | quote }}
             {{- if .Values.s3.endpoint }}
