@@ -604,6 +604,21 @@ entries:
   cubebackup:
   - apiVersion: v2
     appVersion: v1.0.0
+    created: "2026-04-14T09:17:59.569711923Z"
+    description: A Helm chart for cubebackup
+    digest: fc1b3740d1e0d9a222e125a86e60609c86b4ee03b75e16875eed20e4e0bfe223
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cubebackup
+    sources:
+    - https://cubebackup.com
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cubebackup-0.1.1/cubebackup-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v1.0.0
     created: "2025-03-10T06:41:38.283459536Z"
     description: A Helm chart for cubebackup
     digest: 53141746d0175776048f5463f7728f07f9316032b9abc7926336ff15beef2e69
@@ -8530,4 +8545,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-04-11T08:43:22.921581544Z"
+generated: "2026-04-14T09:17:59.570559541Z"
