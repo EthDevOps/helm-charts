@@ -1,3 +1,5 @@
 image:
   tag: latest
   repository: docker.ethquokkaops.io/dh/cubebackup/cubebackup
+
+maintenance: false

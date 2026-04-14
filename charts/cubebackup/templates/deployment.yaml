@@ -34,9 +34,12 @@ spec:
               mountPath: /opt/cubebackup/log
             - name: vol-index
               mountPath: /opt/cubebackup/index
-            {{- with .Values.extraVolumeMounts }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
+          {{- if .Values.maintenance }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "touch /cubebackup_maintenance"]
+          {{- end }}
       nodeSelector:
         kubernetes.io/os: linux
       volumes:
@@ -52,9 +55,6 @@ spec:
         - name: vol-db
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-db-pvc
-        {{- with .Values.extraVolumes }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
