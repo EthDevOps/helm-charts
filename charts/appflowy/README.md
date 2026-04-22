@@ -1,146 +1,62 @@
-# AppFlowy Cloud Helm Chart
+# appflowy
 
-Helm chart for [AppFlowy Cloud](https://appflowy.io) - a collaborative workspace platform.
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
-## Prerequisites
-
-- Kubernetes 1.24+
-- Helm 3.x
-- An external S3-compatible storage endpoint
-- A load balancer in front of the cluster for path-based routing
-
-## Required Secrets
-
-The chart does not create any secrets. You must create them before installing.
-
-### 1. JWT Secret (required)
-
-Referenced by `existingSecret.name` in values.yaml.
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: appflowy-jwt
-type: Opaque
-stringData:
-  GOTRUE_JWT_SECRET: "<your-jwt-secret>"
-```
-
-### 2. S3 Credentials (required)
-
-Referenced by `s3.existingSecret.name` in values.yaml.
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: appflowy-s3
-type: Opaque
-stringData:
-  AWS_ACCESS_KEY_ID: "<your-access-key>"
-  AWS_SECRET_ACCESS_KEY: "<your-secret-key>"
-```
-
-### 3. SMTP Credentials (optional, if `smtp.enabled: true`)
-
-Referenced by `smtp.existingSecret.name` in values.yaml.
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: appflowy-smtp
-type: Opaque
-stringData:
-  SMTP_PASSWORD: "<your-smtp-password>"
-```
-
-### 4. OAuth Provider Secrets (optional, per provider)
-
-Referenced by `oauth.<provider>.existingSecret.name` in values.yaml.
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: appflowy-oauth-google
-type: Opaque
-stringData:
-  GOOGLE_CLIENT_ID: "<client-id>"
-  GOOGLE_CLIENT_SECRET: "<client-secret>"
-```
-
-Repeat for GitHub (`GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`) and Discord (`DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET`).
-
-### 5. OpenAI API Key (optional, if `search.enabled` or `ai.enabled`)
-
-Referenced by `openai.existingSecret.name` in values.yaml.
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: appflowy-openai
-type: Opaque
-stringData:
-  OPENAI_API_KEY: "<your-openai-api-key>"
-```
-
-## Service / Path Mapping
-
-All services are exposed as `NodePort` services. Your external load balancer must route traffic based on path prefixes to the correct service.
-
-| Path | Service Name | Port | Description |
-|------|-------------|------|-------------|
-| `/gotrue` | `<release>-gotrue-app` | 9999 | Authentication (GoTrue) |
-| `/api` | `<release>-cloud-app` | 8000 | Core backend API |
-| `/ws` | `<release>-cloud-app` | 8000 | WebSocket connections |
-| `/console` | `<release>-admin-app` | 3000 | Admin dashboard |
-| `/` | `<release>-web-app` | 80 | Web frontend (catch-all) |
-| `/search` | `<release>-search-app` | 4002 | Search service (if enabled) |
-| `/ai` | `<release>-ai-app` | 5001 | AI service (if enabled) |
-
-The `/` path is a catch-all and must be configured with the lowest priority. More specific paths (`/gotrue`, `/api`, `/ws`, `/console`) must take precedence.
-
-The `/ws` path requires WebSocket upgrade support on your load balancer.
-
-## Installation
-
-```bash
-helm dependency update .
-helm install appflowy . \
-  --set appDomain=appflowy.example.com \
-  --set existingSecret.name=appflowy-jwt \
-  --set s3.existingSecret.name=appflowy-s3 \
-  --set s3.endpoint=https://s3.example.com \
-  --set s3.bucket=appflowy \
-  --set s3.region=us-east-1
-```
-
-## Components
-
-| Component | Image | Default | Description |
-|-----------|-------|---------|-------------|
-| GoTrue | `appflowyinc/gotrue` | enabled | Authentication service |
-| Cloud | `appflowyinc/appflowy_cloud` | enabled | Core backend |
-| Worker | `appflowyinc/appflowy_worker` | enabled | Background job processor |
-| Web | `appflowyinc/appflowy_web` | enabled | Web frontend |
-| Admin | `appflowyinc/admin_frontend` | enabled | Admin dashboard |
-| Search | `appflowyinc/appflowy_search` | disabled | Search indexing (`search.enabled`) |
-| AI | `appflowyinc/appflowy_ai` | disabled | AI integration (`ai.enabled`) |
-
-## Dependencies
-
-| Chart | Version | Description |
-|-------|---------|-------------|
-| postgresql | 1.1.6 | PostgreSQL with pgvector (QuokkaOps) |
-| redis | 1.0.5 | Redis standalone (QuokkaOps) |
-
-The PostgreSQL image defaults to `pgvector/pgvector:pg16` since AppFlowy requires the pgvector extension.
+AppFlowy Cloud - Collaborative workspace platform
 
 ## Maintainers
 
-| Name | Email |
-|------|-------|
-| elasticroentgen | markus.keil@ethereum.org |
+| Name | Email | Url |
+| ---- | ------ | --- |
+| elasticroentgen | markus.keil@ethereum.org |  |
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://ethdevops.github.io/helm-charts | postgresql | 1.1.6 |
+| https://ethdevops.github.io/helm-charts | redis | 1.0.5 |
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| admin | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"appflowyinc/admin_frontend","tag":"latest"},"replicaCount":1,"resources":{},"service":{"annotations":{},"nodePort":"","port":3000,"type":"NodePort"}}` | Admin frontend dashboard |
+| ai | object | `{"enabled":false,"image":{"pullPolicy":"IfNotPresent","repository":"appflowyinc/appflowy_ai","tag":"latest"},"replicaCount":1,"resources":{},"service":{"annotations":{},"nodePort":"","port":5001,"type":"NodePort"}}` | AI service (optional) |
+| appDomain | string | `"appflowy.example.com"` | Domain name for the AppFlowy instance |
+| cloud | object | `{"databaseMaxConnections":"40","image":{"pullPolicy":"IfNotPresent","repository":"appflowyinc/appflowy_cloud","tag":"latest"},"replicaCount":1,"resources":{},"service":{"annotations":{},"nodePort":"","port":8000,"type":"NodePort"}}` | AppFlowy Cloud core backend |
+| cloud.databaseMaxConnections | string | `"40"` | Max database connections |
+| existingSecret | object | `{"jwtSecretKey":"GOTRUE_JWT_SECRET","name":""}` | Existing secret containing GOTRUE_JWT_SECRET |
+| existingSecret.jwtSecretKey | string | `"GOTRUE_JWT_SECRET"` | Key in the secret containing the JWT secret |
+| existingSecret.name | string | `""` | Name of the secret |
+| gotrue | object | `{"adminEmail":"","adminPassword":"","disableSignup":false,"existingSecret":{"adminEmailKey":"GOTRUE_ADMIN_EMAIL","adminPasswordKey":"GOTRUE_ADMIN_PASSWORD","name":""},"image":{"pullPolicy":"IfNotPresent","repository":"appflowyinc/gotrue","tag":"latest"},"jwtExp":"7200","mailerAutoconfirm":false,"replicaCount":1,"resources":{},"service":{"annotations":{},"nodePort":"","port":9999,"type":"NodePort"}}` | GoTrue authentication service |
+| gotrue.adminEmail | string | `""` | GoTrue admin credentials (ignored if existingSecret is set) |
+| gotrue.disableSignup | bool | `false` | Disable new user signups |
+| gotrue.existingSecret | object | `{"adminEmailKey":"GOTRUE_ADMIN_EMAIL","adminPasswordKey":"GOTRUE_ADMIN_PASSWORD","name":""}` | Existing secret for admin credentials |
+| gotrue.jwtExp | string | `"7200"` | JWT expiry in seconds |
+| gotrue.mailerAutoconfirm | bool | `false` | Auto-confirm email addresses |
+| oauth | object | `{"discord":{"enabled":false,"existingSecret":{"clientIdKey":"DISCORD_CLIENT_ID","clientSecretKey":"DISCORD_CLIENT_SECRET","name":""},"redirectUri":""},"github":{"enabled":false,"existingSecret":{"clientIdKey":"GITHUB_CLIENT_ID","clientSecretKey":"GITHUB_CLIENT_SECRET","name":""},"redirectUri":""},"google":{"enabled":false,"existingSecret":{"clientIdKey":"GOOGLE_CLIENT_ID","clientSecretKey":"GOOGLE_CLIENT_SECRET","name":""},"redirectUri":""}}` | OAuth provider configuration |
+| openai | object | `{"existingSecret":{"apiKeyKey":"OPENAI_API_KEY","name":""}}` | OpenAI configuration (for search and AI services) |
+| postgresql | object | `{"auth":{"database":"appflowy","password":"appflowy","username":"appflowy"},"enabled":true,"image":{"repository":"pgvector/pgvector","tag":"pg16"}}` | PostgreSQL subchart configuration (pgvector required for AppFlowy) |
+| redis | object | `{"architecture":"standalone","enabled":true,"master":{"service":{"ports":{"redis":6379}}}}` | Redis subchart configuration |
+| s3 | object | `{"bucket":"appflowy","createBucket":true,"endpoint":"","existingSecret":{"accessKeyIdKey":"AWS_ACCESS_KEY_ID","name":"","secretAccessKeyKey":"AWS_SECRET_ACCESS_KEY"},"presignedUrlEndpoint":"","region":"us-east-1","useMinio":false}` | S3 storage configuration (uses existing S3, no minio) |
+| s3.bucket | string | `"appflowy"` | S3 bucket name |
+| s3.createBucket | bool | `true` | Create bucket on startup |
+| s3.endpoint | string | `""` | S3 endpoint URL |
+| s3.existingSecret | object | `{"accessKeyIdKey":"AWS_ACCESS_KEY_ID","name":"","secretAccessKeyKey":"AWS_SECRET_ACCESS_KEY"}` | Existing secret with S3 credentials |
+| s3.presignedUrlEndpoint | string | `""` | Presigned URL endpoint (if different from endpoint) |
+| s3.region | string | `"us-east-1"` | S3 region |
+| s3.useMinio | bool | `false` | Use minio-compatible endpoint |
+| search | object | `{"backgroundIndexerEnabled":true,"databaseIndexerEnabled":false,"enabled":false,"image":{"pullPolicy":"IfNotPresent","repository":"appflowyinc/appflowy_search","tag":"latest"},"keywordIndexMapSizeBytes":"2147483648","keywordSearchEnabled":true,"persistence":{"size":"5Gi"},"replicaCount":1,"resources":{},"service":{"annotations":{},"nodePort":"","port":4002,"type":"NodePort"}}` | Search service (optional) |
+| search.backgroundIndexerEnabled | bool | `true` | Enable background indexer |
+| search.databaseIndexerEnabled | bool | `false` | Enable database indexer |
+| search.keywordIndexMapSizeBytes | string | `"2147483648"` | Keyword index map size in bytes (default 2GB) |
+| search.keywordSearchEnabled | bool | `true` | Enable keyword search |
+| smtp | object | `{"enabled":false,"existingSecret":{"name":"","passwordKey":"SMTP_PASSWORD"},"fromAddress":"noreply@example.com","fromName":"AppFlowy","host":"","port":"587","tlsKind":"starttls","username":""}` | SMTP mail configuration |
+| smtp.tlsKind | string | `"starttls"` | TLS kind: none, starttls, tls |
+| web | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"appflowyinc/appflowy_web","tag":"latest"},"replicaCount":1,"resources":{},"service":{"annotations":{},"nodePort":"","port":80,"type":"NodePort"}}` | AppFlowy web frontend |
+| worker | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"appflowyinc/appflowy_worker","tag":"latest"},"importTickInterval":"30","replicaCount":1,"resources":{}}` | AppFlowy background worker |
+| worker.importTickInterval | string | `"30"` | Import tick interval in seconds |
+
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)
