@@ -29,8 +29,6 @@ metadata:
   labels:
     app: {{ include "wazuh.fullname" . }}-manager
     node-type: master
-  annotations:
-    {{- toYaml .Values.wazuh.master.service.annotations | nindent 4 }}
 spec:
   ports:
     - name: cluster
