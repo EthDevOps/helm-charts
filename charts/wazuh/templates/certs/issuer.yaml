@@ -5,7 +5,6 @@ metadata:
   name: selfsigned-issuer
 spec:
   selfSigned: {}
-  subject: #! What to add here?
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
