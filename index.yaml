@@ -3012,6 +3012,24 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/healthchecks-0.0.1/healthchecks-0.0.1.tgz
     version: 0.0.1
+  huly:
+  - apiVersion: v2
+    appVersion: 0.7.382
+    created: "2026-05-08T08:34:48.144252592Z"
+    description: Huly — open-source project management platform
+    digest: 0363cc67db48b768097c9ad15416ec25bc8ba37101523bb4ccff0cc4748f48ad
+    home: https://huly.io
+    keywords:
+    - huly
+    - project-management
+    - collaboration
+    name: huly
+    sources:
+    - https://github.com/hcengineering/huly-selfhost
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/huly-0.2.0/huly-0.2.0.tgz
+    version: 0.2.0
   jitsi-meet:
   - apiVersion: v2
     appVersion: stable-10741
@@ -8770,4 +8788,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-04-28T14:08:42.797247497Z"
+generated: "2026-05-08T08:34:48.144852093Z"
