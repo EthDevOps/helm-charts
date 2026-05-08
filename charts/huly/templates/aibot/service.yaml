@@ -1,0 +1,19 @@
+{{- if .Values.aibot.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: aibot
+  labels:
+    {{- include "huly.componentLabels" (dict "component" "aibot" "root" .) | nindent 4 }}
+    app: aibot
+  {{- include "huly.serviceAnnotations" (dict "cfg" .Values.aibot.service "root" .) | nindent 2 }}
+spec:
+  {{- include "huly.serviceSpec" (dict "cfg" .Values.aibot.service "root" .) | nindent 2 }}
+  selector:
+    app: aibot
+  ports:
+    - name: http
+      port: 4010
+      targetPort: 4010
+      {{- include "huly.servicePortNodePort" .Values.aibot.service | nindent 6 }}
+{{- end }}

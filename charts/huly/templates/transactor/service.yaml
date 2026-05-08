@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: transactor
+  labels:
+    {{- include "huly.componentLabels" (dict "component" "transactor" "root" .) | nindent 4 }}
+    app: transactor
+  {{- include "huly.serviceAnnotations" (dict "cfg" .Values.transactor.service "root" .) | nindent 2 }}
+spec:
+  {{- include "huly.serviceSpec" (dict "cfg" .Values.transactor.service "root" .) | nindent 2 }}
+  selector:
+    app: transactor
+  ports:
+    - name: http
+      port: 3333
+      targetPort: 3333
+      {{- include "huly.servicePortNodePort" .Values.transactor.service | nindent 6 }}

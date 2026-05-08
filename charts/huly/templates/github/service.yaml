@@ -1,0 +1,19 @@
+{{- if .Values.githubIntegration.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: github
+  labels:
+    {{- include "huly.componentLabels" (dict "component" "github" "root" .) | nindent 4 }}
+    app: github
+  {{- include "huly.serviceAnnotations" (dict "cfg" .Values.githubIntegration.service "root" .) | nindent 2 }}
+spec:
+  {{- include "huly.serviceSpec" (dict "cfg" .Values.githubIntegration.service "root" .) | nindent 2 }}
+  selector:
+    app: github
+  ports:
+    - name: http
+      port: 3500
+      targetPort: 3500
+      {{- include "huly.servicePortNodePort" .Values.githubIntegration.service | nindent 6 }}
+{{- end }}

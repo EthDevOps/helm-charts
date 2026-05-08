@@ -1,0 +1,351 @@
+# ──────────────────────────────────────────────────────────────
+# REQUIRED — set this to your domain
+# ──────────────────────────────────────────────────────────────
+domain: huly.example
+
+# Override the chart name / full release name
+nameOverride: ""
+fullnameOverride: ""
+
+# ──────────────────────────────────────────────────────────────
+# Global image tag for all Huly services
+# ──────────────────────────────────────────────────────────────
+hulyVersion: v0.7.382
+
+# Docker registry prefix for Huly service images.
+# Default "hardcoreeng" pulls from Docker Hub (hardcoreeng/front, etc.).
+# Override to use a private registry, e.g. europe-west3-docker.pkg.dev/kendall-ledo/docker/huly
+hulyRegistry: hardcoreeng
+
+# ──────────────────────────────────────────────────────────────
+# Secrets
+#
+# To use a Secret managed outside the chart (external-secrets, sealed-secrets,
+# Vault, etc.), set `secrets.existingSecret` to the name of a Secret in the
+# release namespace. Required keys:
+#
+#   SERVER_SECRET                — JWT signing secret
+#   STORAGE_CONFIG               — full storage config string (see below)
+#   CR_DB_URL                    — postgres://user:pass@host:26257/db
+#   COCKROACH_PASSWORD           — required when cockroach.enabled=true
+#   REDPANDA_SUPERUSER_PASSWORD  — required when redpanda.enabled=true
+#   AIBOT_PASSWORD               — required when aibot.enabled=true
+#
+# Optional keys (provide when corresponding feature is enabled):
+#   OPENAI_API_KEY, OPENAI_BASE_URL
+#   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+#   GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
+#   OPENID_CLIENT_ID, OPENID_CLIENT_SECRET, OPENID_ISSUER
+#   GITHUB_APP_ID, GITHUB_APP_CLIENT_ID, GITHUB_APP_CLIENT_SECRET,
+#   GITHUB_APP_PRIVATE_KEY, GITHUB_APP_WEBHOOK_SECRET
+#
+# When `existingSecret` is empty, the chart manages a Secret itself and the
+# values below are used. Empty inline values are auto-generated and persist
+# across upgrades via `lookup` of the existing chart-managed Secret.
+# ──────────────────────────────────────────────────────────────
+secrets:
+  # Use a Secret managed outside the chart.
+  existingSecret: ""
+
+  # Inline values (only used when existingSecret is empty)
+  serverSecret: ""
+  # Full storage config string override.
+  # When empty, auto-derived from storage.type + storage.s3.* (or random MinIO creds).
+  # Format: s3|https://s3.example.com?accessKey=X&secretKey=Y&region=us-east-1&rootBucket=data
+  #     or: minio|minio?accessKey=<key>&secretKey=<secret>
+  storageConfig: ""
+  cockroachPassword: ""
+  redpandaPassword: ""
+  # Set this when using an external database (cockroach.enabled=false).
+  crDbUrl: ""
+  aibotPassword: ""
+
+  # OpenAI (required when aibot.enabled=true and existingSecret is empty)
+  openaiApiKey: ""
+  openaiBaseUrl: ""
+
+# ──────────────────────────────────────────────────────────────
+# Authentication providers (set on the account service)
+# At least one provider should be configured for user login.
+# ──────────────────────────────────────────────────────────────
+auth:
+  google:
+    clientId: ""
+    clientSecret: ""
+  github:
+    clientId: ""
+    clientSecret: ""
+  oidc:
+    clientId: ""
+    clientSecret: ""
+    issuer: ""
+  disableSignup: false
+
+# ──────────────────────────────────────────────────────────────
+# Storage backend
+#
+#   type: "minio" — bundled in-cluster MinIO (NOT recommended; testing only)
+#         "s3"   — external S3-compatible object store (recommended).
+#                  Works with rustfs, MinIO operator, AWS S3, GCS via S3 API,
+#                  Backblaze B2, Cloudflare R2, etc.
+#
+# When type=s3 you can either:
+#   a) put accessKey/secretKey here (chart bakes them into STORAGE_CONFIG), or
+#   b) provide STORAGE_CONFIG directly via secrets.existingSecret (preferred
+#      for production — keys never touch values.yaml or the rendered manifest).
+# ──────────────────────────────────────────────────────────────
+storage:
+  type: minio
+  s3:
+    endpoint: ""
+    region: ""
+    accessKey: ""
+    secretKey: ""
+    # rootBucket: store all workspaces as prefixes inside a single bucket.
+    rootBucket: ""
+    # bucketPrefix: prefix prepended to per-workspace bucket names (only used if rootBucket is empty).
+    bucketPrefix: ""
+
+# ──────────────────────────────────────────────────────────────
+# Ingress (path-based routing under one hostname)
+# ──────────────────────────────────────────────────────────────
+ingress:
+  enabled: true
+  className: nginx
+  # Annotations merged into every Ingress resource
+  annotations: {}
+  tls:
+    enabled: true
+    clusterIssuer: letsencrypt-prod
+
+# ──────────────────────────────────────────────────────────────
+# App settings (ConfigMap)
+# ──────────────────────────────────────────────────────────────
+appSettings:
+  modelEnabled: "*"
+  lastNameFirst: "true"
+  title: "Huly Self Host"
+  defaultLanguage: "en"
+  adminEmails: ""
+  desktopChannel: "selfhost"
+
+# ──────────────────────────────────────────────────────────────
+# Global pod settings (applied to all services)
+# ──────────────────────────────────────────────────────────────
+global:
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# ──────────────────────────────────────────────────────────────
+# Default service config block, merged into every component's `.service`.
+# Per-component overrides (e.g. front.service.type) take precedence.
+#
+# Schema (any key can be set on `.service` per component):
+#   type: ClusterIP | NodePort | LoadBalancer | ExternalName
+#   annotations: {}                       # merged with serviceDefaults.annotations
+#   loadBalancerIP: ""                    # cloud-LB only
+#   loadBalancerClass: ""
+#   loadBalancerSourceRanges: []
+#   externalTrafficPolicy: ""             # Local | Cluster
+#   ipFamilyPolicy: ""                    # SingleStack | PreferDualStack | RequireDualStack
+#   ipFamilies: []
+#   allocateLoadBalancerNodePorts: null   # bool, LoadBalancer only
+#   nodePort: null                        # explicit nodePort number (NodePort/LB only)
+#   clusterIP: ""                         # set "None" for headless
+# ──────────────────────────────────────────────────────────────
+serviceDefaults:
+  type: ClusterIP
+  annotations: {}
+
+# ──────────────────────────────────────────────────────────────
+# Infrastructure — set enabled: false to use external services
+#
+# When disabled, provide connection details via:
+#   cockroach:  secrets.crDbUrl  (or STORAGE_CONFIG-style key in existingSecret)
+#   redpanda:   external.redpanda
+#   elastic:    external.elastic
+#   minio:      storage.type=s3 + storage.s3.*
+#   mongodb:    external.mongodb (only when aibot.enabled=true)
+# ──────────────────────────────────────────────────────────────
+cockroach:
+  enabled: true
+  image: cockroachdb/cockroach:v24.2.6
+  database: defaultdb
+  username: selfhost
+  storage: 10Gi
+  storageClassName: ""
+  resources: {}
+
+redpanda:
+  enabled: true
+  image: docker.redpanda.com/redpandadata/redpanda:v24.3.6
+  storage: 5Gi
+  storageClassName: ""
+  resources:
+    limits:
+      memory: 512Mi
+
+elastic:
+  enabled: true
+  image: elasticsearch:7.14.2
+  storage: 10Gi
+  storageClassName: ""
+  javaOpts: "-Xms1024m -Xmx1024m"
+  resources: {}
+
+minio:
+  # Bundled MinIO is OFF by default. Use storage.type=s3 with an external
+  # store (rustfs, MinIO operator, AWS S3, etc.) for any real workload.
+  enabled: false
+  image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+  storage: 50Gi
+  storageClassName: ""
+  resources: {}
+
+mongodb:
+  # Only deployed when aibot.enabled=true
+  enabled: true
+  image: mongo:7.0.16
+  storage: 5Gi
+  storageClassName: ""
+  resources: {}
+
+# ──────────────────────────────────────────────────────────────
+# External infrastructure endpoints (used when corresponding built-in is disabled)
+# ──────────────────────────────────────────────────────────────
+external:
+  redpanda: ""       # e.g. kafka.example.com:9092
+  elastic: ""        # e.g. https://elasticsearch.example.com:9200
+  mongodb: ""        # e.g. mongodb://user:pass@host:27017
+
+# ──────────────────────────────────────────────────────────────
+# Application services
+#
+# Each `.service` block accepts the schema documented under `serviceDefaults`.
+# Default is ClusterIP — set type: LoadBalancer (or NodePort) and add
+# annotations to expose externally.
+# ──────────────────────────────────────────────────────────────
+front:
+  replicas: 1
+  resources: {}
+  service: {}
+
+account:
+  replicas: 1
+  resources:
+    limits:
+      memory: 512Mi
+  service: {}
+
+transactor:
+  replicas: 1
+  resources: {}
+  service: {}
+
+collaborator:
+  replicas: 1
+  resources:
+    limits:
+      memory: 512Mi
+  service: {}
+
+workspace:
+  replicas: 1
+  resources:
+    limits:
+      memory: 512Mi
+  # No service — workspace is a queue worker, not exposed.
+
+fulltext:
+  replicas: 1
+  resources:
+    limits:
+      memory: 512Mi
+  service: {}
+
+rekoni:
+  replicas: 1
+  resources:
+    limits:
+      memory: 500Mi
+  service: {}
+
+stats:
+  replicas: 1
+  resources:
+    limits:
+      memory: 500Mi
+  service: {}
+
+kvs:
+  enabled: true
+  replicas: 1
+  resources: {}
+  service: {}
+
+githubIntegration:
+  # GitHub App integration — syncs issues, PRs, and comments with GitHub
+  enabled: false
+  replicas: 1
+  botName: ""
+  appSlug: ""
+  appId: ""
+  clientId: ""
+  clientSecret: ""
+  privateKey: ""
+  webhookSecret: ""
+  resources:
+    limits:
+      memory: 512Mi
+  service: {}
+
+aibot:
+  # AI bot service — requires OpenAI API key
+  enabled: false
+  replicas: 1
+  firstName: "Huly"
+  lastName: "AI"
+  openaiModel: ""
+  openaiEmbeddingModel: ""
+  openaiTranslateModel: ""
+  openaiSummaryModel: ""
+  resources:
+    limits:
+      memory: 512Mi
+  service: {}
+
+# ──────────────────────────────────────────────────────────────
+# Backup — nightly CronJobs to S3-compatible storage
+#
+# To use an external Secret for backup credentials, set backup.existingSecret.
+# Required keys: BACKUP_S3_ENDPOINT, BACKUP_S3_REGION, BACKUP_S3_BUCKET,
+# BACKUP_S3_PATH_PREFIX, BACKUP_S3_ACCESS_KEY, BACKUP_S3_SECRET_KEY.
+# ──────────────────────────────────────────────────────────────
+backup:
+  enabled: false
+  schedule: "0 2 * * *"
+  retentionDays: 30
+  rcloneImage: rclone/rclone:1.69.1
+  existingSecret: ""
+  s3:
+    endpoint: ""
+    region: ""
+    bucket: ""
+    pathPrefix: ""
+    accessKey: ""
+    secretKey: ""
+    # Secondary credentials for rotation (optional)
+    secondaryAccessKey: ""
+    secondarySecretKey: ""
+    # Which credential set is active: "primary" or "secondary"
+    activeCredential: "primary"
+  cockroachdb:
+    enabled: true
+    schedule: ""
+  files:
+    enabled: true
+    schedule: ""
+  mongodb:
+    enabled: true
+    schedule: ""

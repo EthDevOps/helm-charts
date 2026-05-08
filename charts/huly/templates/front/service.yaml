@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: front
+  labels:
+    {{- include "huly.componentLabels" (dict "component" "front" "root" .) | nindent 4 }}
+    app: front
+  {{- include "huly.serviceAnnotations" (dict "cfg" .Values.front.service "root" .) | nindent 2 }}
+spec:
+  {{- include "huly.serviceSpec" (dict "cfg" .Values.front.service "root" .) | nindent 2 }}
+  selector:
+    app: front
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      {{- include "huly.servicePortNodePort" .Values.front.service | nindent 6 }}

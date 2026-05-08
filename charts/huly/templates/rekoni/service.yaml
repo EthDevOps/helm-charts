@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rekoni
+  labels:
+    {{- include "huly.componentLabels" (dict "component" "rekoni" "root" .) | nindent 4 }}
+    app: rekoni
+  {{- include "huly.serviceAnnotations" (dict "cfg" .Values.rekoni.service "root" .) | nindent 2 }}
+spec:
+  {{- include "huly.serviceSpec" (dict "cfg" .Values.rekoni.service "root" .) | nindent 2 }}
+  selector:
+    app: rekoni
+  ports:
+    - name: http
+      port: 4004
+      targetPort: 4004
+      {{- include "huly.servicePortNodePort" .Values.rekoni.service | nindent 6 }}

@@ -1,0 +1,76 @@
+{{- if eq (include "huly.minioEnabled" .) "true" }}
+{{- /*
+  Bundled MinIO is for testing only. Production should use storage.type=s3
+  with an external S3-compatible store.
+
+  We parse accessKey/secretKey out of STORAGE_CONFIG (which is what every
+  Huly service authenticates with) and feed them to MinIO as MINIO_ROOT_USER /
+  MINIO_ROOT_PASSWORD via a small companion Secret. Without it MinIO would
+  boot as minioadmin/minioadmin while the apps tried to authenticate with
+  random keys baked into STORAGE_CONFIG, and every upload would 403.
+*/ -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  labels:
+    {{- include "huly.componentLabels" (dict "component" "minio" "root" .) | nindent 4 }}
+    app: minio
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      annotations:
+        {{- include "huly.checksumAnnotations" . | nindent 8 }}
+      labels:
+        {{- include "huly.componentLabels" (dict "component" "minio" "root" .) | nindent 8 }}
+        app: minio
+    spec:
+      {{- include "huly.scheduling" . | nindent 6 }}
+      containers:
+        - name: minio
+          image: {{ .Values.minio.image }}
+          args:
+            - server
+            - /data
+            - --address
+            - ":9000"
+            - --console-address
+            - ":9001"
+          ports:
+            - name: api
+              containerPort: 9000
+            - name: console
+              containerPort: 9001
+          env:
+            {{- include "huly.envSecret" (dict "name" "MINIO_ROOT_USER" "key" "MINIO_ROOT_USER" "root" .) | nindent 12 }}
+            {{- include "huly.envSecret" (dict "name" "MINIO_ROOT_PASSWORD" "key" "MINIO_ROOT_PASSWORD" "root" .) | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- with .Values.minio.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: minio-data
+{{- end }}
