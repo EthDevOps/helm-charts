@@ -58,6 +58,10 @@ spec:
             - name: DISABLE_SIGNUP
               value: "true"
             {{- end }}
+            {{- if .Values.auth.hideLocalLogin }}
+            - name: HIDE_LOCAL_LOGIN
+              value: "true"
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /

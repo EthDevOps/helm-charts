@@ -175,13 +175,12 @@ Always required:
 |-----|----------------|
 | `SERVER_SECRET` | Shared JWT signing secret. 32+ chars of entropy. |
 | `STORAGE_CONFIG` | Full storage config string. See [STORAGE_CONFIG format](#storage_config-format) below. |
-| `CR_DB_URL` | `postgres://user:pass@host:26257/db` — Cockroach/Postgres-wire URL. |
+| `CR_DB_URL` | Cockroach/Postgres-wire URL. For **bundled Cockroach** (`cockroach.enabled=true`) the only valid value is `postgres://root@cockroach:26257/defaultdb?sslmode=disable` — the upstream `cockroachdb/cockroach` image in `--insecure` mode does not honor `COCKROACH_USER`/`COCKROACH_PASSWORD`/`COCKROACH_DATABASE`, so only the built-in `root` user and the default databases exist. For **external Cockroach/Postgres**, use the full `postgres://user:pass@host:26257/db` form. |
 
-Required when the corresponding feature is enabled (chart still expects the key to exist):
+Required when the corresponding feature is enabled:
 
 | Key | Required when | Notes |
 |-----|---------------|-------|
-| `COCKROACH_PASSWORD` | `cockroach.enabled=true` | Cockroach `--insecure` accepts any value, but the key must be present. |
 | `REDPANDA_SUPERUSER_PASSWORD` | `redpanda.enabled=true` | Redpanda superuser password. |
 | `AIBOT_PASSWORD` | `aibot.enabled=true` | AI bot account password. |
 | `OPENAI_API_KEY` | `aibot.enabled=true` | OpenAI API key. |
@@ -259,8 +258,7 @@ type: Opaque
 stringData:
   SERVER_SECRET: "32-char-random-string"
   STORAGE_CONFIG: "s3|https://rustfs.internal:9000?accessKey=AKIA...&secretKey=wJal...&region=us-east-1&rootBucket=huly"
-  CR_DB_URL: "postgres://selfhost:pw@cockroach:26257/defaultdb"
-  COCKROACH_PASSWORD: "pw"
+  CR_DB_URL: "postgres://root@cockroach:26257/defaultdb?sslmode=disable"
   REDPANDA_SUPERUSER_PASSWORD: "rp-superuser-pw"
   AIBOT_PASSWORD: "ignored-when-aibot-disabled"
   GOOGLE_CLIENT_ID: "..."
@@ -414,14 +412,16 @@ kubectl rollout restart deployment/account deployment/transactor \
   deployment/workspace deployment/fulltext -n <namespace>
 ```
 
-### CockroachDB password issues
+### CockroachDB connection issues with bundled Cockroach
 
-Built-in CockroachDB runs `--insecure`, so authentication is disabled. The `COCKROACH_PASSWORD` is set during user init but not enforced. To use the `root` user instead:
+The upstream `cockroachdb/cockroach` image, when started with `--insecure` (how this chart runs it), does **not** honor `COCKROACH_USER`, `COCKROACH_PASSWORD`, or `COCKROACH_DATABASE` env vars — those are conventions of other Cockroach images (Bitnami's, etc.), not the official one. The pod boots with only:
 
-```bash
---set cockroach.username=root \
---set secrets.crDbUrl='postgres://root@cockroach:26257/defaultdb?sslmode=disable'
-```
+- Users: `root`, `admin`
+- Databases: `defaultdb`, `postgres`, `system`
+
+The chart auto-derives `CR_DB_URL` as `postgres://root@cockroach:26257/defaultdb?sslmode=disable` to match. If you set `secrets.crDbUrl` (or supply `CR_DB_URL` via `secrets.existingSecret`) with a user or database that doesn't exist, every DB-touching service will fail at connect time. The Huly Node services retry silently (look like they're "running"); kvs (Rust client) crashes loudly with `password authentication failed for user <name>` — that's almost always the symptom.
+
+Fix: point `CR_DB_URL` at `postgres://root@cockroach:26257/defaultdb?sslmode=disable` or set `cockroach.enabled=false` and use an external Cockroach/Postgres where you control the user and database.
 
 ### Checking pod health
 
@@ -445,8 +445,7 @@ kubectl logs deployment/<service> -n <namespace> --tail=20
 | `secrets.existingSecret` | Name of an externally-managed Secret. When set, the chart skips its own Secret. See [required keys](#required-keys-in-secretsexistingsecret). | `""` |
 | `secrets.serverSecret` | JWT signing secret (auto-generated if empty) | `""` |
 | `secrets.storageConfig` | Full `STORAGE_CONFIG` override | `""` |
-| `secrets.crDbUrl` | Cockroach/Postgres connection URL | `""` |
-| `secrets.cockroachPassword` | Cockroach user password | `""` |
+| `secrets.crDbUrl` | Cockroach/Postgres connection URL. Required when `cockroach.enabled=false`; otherwise auto-derived to `postgres://root@cockroach:26257/defaultdb?sslmode=disable`. | `""` |
 | `secrets.redpandaPassword` | Redpanda superuser password | `""` |
 | `secrets.aibotPassword` | AI bot account password | `""` |
 | `secrets.openaiApiKey` | OpenAI API key (required with `aibot.enabled=true`) | `""` |
@@ -463,7 +462,8 @@ kubectl logs deployment/<service> -n <namespace> --tail=20
 | `auth.oidc.clientId` | OIDC client ID | `""` |
 | `auth.oidc.clientSecret` | OIDC client secret | `""` |
 | `auth.oidc.issuer` | OIDC issuer URL | `""` |
-| `auth.disableSignup` | Prevent new user registration | `false` |
+| `auth.disableSignup` | Block open self-signup (invite-link join still works) | `false` |
+| `auth.hideLocalLogin` | Hide the email/password login form on the login screen | `false` |
 
 ### Storage
 
@@ -511,12 +511,10 @@ Each component (`front`, `account`, `transactor`, `collaborator`, `fulltext`, `r
 
 | Key | Description | Default |
 |-----|-------------|---------|
-| `cockroach.enabled` | Deploy bundled CockroachDB | `true` |
+| `cockroach.enabled` | Deploy bundled CockroachDB (single-node `--insecure`, root-only) | `true` |
 | `cockroach.image` | CockroachDB image | `cockroachdb/cockroach:v24.2.6` |
 | `cockroach.storage` | Data PVC size | `10Gi` |
 | `cockroach.storageClassName` | PVC storage class | `""` |
-| `cockroach.database` | Database name | `defaultdb` |
-| `cockroach.username` | Database user | `selfhost` |
 | `redpanda.enabled` | Deploy bundled Redpanda | `true` |
 | `redpanda.image` | Redpanda image | pinned in `values.yaml` |
 | `redpanda.storage` | Data PVC size | `5Gi` |
@@ -631,5 +629,5 @@ All app services accept `<svc>.replicas` and `<svc>.resources`. Components with 
 ## Known Limitations
 
 - **One release per namespace.** Service and Deployment names are not release-prefixed. Internal hostnames (`http://account:3000`, `cockroach:26257`, etc.) assume single-release-per-namespace; install multiple releases in the same namespace will collide.
-- **Cockroach `--insecure`.** The bundled CockroachDB does not enforce authentication. Set `cockroach.enabled=false` and provide `secrets.crDbUrl` for a secured external database.
+- **Cockroach `--insecure`, root-only.** The bundled CockroachDB does not enforce authentication and only has the built-in `root` user against `defaultdb`/`postgres`/`system`. Set `cockroach.enabled=false` and provide `secrets.crDbUrl` for a secured external database with a real user.
 - **Bundled MinIO is testing-only.** No HA, no backups, no encryption. Use `storage.type=s3` for anything you'd page on.

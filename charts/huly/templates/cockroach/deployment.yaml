@@ -31,15 +31,13 @@ spec:
               containerPort: 26257
             - name: http
               containerPort: 8080
-          env:
-            - name: COCKROACH_DATABASE
-              value: {{ .Values.cockroach.database }}
-            - name: COCKROACH_USER
-              value: {{ .Values.cockroach.username }}
-            {{- include "huly.envSecret" (dict "name" "COCKROACH_PASSWORD" "key" "COCKROACH_PASSWORD" "root" .) | nindent 12 }}
+          # Upstream cockroachdb/cockroach in --insecure mode ignores
+          # COCKROACH_USER/PASSWORD/DATABASE; only the built-in `root` user
+          # and defaultdb/postgres/system exist. No env block needed.
           readinessProbe:
-            exec:
-              command: ['sh', '-c', 'curl -sf http://localhost:8080/health?ready=1']
+            httpGet:
+              path: /health?ready=1
+              port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:

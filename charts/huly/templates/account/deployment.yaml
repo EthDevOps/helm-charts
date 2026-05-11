@@ -46,6 +46,10 @@ spec:
             - name: DISABLE_SIGNUP
               value: "true"
             {{- end }}
+            {{- if .Values.auth.hideLocalLogin }}
+            - name: HIDE_LOCAL_LOGIN
+              value: "true"
+            {{- end }}
             {{- if .Values.auth.google.clientId }}
             {{- include "huly.envSecret" (dict "name" "GOOGLE_CLIENT_ID" "key" "GOOGLE_CLIENT_ID" "root" .) | nindent 12 }}
             {{- include "huly.envSecret" (dict "name" "GOOGLE_CLIENT_SECRET" "key" "GOOGLE_CLIENT_SECRET" "root" .) | nindent 12 }}

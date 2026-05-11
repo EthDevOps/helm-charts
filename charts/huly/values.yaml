@@ -27,7 +27,10 @@ hulyRegistry: hardcoreeng
 #   SERVER_SECRET                — JWT signing secret
 #   STORAGE_CONFIG               — full storage config string (see below)
 #   CR_DB_URL                    — postgres://user:pass@host:26257/db
-#   COCKROACH_PASSWORD           — required when cockroach.enabled=true
+#                                  Bundled Cockroach (cockroach.enabled=true)
+#                                  runs --insecure with only the built-in
+#                                  `root` user against `defaultdb`. Use:
+#                                  postgres://root@cockroach:26257/defaultdb?sslmode=disable
 #   REDPANDA_SUPERUSER_PASSWORD  — required when redpanda.enabled=true
 #   AIBOT_PASSWORD               — required when aibot.enabled=true
 #
@@ -54,9 +57,10 @@ secrets:
   # Format: s3|https://s3.example.com?accessKey=X&secretKey=Y&region=us-east-1&rootBucket=data
   #     or: minio|minio?accessKey=<key>&secretKey=<secret>
   storageConfig: ""
-  cockroachPassword: ""
   redpandaPassword: ""
-  # Set this when using an external database (cockroach.enabled=false).
+  # Required when cockroach.enabled=false (external DB). For bundled Cockroach
+  # the chart auto-generates postgres://root@cockroach:26257/defaultdb?sslmode=disable
+  # since the upstream image in --insecure mode only exposes the built-in root user.
   crDbUrl: ""
   aibotPassword: ""
 
@@ -80,6 +84,10 @@ auth:
     clientSecret: ""
     issuer: ""
   disableSignup: false
+  # Hide the email/password (local) login form on the login screen. Only the
+  # configured OAuth providers (Google/GitHub/OIDC) remain available. Invite
+  # links still work for both OAuth and email-based join.
+  hideLocalLogin: false
 
 # ──────────────────────────────────────────────────────────────
 # Storage backend
@@ -162,17 +170,19 @@ serviceDefaults:
 # Infrastructure — set enabled: false to use external services
 #
 # When disabled, provide connection details via:
-#   cockroach:  secrets.crDbUrl  (or STORAGE_CONFIG-style key in existingSecret)
+#   cockroach:  secrets.crDbUrl  (or CR_DB_URL in secrets.existingSecret)
 #   redpanda:   external.redpanda
 #   elastic:    external.elastic
 #   minio:      storage.type=s3 + storage.s3.*
 #   mongodb:    external.mongodb (only when aibot.enabled=true)
 # ──────────────────────────────────────────────────────────────
 cockroach:
+  # Bundled Cockroach runs as single-node --insecure. Connections must use
+  # the built-in `root` user against `defaultdb` (the upstream image ignores
+  # COCKROACH_USER/PASSWORD/DATABASE env vars). For anything beyond local
+  # testing, set enabled: false and point secrets.crDbUrl at an external DB.
   enabled: true
   image: cockroachdb/cockroach:v24.2.6
-  database: defaultdb
-  username: selfhost
   storage: 10Gi
   storageClassName: ""
   resources: {}
