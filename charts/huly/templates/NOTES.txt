@@ -1,6 +1,6 @@
 Huly has been installed!
 
-{{- $proto := ternary "https" "http" (and .Values.ingress.enabled .Values.ingress.tls.enabled) }}
+{{- $proto := ternary "https" "http" .Values.ingress.tls.enabled }}
 
 Your Huly instance will be available at:
 

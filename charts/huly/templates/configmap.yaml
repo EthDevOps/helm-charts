@@ -1,5 +1,8 @@
-{{- $proto := ternary "https" "http" (and .Values.ingress.enabled .Values.ingress.tls.enabled) -}}
-{{- $wsProto := ternary "wss" "ws" (and .Values.ingress.enabled .Values.ingress.tls.enabled) -}}
+{{- /* URL scheme for the public-facing URLs. Independent of ingress.enabled so
+       Pattern 2 (per-service LoadBalancer with an external routing layer that
+       terminates TLS) still renders https:// / wss:// when ingress is off. */ -}}
+{{- $proto := ternary "https" "http" .Values.ingress.tls.enabled -}}
+{{- $wsProto := ternary "wss" "ws" .Values.ingress.tls.enabled -}}
 
 {{- /* Resolve infra endpoints: built-in pod name or external URL */ -}}
 {{- $elasticUrl := ternary "http://elastic:9200" .Values.external.elastic .Values.elastic.enabled -}}
