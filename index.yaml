@@ -3015,6 +3015,23 @@ entries:
   huly:
   - apiVersion: v2
     appVersion: 0.7.382
+    created: "2026-05-11T09:18:58.76616769Z"
+    description: Huly — open-source project management platform
+    digest: 48a73726e6c21de4bc4fda7d5877ff652807472e086504340bb39a5331b615be
+    home: https://huly.io
+    keywords:
+    - huly
+    - project-management
+    - collaboration
+    name: huly
+    sources:
+    - https://github.com/hcengineering/huly-selfhost
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/huly-0.2.3/huly-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
+    appVersion: 0.7.382
     created: "2026-05-11T06:51:11.78075834Z"
     description: Huly — open-source project management platform
     digest: e948bf9b7c7459c54a8b2757466aa45035d552d02daf19368ebec24dfa8f2abb
@@ -8805,4 +8822,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-05-11T06:51:11.78145691Z"
+generated: "2026-05-11T09:18:58.7668538Z"
