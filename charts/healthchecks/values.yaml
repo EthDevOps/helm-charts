@@ -2,6 +2,9 @@ db:
   name: mydatabase
   user: dbuser
   password: mypassword
+  resources: {}
+web:
+  resources: {}
 imageTag: v3.0
 useExistingSecret: false
 baseDomain: localhost

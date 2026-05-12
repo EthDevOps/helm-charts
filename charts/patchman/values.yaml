@@ -5,6 +5,13 @@ image:
 commonAnnotations: {}
 podAnnotations: {}
 extraInitContainers: {}
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 ingress:
   enabled: false
   className: ""

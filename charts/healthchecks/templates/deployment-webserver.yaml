@@ -46,6 +46,10 @@ spec:
         # Uncomment the following lines to enable SMTP on port 2525
         #- name: smtp
         #  containerPort: 2525
+        {{- with .Values.web.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - "bash"
           - "-c"

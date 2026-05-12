@@ -36,6 +36,10 @@ spec:
             subPath: pg
         ports:
           - containerPort: 5432
+        {{- with .Values.db.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         readinessProbe:
           tcpSocket:
             port: 5432
