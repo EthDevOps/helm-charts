@@ -2729,6 +2729,21 @@ entries:
   healthchecks:
   - apiVersion: v2
     appVersion: v3.0
+    created: "2026-05-12T12:30:57.57726656Z"
+    description: A Helm chart for hosting healthchecks.io
+    digest: ad907d6c0db90c0aa9fddae91927b15d3539859112c27e6e43f0482a76171e2a
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: healthchecks
+    sources:
+    - https://healthchecks.io
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/healthchecks-0.1.7/healthchecks-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: v3.0
     created: "2025-06-23T12:57:36.874364885Z"
     description: A Helm chart for hosting healthchecks.io
     digest: 3e20b8a5c9dfcf9f862e4d67cc28ea352140c009d84c24b6c5f3755ac0919fef
@@ -8822,4 +8837,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-05-11T09:18:58.7668538Z"
+generated: "2026-05-12T12:30:57.794866528Z"
