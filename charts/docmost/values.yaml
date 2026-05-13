@@ -2,20 +2,102 @@ replicaCount: 1
 appDomain: docmost.example.com
 image:
   repository: docmost/docmost
+  # TODO: pin a specific tag instead of latest
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  annotations: {}
+
+# Resources for the main docmost container
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 2Gi
+    ephemeral-storage: 1Gi
+
+# Init container that fixes storage permissions
+initContainer:
+  image: alpine:3.20
+  imagePullPolicy: Always
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+      ephemeral-storage: 256Mi
+
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+networkPolicy:
+  enabled: true
+  ingress:
+    - ports:
+        - port: 3000
+          protocol: TCP
+  egress:
+    - {}
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
 
 postgresql:
   enabled: true
   image:
     tag: 17-alpine
+    pullPolicy: Always
   auth:
     username: docmost
     password: docmost
+  networkPolicy:
+    enabled: true
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 
 redis:
   enabled: true
   architecture: standalone
+  image:
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 512Mi
 
 persistence:
   size: 1Gi

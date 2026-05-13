@@ -1,6 +1,6 @@
 # docmost
 
-![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 OpenSource alternative for Notion
 
@@ -14,20 +14,34 @@ OpenSource alternative for Notion
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://ethdevops.github.io/helm-charts | postgresql | 1.1.3 |
-| https://ethdevops.github.io/helm-charts | redis | 1.0.3 |
+| https://ethdevops.github.io/helm-charts | postgresql | 1.1.8 |
+| https://ethdevops.github.io/helm-charts | redis | 1.0.6 |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | appDomain | string | `"docmost.example.com"` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
+| containerSecurityContext.runAsGroup | int | `1000` |  |
+| containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| containerSecurityContext.runAsUser | int | `1000` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docmost/docmost"` |  |
 | image.tag | string | `"latest"` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `true` |  |
 | ingress.tls.secretName | string | `"docmost-tls"` |  |
+| initContainer.image | string | `"alpine:3.20"` |  |
+| initContainer.imagePullPolicy | string | `"Always"` |  |
+| initContainer.resources.limits.cpu | string | `"200m"` |  |
+| initContainer.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
+| initContainer.resources.limits.memory | string | `"128Mi"` |  |
+| initContainer.resources.requests.cpu | string | `"50m"` |  |
+| initContainer.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| initContainer.resources.requests.memory | string | `"64Mi"` |  |
 | mail.driver | string | `"smtp"` |  |
 | mail.enabled | bool | `false` |  |
 | mail.existingSecret.name | string | `""` |  |
@@ -38,14 +52,46 @@ OpenSource alternative for Notion
 | mail.host | string | `""` |  |
 | mail.port | string | `""` |  |
 | mail.secure | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `3000` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
 | persistence.size | string | `"1Gi"` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
+| podSecurityContext.fsGroup | int | `1000` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | postgresql.auth.password | string | `"docmost"` |  |
 | postgresql.auth.username | string | `"docmost"` |  |
 | postgresql.enabled | bool | `true` |  |
+| postgresql.image.pullPolicy | string | `"Always"` |  |
 | postgresql.image.tag | string | `"17-alpine"` |  |
+| postgresql.networkPolicy.enabled | bool | `true` |  |
+| postgresql.resources.limits.cpu | string | `"1"` |  |
+| postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| postgresql.resources.limits.memory | string | `"1Gi"` |  |
+| postgresql.resources.requests.cpu | string | `"250m"` |  |
+| postgresql.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| postgresql.resources.requests.memory | string | `"256Mi"` |  |
 | redis.architecture | string | `"standalone"` |  |
 | redis.enabled | bool | `true` |  |
+| redis.image.pullPolicy | string | `"Always"` |  |
+| redis.resources.limits.cpu | string | `"500m"` |  |
+| redis.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| redis.resources.limits.memory | string | `"512Mi"` |  |
+| redis.resources.requests.cpu | string | `"100m"` |  |
+| redis.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| redis.resources.requests.memory | string | `"128Mi"` |  |
 | replicaCount | int | `1` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"2Gi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"512Mi"` |  |
+| service.annotations | object | `{}` |  |
+| service.type | string | `"ClusterIP"` |  |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)
