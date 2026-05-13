@@ -11,6 +11,7 @@ spec:
   selector:
     app: {{ .Release.Name }}-website
   ports:
-  - protocol: TCP
+  - name: http
+    protocol: TCP
     targetPort: http
     port: 80
