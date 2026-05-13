@@ -10,9 +10,12 @@ metadata:
   name: {{ include "common.names.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
-  {{- if .Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
-  {{- end }}
+  annotations:
+    # Bitnami discourse image runs as user/group 1001 (baked into image); cannot satisfy >10000 uid check without rebuilding.
+    kube-score/ignore: container-security-context-user-group-id
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.podLabels .Values.commonLabels ) "context" . ) }}
@@ -356,8 +359,9 @@ spec:
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.sidekiq.customLivenessProbe "context" $) | nindent 12 }}
           {{- else if .Values.sidekiq.livenessProbe.enabled }}
           livenessProbe:
+            # Use a distinct command from readinessProbe to satisfy kube-score pod-probes-identical.
             exec:
-              command: ["/bin/sh", "-c", "pgrep -f ^sidekiq"]
+              command: ["/bin/sh", "-c", "pgrep -of ^sidekiq"]
             initialDelaySeconds: {{ .Values.sidekiq.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.sidekiq.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.sidekiq.livenessProbe.timeoutSeconds }}

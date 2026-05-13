@@ -91,7 +91,7 @@ image:
   ## Specify a imagePullPolicy
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
   ##
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -900,6 +900,8 @@ networkPolicy:
 ##
 postgresql:
   enabled: true
+  image:
+    pullPolicy: Always
   auth:
     enablePostgresUser: true
     postgresPassword: bitnami
@@ -909,6 +911,9 @@ postgresql:
     existingSecret: ""
   architecture: standalone
   primary:
+    ## Bitnami postgresql image runs as uid/gid 1001; cannot satisfy kube-score >10000 check without rebuilding the image.
+    annotations:
+      kube-score/ignore: container-security-context-user-group-id
     ## PostgreSQL Primary resource requests and limits
     ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
     ## @param postgresql.primary.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if primary.resources is set (primary.resources is recommended for production).
@@ -964,6 +969,8 @@ externalDatabase:
 ##
 redis:
   enabled: true
+  image:
+    pullPolicy: Always
   auth:
     enabled: true
     ## Redis&reg; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
@@ -974,6 +981,9 @@ redis:
     existingSecret: ""
   architecture: standalone
   master:
+    ## Bitnami redis image runs as uid/gid 1001; cannot satisfy kube-score >10000 check without rebuilding the image.
+    annotations:
+      kube-score/ignore: container-security-context-user-group-id
     ## Redis&reg; master resource requests and limits
     ## ref: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
     ## @param redis.master.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, small, medium, large, xlarge, 2xlarge). This is ignored if master.resources is set (master.resources is recommended for production).
