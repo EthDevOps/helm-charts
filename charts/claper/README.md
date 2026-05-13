@@ -14,7 +14,7 @@ OpenSource interactive presentation tool
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://ethdevops.github.io/helm-charts | postgresql | 1.1.7 |
+| https://ethdevops.github.io/helm-charts | postgresql | 1.1.6 |
 
 ## Values
 
