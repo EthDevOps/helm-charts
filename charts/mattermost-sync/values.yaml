@@ -4,7 +4,7 @@
 
 image:
   repository: mattermost-sync
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "v0.1.0"
 
 imagePullSecrets: []
@@ -128,9 +128,11 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+    ephemeral-storage: 1Gi
   requests:
     cpu: 100m
     memory: 128Mi
+    ephemeral-storage: 256Mi
 
 # Node selector for pod assignment
 nodeSelector: {}
@@ -144,9 +146,9 @@ affinity: {}
 # Security context for the pod
 podSecurityContext:
   runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
 
 # Security context for the container
 securityContext:
@@ -156,7 +158,8 @@ securityContext:
     - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 1000
+  runAsUser: 10001
+  runAsGroup: 10001
 
 # Pod annotations
 podAnnotations: {}
@@ -181,6 +184,16 @@ restartPolicy: OnFailure
 
 # Init containers (additional)
 initContainers: []
+
+# NetworkPolicy configuration
+networkPolicy:
+  # Enable NetworkPolicy for the sync job
+  enabled: true
+  # Ingress rules (empty by default — sync job does not expose ports)
+  ingress: []
+  # Egress rules (allow all by default; restrict per-environment if needed)
+  egress:
+    - {}
 
 # Volume mounts (additional)
 volumeMounts: []
