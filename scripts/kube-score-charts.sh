@@ -42,9 +42,23 @@ if ((${#chart_dirs[@]} == 0)); then
   exit 0
 fi
 
+build_deps() {
+  local chart="$1"
+  # Only run when the chart declares dependencies; otherwise it's a no-op.
+  if grep -q '^dependencies:' "${chart}/Chart.yaml" 2>/dev/null; then
+    helm dependency build "${chart}" >/dev/null 2>&1 \
+      || helm dependency update "${chart}" >/dev/null
+  fi
+}
+
 failed=0
 for chart in "${chart_dirs[@]}"; do
   echo "==> kube-score ${chart}"
+  if ! build_deps "${chart}"; then
+    echo "kube-score: dependency build failed for ${chart}, skipping" >&2
+    failed=1
+    continue
+  fi
   rendered=$(helm template release "${chart}" 2>&1) || {
     echo "${rendered}"
     echo "kube-score: helm template failed for ${chart}, skipping" >&2

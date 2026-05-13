@@ -33,9 +33,19 @@ if ((${#chart_dirs[@]} == 0)); then
   exit 0
 fi
 
+build_deps() {
+  local chart="$1"
+  # Only run when the chart declares dependencies; otherwise it's a no-op.
+  if grep -q '^dependencies:' "${chart}/Chart.yaml" 2>/dev/null; then
+    helm dependency build "${chart}" >/dev/null 2>&1 \
+      || helm dependency update "${chart}" >/dev/null
+  fi
+}
+
 failed=0
 for chart in "${chart_dirs[@]}"; do
   echo "==> helm lint ${chart}"
+  build_deps "${chart}" || { echo "helm-lint: dependency build failed for ${chart}" >&2; failed=1; continue; }
   if ! helm lint "${chart}"; then
     failed=1
   fi
