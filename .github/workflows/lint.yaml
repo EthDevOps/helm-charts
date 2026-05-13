@@ -1,0 +1,85 @@
+name: lint
+
+on:
+  pull_request:
+    paths:
+      - 'charts/**'
+      - 'scripts/helm-lint-charts.sh'
+      - 'scripts/kube-score-charts.sh'
+      - '.github/workflows/lint.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**'
+      - 'scripts/helm-lint-charts.sh'
+      - 'scripts/kube-score-charts.sh'
+      - '.github/workflows/lint.yaml'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Install kube-score
+        run: |
+          KUBE_SCORE_VERSION=1.18.0
+          curl -fsSL -o /tmp/kube-score.tar.gz \
+            "https://github.com/zegl/kube-score/releases/download/v${KUBE_SCORE_VERSION}/kube-score_${KUBE_SCORE_VERSION}_linux_amd64.tar.gz"
+          tar -xzf /tmp/kube-score.tar.gz -C /tmp kube-score
+          sudo install -m 0755 /tmp/kube-score /usr/local/bin/kube-score
+          kube-score version
+
+      - name: Determine changed charts
+        id: changed
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="origin/${{ github.base_ref }}"
+            git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+          else
+            base="${{ github.event.before }}"
+          fi
+
+          # Find charts/<name> directories touched in this range. Falls back
+          # to every chart if the base ref is unavailable (e.g. first push).
+          if ! git rev-parse --verify "${base}" >/dev/null 2>&1; then
+            echo "Base ref ${base} not found, linting all charts."
+            mapfile -t charts < <(find charts -mindepth 1 -maxdepth 1 -type d | sort)
+          else
+            mapfile -t charts < <(
+              git diff --name-only "${base}" HEAD -- 'charts/**' \
+                | awk -F/ 'NF>=2 && $1=="charts" {print $1"/"$2}' \
+                | sort -u
+            )
+          fi
+
+          if ((${#charts[@]} == 0)); then
+            echo "No chart changes detected."
+            echo "charts=" >> "$GITHUB_OUTPUT"
+          else
+            printf "Charts to lint:\n"
+            printf '  %s\n' "${charts[@]}"
+            # Space-separated list for downstream steps
+            echo "charts=${charts[*]}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: helm lint
+        if: steps.changed.outputs.charts != ''
+        run: |
+          read -r -a charts <<< "${{ steps.changed.outputs.charts }}"
+          ./scripts/helm-lint-charts.sh "${charts[@]}"
+
+      - name: kube-score
+        if: steps.changed.outputs.charts != ''
+        run: |
+          read -r -a charts <<< "${{ steps.changed.outputs.charts }}"
+          ./scripts/kube-score-charts.sh "${charts[@]}"

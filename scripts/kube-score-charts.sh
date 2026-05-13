@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Renders each chart with `helm template` and pipes the result to `kube-score`.
+# Fails on kube-score CRITICAL findings (default kube-score behavior).
+#
+# Usage:
+#   kube-score-charts.sh <chart-dir> [<chart-dir>...]
+#   kube-score-charts.sh --from-files <file> [<file>...]
+#
+# Tune which kube-score tests run by editing KUBE_SCORE_FLAGS below, or by
+# adding `kube-score/ignore: <test>` annotations to specific manifests.
+set -euo pipefail
+
+KUBE_SCORE_FLAGS=(
+  # Treat warnings as informational; only CRITICAL findings fail the run.
+  --exit-one-on-warning=false
+  # PSS-restricted does not require a read-only root FS; cryptpad and others
+  # write to the rootfs at startup, so skip that check by default.
+  --ignore-test container-security-context-readonlyrootfilesystem
+)
+
+derive_chart_dirs() {
+  local dirs=()
+  for f in "$@"; do
+    if [[ "$f" =~ ^charts/([^/]+)/ ]]; then
+      dirs+=("charts/${BASH_REMATCH[1]}")
+    fi
+  done
+  if ((${#dirs[@]})); then
+    printf "%s\n" "${dirs[@]}" | sort -u
+  fi
+}
+
+if [[ "${1:-}" == "--from-files" ]]; then
+  shift
+  mapfile -t chart_dirs < <(derive_chart_dirs "$@")
+else
+  chart_dirs=("$@")
+fi
+
+if ((${#chart_dirs[@]} == 0)); then
+  echo "kube-score: no charts to check."
+  exit 0
+fi
+
+failed=0
+for chart in "${chart_dirs[@]}"; do
+  echo "==> kube-score ${chart}"
+  rendered=$(helm template release "${chart}" 2>&1) || {
+    echo "${rendered}"
+    echo "kube-score: helm template failed for ${chart}, skipping" >&2
+    failed=1
+    continue
+  }
+  if ! printf "%s\n" "${rendered}" | kube-score score "${KUBE_SCORE_FLAGS[@]}" -; then
+    failed=1
+  fi
+done
+exit "${failed}"
