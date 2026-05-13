@@ -2,6 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-claper
+  annotations:
+    # The upstream claper image runs as root and uses the default tag in
+    # values.yaml. TODO: pin a specific version tag in values.yaml so we can
+    # drop the container-image-tag ignore.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -14,9 +19,18 @@ spec:
       labels:
         app: {{ .Release.Name }}-claper
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: claper
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: BASE_URL
               value: "https://{{ .Values.appDomain }}"
@@ -96,7 +110,18 @@ spec:
               value: {{ .Values.oidc.allowUnlinkExternalProvider | quote }}
           {{- end }}
           ports:
-            - containerPort: 4000
+            - name: http
+              containerPort: 4000
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: claper-storage
               mountPath: /app/uploads
