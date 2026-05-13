@@ -11,7 +11,7 @@ image:
   # -- The image repository to pull from
   repository: nodered/node-red
   # -- The image pull policy
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # -- The image tag to pull, default: `Chart.appVersion`
   tag: ""
 
@@ -197,8 +197,7 @@ ingress:
 
 # -- Liveness probe for the Deployment
 livenessProbe:
-  httpGet:
-    path: /
+  tcpSocket:
     port: http
 
 # -- Readiness probe for the Deployment
@@ -216,9 +215,11 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+    ephemeral-storage: 1Gi
   requests:
     cpu: 100m
     memory: 128Mi
+    ephemeral-storage: 256Mi
 
 # -- Node selector
 nodeSelector: {}
@@ -233,6 +234,19 @@ terminationGracePeriodSeconds: 30
 
 # -- The affinity constraint
 affinity: {}
+
+# -- NetworkPolicy configuration for the node-red pod
+networkPolicy:
+  # -- Enable NetworkPolicy for node-red
+  enabled: true
+  # -- Ingress rules. Empty list means no restrictions on ingress sources, but only to the configured pod ports.
+  ingress:
+    - ports:
+        - port: 1880
+          protocol: TCP
+  # -- Egress rules. Default permits all egress; tighten in your environment as needed.
+  egress:
+    - {}
 
 # -- Extra Volumes for the pod
 extraVolumes:
