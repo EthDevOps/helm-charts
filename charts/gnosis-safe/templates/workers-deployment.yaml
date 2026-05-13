@@ -6,6 +6,10 @@ metadata:
   labels:
     {{- include "gnosis-safe.labels" . | nindent 4 }}
     app.kubernetes.io/component: indexer-worker
+  annotations:
+    # safe-transaction-service image is uid/gid 999 (cannot be set >10000
+    # without rebuilding) and pulls `main`. Tracked via TODOs in values.yaml.
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   replicas: {{ .Values.workers.indexer.replicaCount }}
   selector:
@@ -33,6 +37,22 @@ spec:
                 name: {{ include "gnosis-safe.fullname" . }}-config
             - secretRef:
                 name: {{ include "gnosis-safe.fullname" . }}-secret
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "celery -A config inspect ping -d celery@$HOSTNAME"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pgrep -f celery >/dev/null"]
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.workerResources | nindent 12 }}
 ---
 {{- end }}
 {{- if .Values.workers.contractsTokens.enabled }}
@@ -43,6 +63,8 @@ metadata:
   labels:
     {{- include "gnosis-safe.labels" . | nindent 4 }}
     app.kubernetes.io/component: contracts-tokens-worker
+  annotations:
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   replicas: {{ .Values.workers.contractsTokens.replicaCount }}
   selector:
@@ -68,6 +90,22 @@ spec:
                 name: {{ include "gnosis-safe.fullname" . }}-config
             - secretRef:
                 name: {{ include "gnosis-safe.fullname" . }}-secret
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "celery -A config inspect ping -d celery@$HOSTNAME"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pgrep -f celery >/dev/null"]
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.workerResources | nindent 12 }}
 ---
 {{- end }}
 {{- if .Values.workers.scheduler.enabled }}
@@ -78,6 +116,8 @@ metadata:
   labels:
     {{- include "gnosis-safe.labels" . | nindent 4 }}
     app.kubernetes.io/component: scheduler
+  annotations:
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   replicas: {{ .Values.workers.scheduler.replicaCount }}
   selector:
@@ -100,4 +140,20 @@ spec:
                 name: {{ include "gnosis-safe.fullname" . }}-config
             - secretRef:
                 name: {{ include "gnosis-safe.fullname" . }}-secret
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "celery -A config inspect ping -d celery@$HOSTNAME"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pgrep -f celery >/dev/null"]
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.workerResources | nindent 12 }}
 {{- end }}

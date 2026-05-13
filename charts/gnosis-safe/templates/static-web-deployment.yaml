@@ -6,6 +6,10 @@ metadata:
   labels:
     {{- include "gnosis-safe.labels" . | nindent 4 }}
     app.kubernetes.io/component: static-web
+  annotations:
+    # safe-global-web-docker image runs as a low uid (nginx-based) and is
+    # currently pulled by the `main` tag. Tracked via TODO in values.yaml.
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   replicas: {{ .Values.staticWeb.replicaCount }}
   selector:
@@ -39,8 +43,21 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.staticWebResources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

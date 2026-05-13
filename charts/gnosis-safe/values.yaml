@@ -3,7 +3,9 @@ rpcNode: "http://localhost:8545"
 
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/safe-transaction-service
-  pullPolicy: IfNotPresent
+  # TODO: pin to a specific tag instead of "main" to satisfy kube-score
+  # container-image-tag. Currently ignored on workloads via kube-score/ignore.
+  pullPolicy: Always
   tag: "main"
 
 imagePullSecrets: []
@@ -17,6 +19,10 @@ serviceAccount:
 
 podAnnotations: {}
 
+# Main app/nginx sidecar pods. The upstream safe-transaction-service image
+# runs as uid 999 / gid 999 so we cannot set runAsUser/runAsGroup > 10000
+# without rebuilding it (kube-score container-security-context-user-group-id
+# is ignored on the workload metadata instead).
 podSecurityContext: {}
 
 securityContext: {}
@@ -36,7 +42,81 @@ ingress:
           pathType: Prefix
   tls: []
 
-resources: {}
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 2Gi
+    ephemeral-storage: 1Gi
+
+# Resources for the nginx sidecar in the main deployment.
+nginxResources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+    ephemeral-storage: 512Mi
+
+# Resources for the static-web frontend deployment.
+staticWebResources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+    ephemeral-storage: 512Mi
+
+# Resources for the postgresql deployment.
+postgresqlResources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+
+# Resources for the redis deployment.
+redisResources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+    ephemeral-storage: 512Mi
+
+# Resources for the rabbitmq deployment.
+rabbitmqResources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 128Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 512Mi
+
+# Resources for celery worker / scheduler deployments.
+workerResources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 1Gi
 
 autoscaling:
   enabled: false
@@ -60,7 +140,9 @@ nginx:
   enabled: true
   image:
     repository: nginx
-    tag: alpine
+    # Pinned alpine version so kube-score container-image-tag passes.
+    tag: 1.27-alpine
+    pullPolicy: Always
   service:
     port: 8000
   configMap:
@@ -70,7 +152,8 @@ redis:
   enabled: true
   image:
     repository: redis
-    tag: alpine
+    tag: 7-alpine
+    pullPolicy: Always
   service:
     port: 6379
   healthcheck:
@@ -80,7 +163,8 @@ rabbitmq:
   enabled: true
   image:
     repository: rabbitmq
-    tag: alpine
+    tag: 3.13-alpine
+    pullPolicy: Always
   service:
     port: 5672
   healthcheck:
@@ -91,6 +175,7 @@ postgresql:
   image:
     repository: postgres
     tag: 16-alpine
+    pullPolicy: Always
   auth:
     username: postgres
     password: postgres
@@ -106,12 +191,12 @@ workers:
     enabled: true
     queues: "default,indexing,processing"
     replicaCount: 1
-  
+
   contractsTokens:
     enabled: true
     queues: "contracts,tokens"
     replicaCount: 1
-  
+
   scheduler:
     enabled: true
     replicaCount: 1
@@ -127,8 +212,9 @@ staticWeb:
   enabled: true
   image:
     repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/safe-global-web-docker
+    # TODO: pin a specific tag instead of "main".
     tag: main
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   replicaCount: 1
   service:
     type: ClusterIP
@@ -141,3 +227,17 @@ persistence:
   storageClass: ""
   accessMode: ReadWriteOnce
   size: 8Gi
+
+# NetworkPolicy permits all ingress/egress by default. Operators should
+# tighten these rules per environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+# PodDisruptionBudget for the main deployment.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

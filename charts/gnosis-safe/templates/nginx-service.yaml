@@ -13,7 +13,8 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+  # nginx runs as a sidecar in the main {{ include "gnosis-safe.fullname" . }}
+  # deployment, so we target the main pod selector here.
   selector:
     {{- include "gnosis-safe.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: nginx
 {{- end }}
