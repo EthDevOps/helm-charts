@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" . | nindent 4 }}
     app.kubernetes.io/component: nginx
+  annotations:
+    # The official nginx:alpine image runs the master process as uid 0 to
+    # bind privileged ports and cannot be raised above 10000 without
+    # rebuilding the image.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: {{ .Values.nginx.replicas }}
   selector:
@@ -19,9 +24,11 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: {{ .Values.nginx.image }}
+        image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+        imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
         ports:
-        - containerPort: 8000
+        - name: http
+          containerPort: 8000
         volumeMounts:
         - name: nginx-config
           mountPath: /etc/nginx/nginx.conf
@@ -30,6 +37,21 @@ spec:
           mountPath: /nginx-txs
         - name: nginx-shared-cfg
           mountPath: /nginx-cfg
+        readinessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
       volumes:
       - name: nginx-config
         configMap:

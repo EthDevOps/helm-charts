@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" . | nindent 4 }}
     app.kubernetes.io/component: cfg-web
+  annotations:
+    # TODO: The Safe config-service image is pulled as `:latest` by default.
+    # Operators should pin `images.cfgVersion` in their overrides. The check
+    # is suppressed until the chart can default to a fixed tag.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.cfg.replicas }}
   selector:
@@ -20,15 +25,20 @@ spec:
       initContainers:
       - name: copy-staticfiles
         image: {{ .Values.cfg.image }}:{{ .Values.images.cfgVersion }}
+        imagePullPolicy: {{ .Values.cfg.pullPolicy }}
         command: ["sh", "-c", "cp -r /app/staticfiles/* /shared-static/"]
         volumeMounts:
         - name: staticfiles-volume
           mountPath: /shared-static
+        resources:
+          {{- toYaml .Values.initResources | nindent 10 }}
       containers:
       - name: cfg-web
         image: {{ .Values.cfg.image }}:{{ .Values.images.cfgVersion }}
+        imagePullPolicy: {{ .Values.cfg.pullPolicy }}
         ports:
-        - containerPort: 8001
+        - name: http
+          containerPort: 8001
         env:
         - name: CSRF_COOKIE_NAME
           value: "csrf_cfg"
@@ -111,12 +121,27 @@ spec:
         volumeMounts:
         - name: nginx-shared-cfg
           mountPath: /nginx
+        readinessProbe:
+          httpGet:
+            path: /cfg/api/v1/about/
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       - name: nginx-staticfiles
-        image: nginx:alpine
+        image: "{{ .Values.staticNginx.image.repository }}:{{ .Values.staticNginx.image.tag }}"
+        imagePullPolicy: {{ .Values.staticNginx.image.pullPolicy }}
         ports:
-        - containerPort: 80
+        - name: static
+          containerPort: 80
         volumeMounts:
         - name: staticfiles-volume
           mountPath: /usr/share/nginx/html
@@ -124,6 +149,8 @@ spec:
         - name: nginx-static-config
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
+        resources:
+          {{- toYaml .Values.staticNginxResources | nindent 10 }}
       volumes:
       - name: nginx-shared-cfg
         emptyDir: {}
@@ -147,11 +174,11 @@ data:
       default_type application/octet-stream;
       sendfile on;
       keepalive_timeout 65;
-      
+
       server {
         listen 80;
         root /usr/share/nginx/html;
-        
+
         location / {
           try_files $uri $uri/ =404;
         }

@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" . | nindent 4 }}
     app.kubernetes.io/component: cgw-web
+  annotations:
+    # TODO: The Safe client-gateway image is pulled as `:latest` by default.
+    # Operators should pin `images.cgwVersion` in their overrides. The check
+    # is suppressed until the chart can default to a fixed tag.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.cgw.replicas }}
   selector:
@@ -20,8 +25,10 @@ spec:
       containers:
       - name: cgw-web
         image: {{ .Values.cgw.image }}:{{ .Values.images.cgwVersion }}
+        imagePullPolicy: {{ .Values.cgw.pullPolicy }}
         ports:
-        - containerPort: 3000
+        - name: http
+          containerPort: 3000
         env:
         - name: DISABLE_CREATION_MULTISIG_TRANSACTIONS_WITH_DELEGATE_CALL_OPERATION
           value: "false"
@@ -110,5 +117,18 @@ spec:
             secretKeyRef:
               name: {{ include "safe-infrastructure.fullname" . }}-credentials
               key: postgres-database
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}

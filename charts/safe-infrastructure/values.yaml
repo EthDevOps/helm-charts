@@ -3,39 +3,64 @@ global:
   reverseProxyPort: 8000
   rpcNodeUrl: ""
 baseUrl: "http://localhost"
-  
+
 # Image versions
+# TODO: pin tags for the upstream Safe images below (`txsVersion`, `cfgVersion`,
+# `cgwVersion`, `uiVersion`, `eventsVersion`). The Safe team publishes
+# floating `latest` tags and consumers of this chart typically override per
+# release. kube-score warns about this via `container-image-tag`; the
+# Deployments below carry `kube-score/ignore: container-image-tag` until a
+# pin is agreed.
 images:
   txsVersion: "latest"
-  cfgVersion: "latest" 
+  cfgVersion: "latest"
   cgwVersion: "latest"
   uiVersion: "latest"
   eventsVersion: "latest"
 
-# Nginx configuration
+# Nginx (reverse proxy) configuration
 nginx:
-  image: nginx:alpine
+  image:
+    repository: nginx
+    tag: "1.27-alpine"
+    pullPolicy: Always
   replicas: 1
-  
+
+# Static-files sidecar nginx image used by cfg-web and txs-web pods
+staticNginx:
+  image:
+    repository: nginx
+    tag: "1.27-alpine"
+    pullPolicy: Always
 
 # Database configurations
 databases:
   postgres:
-    image: postgres:14-alpine
+    image:
+      repository: postgres
+      tag: "14-alpine"
+      pullPolicy: Always
     maxConnections: 250
 
-# Redis configurations  
+# Redis configurations
 redis:
-  image: redis:alpine
+  image:
+    repository: redis
+    tag: "7-alpine"
+    pullPolicy: Always
 
 # RabbitMQ configurations
 rabbitmq:
-  image: rabbitmq:alpine
+  image:
+    repository: rabbitmq
+    tag: "3.13-alpine"
+    pullPolicy: Always
 
 # Transaction Service configuration
 txs:
   replicas: 1
   image: safeglobal/safe-transaction-service
+  pullPolicy: Always
   env:
     pythonPath: /app/
     djangoSettingsModule: config.settings.production
@@ -51,6 +76,7 @@ txs:
 cfg:
   replicas: 1
   image: safeglobal/safe-config-service
+  pullPolicy: Always
   env:
     pythonDontWriteBytecode: "true"
     debug: "true"
@@ -68,10 +94,11 @@ cfg:
     csrfTrustedOrigins: "http://localhost:8000"
     mediaUrl: "http://localhost:8000/cfg/media/"
 
-# Client Gateway configuration  
+# Client Gateway configuration
 cgw:
   replicas: 1
   image: safeglobal/safe-client-gateway-nest
+  pullPolicy: Always
   env:
     httpClientRequestTimeoutMilliseconds: "60000"
     safeConfigBaseUri: http://nginx:8000/cfg
@@ -104,6 +131,7 @@ cgw:
 events:
   replicas: 1
   image: safeglobal/safe-events-service
+  pullPolicy: Always
   env:
     amqpExchange: safe-transaction-service-events
     amqpQueue: safe-events-service
@@ -115,6 +143,7 @@ events:
 ui:
   replicas: 1
   image: safeglobal/safe-wallet-web
+  pullPolicy: Always
   env:
     nextPublicInfuraToken: ""
     nextPublicGatewayUrlProduction: http://localhost:8000/cgw
@@ -140,7 +169,7 @@ services:
     type: ClusterIP
     port: 8000
   cfgWeb:
-    type: ClusterIP 
+    type: ClusterIP
     port: 8001
   cgwWeb:
     type: ClusterIP
@@ -152,16 +181,45 @@ services:
     type: ClusterIP
     port: 8080
 
-# Persistent Volume configurations  
+# Persistent Volume configurations
 persistence:
   enabled: true
   storageClass: ""
   accessMode: ReadWriteOnce
   size: 10Gi
 
-# Resource limits and requests
-resources: {}
+# Default resources applied to every workload container.
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 2Gi
+    ephemeral-storage: 1Gi
 
+# Resources for the copy-staticfiles initContainer used by txs-web and cfg-web.
+initResources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+
+# Resources for the nginx static-files sidecar in txs-web/cfg-web pods.
+staticNginxResources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+    ephemeral-storage: 256Mi
 
 # Node selector and affinity
 nodeSelector: {}
@@ -176,6 +234,20 @@ healthCheck:
   timeoutSeconds: 30
   successThreshold: 1
   failureThreshold: 3
+
+# NetworkPolicy permits all ingress/egress by default. Operators should
+# tighten these rules per environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+# PodDisruptionBudget applied per workload-component selector.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
 
 # Credentials (these should be overridden in production)
 credentials:

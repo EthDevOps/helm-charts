@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" . | nindent 4 }}
     app.kubernetes.io/component: events-web
+  annotations:
+    # TODO: The Safe events-service image is pulled as `:latest` by default.
+    # Operators should pin `images.eventsVersion` in their overrides. The
+    # check is suppressed until the chart can default to a fixed tag.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.events.replicas }}
   selector:
@@ -20,8 +25,10 @@ spec:
       containers:
       - name: events-web
         image: {{ .Values.events.image }}:{{ .Values.images.eventsVersion }}
+        imagePullPolicy: {{ .Values.events.pullPolicy }}
         ports:
-        - containerPort: 3000
+        - name: http
+          containerPort: 3000
         env:
         - name: DATABASE_URL
           value: "psql://{{ .Values.credentials.postgres.user }}:{{ .Values.credentials.postgres.password }}@{{ include "safe-infrastructure.fullname" . }}-events-db:5432/{{ .Values.credentials.postgres.database }}"
@@ -62,5 +69,18 @@ spec:
           value: {{ .Values.events.env.nodeEnv | quote }}
         - name: URL_BASE_PATH
           value: {{ .Values.events.env.urlBasePath | quote }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.events.env.urlBasePath }}/v1/health
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}

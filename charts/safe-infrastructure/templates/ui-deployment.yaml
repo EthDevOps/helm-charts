@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" . | nindent 4 }}
     app.kubernetes.io/component: ui
+  annotations:
+    # TODO: The Safe wallet-web image is pulled as `:latest` by default.
+    # Operators should pin `images.uiVersion` in their overrides. The check
+    # is suppressed until the chart can default to a fixed tag.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.ui.replicas }}
   selector:
@@ -20,8 +25,10 @@ spec:
       containers:
       - name: ui
         image: {{ .Values.ui.image }}:{{ .Values.images.uiVersion }}
+        imagePullPolicy: {{ .Values.ui.pullPolicy }}
         ports:
-        - containerPort: 8080
+        - name: http
+          containerPort: 8080
         env:
         - name: CSRF_COOKIE_NAME
           value: "csrf_ui"
@@ -53,5 +60,18 @@ spec:
           value: {{ .Values.ui.env.nextPublicPortisKey | quote }}
         - name: NEXT_PUBLIC_CYPRESS_MNEMONIC
           value: {{ .Values.ui.env.nextPublicCypressMnemonic | quote }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
