@@ -1,0 +1,33 @@
+{{- /*
+  Headless service that backs the StatefulSet's per-pod DNS identity.
+  Kube-score requires this; the StatefulSet's `serviceName` points here.
+  Clients keep using the regular {{ include "prosody.fullname" . }} Service.
+*/ -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "prosody.fullname" . }}-headless
+  labels:
+    {{- include "prosody.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: {{ index .Values.service.ports "bosh-insecure" }}
+      protocol: TCP
+      name: tcp-bosh-insecure
+    - port: {{ index .Values.service.ports "bosh-secure" }}
+      protocol: TCP
+      name: tcp-bosh-secure
+    - port: {{ index .Values.service.ports "xmpp-component" }}
+      protocol: TCP
+      name: tcp-xmpp-component
+    - port: {{ index .Values.service.ports "xmpp-c2s" }}
+      protocol: TCP
+      name: tcp-xmpp-c2
+    - port: {{ index .Values.service.ports "xmpp-s2s" }}
+      protocol: TCP
+      name: tcp-xmpp-s2
+  selector:
+    {{- include "prosody.selectorLabels" . | nindent 4 }}

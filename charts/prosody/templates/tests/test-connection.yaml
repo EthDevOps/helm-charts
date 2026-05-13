@@ -6,10 +6,19 @@ metadata:
     {{- include "prosody.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
+    # Helm test pods are one-shot; skip production hardening checks.
+    kube-score/ignore: >-
+      container-image-tag,
+      container-image-pull-policy,
+      pod-probes,
+      container-resources,
+      pod-networkpolicy,
+      container-ephemeral-storage-request-and-limit,
+      container-security-context-user-group-id
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: {{ .Values.testConnection.image }}
       command: ['wget']
       args: ['{{ include "prosody.fullname" . }}:{{ index .Values.service.ports "bosh-insecure" }}/http-bind']
   restartPolicy: Never

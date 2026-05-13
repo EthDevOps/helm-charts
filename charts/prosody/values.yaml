@@ -1,10 +1,39 @@
 # Default values for prosody.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+global:
+  clusterDomain: cluster.local
+  podLabels: {}
+  podAnnotations: {}
+  releaseSecretsOverride:
+    enabled: false
 
+custom:
+  contInit:
+    _10_config: ""
+  defaults:
+    _prosody_cfg_lua: ""
+    _saslauthd_conf: ""
+    _jitsi_meet_cfg_lua: true
 image:
   repository: nginx
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
+
+# Init container that downloads custom prosody plugins listed in
+# customPluginUrls. Image needs apk + wget; runs as root because apk requires
+# write access to /var/cache/apk and we ignore kube-score's uid/gid check for it.
+initContainer:
+  image: alpine:3.20
+  imagePullPolicy: Always
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+      ephemeral-storage: 256Mi
 
 imagePullSecrets: []
 nameOverride: ""
@@ -37,6 +66,16 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# SecurityContext applied to the download-plugins init container.
+# Defaults below drop privileges as far as `apk add` + write to an emptyDir allows.
+initContainerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
 service:
   type: ClusterIP
   ports:
@@ -59,26 +98,35 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
+resources: 
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+    ephemeral-storage: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 128Mi
 
 livenessProbe:
-  httpGet:
-    path: /http-bind
+  tcpSocket:
     port: bosh-insecure
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 6
 readinessProbe:
   httpGet:
     path: /http-bind
     port: bosh-insecure
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
 
 persistence:
   enabled: true
@@ -94,3 +142,27 @@ affinity: {}
 extraEnvs: []
 extraEnvFrom: []
 secretEnvs: {}
+
+# Permissive default NetworkPolicy: ingress allowed on all prosody ports,
+# egress unrestricted so prosody can reach jicofo/jvb/IDPs/etc.
+networkPolicy:
+  enabled: true
+  ingress:
+    - ports:
+        - port: 5222
+          protocol: TCP
+        - port: 5269
+          protocol: TCP
+        - port: 5280
+          protocol: TCP
+        - port: 5281
+          protocol: TCP
+        - port: 5347
+          protocol: TCP
+  egress:
+    - {}
+
+# Helm-test pods are one-shot and don't benefit from production hardening.
+# Set image tag here; kube-score checks are silenced on the test pod itself.
+testConnection:
+  image: busybox:1.36
