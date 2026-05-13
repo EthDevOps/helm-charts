@@ -4,6 +4,13 @@ metadata:
   name: {{ include "jitsi-recording-uploader.fullname" . }}
   labels:
     {{- include "jitsi-recording-uploader.labels" . | nindent 4 }}
+  annotations:
+    # TODO: pin a non-:latest image tag upstream, then drop container-image-tag
+    # from this ignore list. The image runs as uid/gid 1001 (baked into the
+    # upstream image); cannot be raised >10000 without rebuilding.
+    kube-score/ignore: >-
+      container-image-tag,
+      container-security-context-user-group-id
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

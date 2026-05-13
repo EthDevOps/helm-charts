@@ -6,10 +6,19 @@ metadata:
     {{- include "jitsi-meet.web.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
+    kube-score/ignore: >-
+      container-image-tag,
+      container-image-pull-policy,
+      pod-probes,
+      container-resources,
+      pod-networkpolicy,
+      container-ephemeral-storage-request-and-limit,
+      container-security-context-user-group-id
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: {{ .Values.testConnection.image }}
+      imagePullPolicy: {{ .Values.testConnection.imagePullPolicy }}
       command: ['wget']
       args: ['{{ include "jitsi-meet.web.fullname" . }}:{{ .Values.web.service.port }}']
   restartPolicy: Never

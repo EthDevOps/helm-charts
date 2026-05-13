@@ -1,6 +1,6 @@
 # jitsi-monitor
 
-![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.3](https://img.shields.io/badge/AppVersion-v0.1.3-informational?style=flat-square)
+![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.3](https://img.shields.io/badge/AppVersion-v0.1.3-informational?style=flat-square)
 
 Monitors the health of Jitsi Meet instances and bridges
 
@@ -23,10 +23,24 @@ Monitors the health of Jitsi Meet instances and bridges
 | config.mediaOption | string | `"1"` |  |
 | config.runtime | string | `"60"` |  |
 | config.takeScreenshots | string | `"false"` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
+| containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-monitor-docker"` |  |
 | image.tag | string | `"v0.1.6"` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `8000` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
 | podAnnotations | object | `{}` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"1Gi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"256Mi"` |  |
 | service.port | int | `8000` |  |
 | service.type | string | `"ClusterIP"` |  |
 

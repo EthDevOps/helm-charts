@@ -1,7 +1,7 @@
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-monitor-docker
   tag: v0.1.6
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 config:
   jitsiUrl: "https://jitsihost"
   bridgeRegions: "au,eu,us"
@@ -15,3 +15,36 @@ service:
   port: 8000
 
 podAnnotations: {}
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+
+# The upstream jitsi-monitor-docker image bakes in its own user; the
+# kube-score container-security-context-user-group-id check is ignored on the
+# Deployment metadata. We still drop privileges/escalation here.
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Permissive default NetworkPolicy: ingress allowed on the service port,
+# egress unrestricted (monitor performs outbound HTTPS to the Jitsi host).
+networkPolicy:
+  enabled: true
+  ingress:
+    - ports:
+        - port: 8000
+          protocol: TCP
+  egress:
+    - {}

@@ -1,8 +1,14 @@
 # jitsi-meet
 
-![Version: 1.8.10](https://img.shields.io/badge/Version-1.8.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
+![Version: 1.9.0](https://img.shields.io/badge/Version-1.9.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
 
 Jitsi Meet packaged for Kubernetes
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| file://../prosody | prosody | >=1.5.0 |
 
 ## Values
 
@@ -14,6 +20,16 @@ Jitsi Meet packaged for Kubernetes
 | enableGuests | bool | `true` |  |
 | extraCommonEnvs | object | `{}` |  |
 | fullnameOverride | string | `""` |  |
+| geoselector.domain | string | `""` |  |
+| geoselector.enabled | bool | `false` |  |
+| geoselector.imageTag | string | `"latest"` |  |
+| geoselector.resources.limits.cpu | string | `"200m"` |  |
+| geoselector.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
+| geoselector.resources.limits.memory | string | `"256Mi"` |  |
+| geoselector.resources.requests.cpu | string | `"50m"` |  |
+| geoselector.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| geoselector.resources.requests.memory | string | `"64Mi"` |  |
+| geoselector.service.annotations | object | `{}` |  |
 | geoselector.service.type | string | `"ClusterIP"` |  |
 | global.clusterDomain | string | `"cluster.local"` |  |
 | global.podAnnotations | object | `{}` |  |
@@ -68,10 +84,10 @@ Jitsi Meet packaged for Kubernetes
 | jicofo.custom.defaults._jicofo_conf | string | `""` |  |
 | jicofo.custom.defaults._logging_properties | string | `""` |  |
 | jicofo.extraEnvs | object | `{}` |  |
+| jicofo.image.pullPolicy | string | `"Always"` |  |
 | jicofo.image.repository | string | `"jitsi/jicofo"` |  |
-| jicofo.livenessProbe.httpGet.path | string | `"/about/health"` |  |
-| jicofo.livenessProbe.httpGet.port | int | `8888` |  |
 | jicofo.livenessProbe.initialDelaySeconds | int | `30` |  |
+| jicofo.livenessProbe.tcpSocket.port | int | `8888` |  |
 | jicofo.nodeSelector | object | `{}` |  |
 | jicofo.podAnnotations | object | `{}` |  |
 | jicofo.podLabels | object | `{}` |  |
@@ -80,7 +96,12 @@ Jitsi Meet packaged for Kubernetes
 | jicofo.readinessProbe.httpGet.port | int | `8888` |  |
 | jicofo.readinessProbe.initialDelaySeconds | int | `30` |  |
 | jicofo.replicaCount | int | `1` |  |
-| jicofo.resources | object | `{}` |  |
+| jicofo.resources.limits.cpu | string | `"1"` |  |
+| jicofo.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| jicofo.resources.limits.memory | string | `"1Gi"` |  |
+| jicofo.resources.requests.cpu | string | `"100m"` |  |
+| jicofo.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| jicofo.resources.requests.memory | string | `"512Mi"` |  |
 | jicofo.rest.enabled | bool | `true` |  |
 | jicofo.rest.host | string | `"0.0.0.0"` |  |
 | jicofo.rest.port | int | `8888` |  |
@@ -125,21 +146,24 @@ Jitsi Meet packaged for Kubernetes
 | jvb.UDPPort | int | `10000` |  |
 | jvb.affinity | object | `{}` |  |
 | jvb.breweryMuc | string | `"jvbbrewery"` |  |
+| jvb.enableDeploy | bool | `true` |  |
 | jvb.extraEnvs | object | `{}` |  |
+| jvb.image.pullPolicy | string | `"Always"` |  |
 | jvb.image.repository | string | `"jitsi/jvb"` |  |
-| jvb.livenessProbe.httpGet.path | string | `"/about/health"` |  |
-| jvb.livenessProbe.httpGet.port | int | `8080` |  |
+| jvb.livenessProbe.tcpSocket.port | int | `8080` |  |
 | jvb.metrics.enabled | bool | `true` |  |
 | jvb.metrics.grafanaDashboards.annotations | object | `{}` |  |
 | jvb.metrics.grafanaDashboards.enabled | bool | `false` |  |
 | jvb.metrics.grafanaDashboards.labels.grafana_dashboard | string | `"1"` |  |
-| jvb.metrics.image.pullPolicy | string | `"IfNotPresent"` |  |
+| jvb.metrics.image.pullPolicy | string | `"Always"` |  |
 | jvb.metrics.image.repository | string | `"docker.io/systemli/prometheus-jitsi-meet-exporter"` |  |
 | jvb.metrics.image.tag | string | `"1.2.3"` |  |
 | jvb.metrics.prometheusAnnotations | bool | `false` |  |
 | jvb.metrics.resources.limits.cpu | string | `"20m"` |  |
+| jvb.metrics.resources.limits.ephemeral-storage | string | `"128Mi"` |  |
 | jvb.metrics.resources.limits.memory | string | `"32Mi"` |  |
 | jvb.metrics.resources.requests.cpu | string | `"10m"` |  |
+| jvb.metrics.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
 | jvb.metrics.resources.requests.memory | string | `"16Mi"` |  |
 | jvb.metrics.serviceMonitor.enabled | bool | `true` |  |
 | jvb.metrics.serviceMonitor.interval | string | `"10s"` |  |
@@ -151,7 +175,12 @@ Jitsi Meet packaged for Kubernetes
 | jvb.readinessProbe.httpGet.path | string | `"/about/health"` |  |
 | jvb.readinessProbe.httpGet.port | int | `8080` |  |
 | jvb.replicaCount | int | `1` |  |
-| jvb.resources | object | `{}` |  |
+| jvb.resources.limits.cpu | string | `"1"` |  |
+| jvb.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| jvb.resources.limits.memory | string | `"1Gi"` |  |
+| jvb.resources.requests.cpu | string | `"200m"` |  |
+| jvb.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| jvb.resources.requests.memory | string | `"512Mi"` |  |
 | jvb.securityContext | object | `{}` |  |
 | jvb.service.annotations | object | `{}` |  |
 | jvb.service.enabled | string | `nil` |  |
@@ -164,7 +193,26 @@ Jitsi Meet packaged for Kubernetes
 | jvb.xmpp.existingSecret | string | `""` |  |
 | jvb.xmpp.password | string | `nil` |  |
 | jvb.xmpp.user | string | `"jvb"` |  |
+| keycloak_adapter.allowedDomains | list | `[]` |  |
+| keycloak_adapter.enableDebug | string | `"false"` |  |
+| keycloak_adapter.enabled | bool | `false` |  |
+| keycloak_adapter.imagePullPolicy | string | `"Always"` |  |
+| keycloak_adapter.imageRepository | string | `"ghcr.io/ethquokkaops/jitsi-keycloak-adapter"` |  |
+| keycloak_adapter.imageTag | string | `"latest"` |  |
+| keycloak_adapter.keycloak_client_id | string | `""` |  |
+| keycloak_adapter.keycloak_realm | string | `""` |  |
+| keycloak_adapter.keycloak_url | string | `""` |  |
+| keycloak_adapter.resources.limits.cpu | string | `"200m"` |  |
+| keycloak_adapter.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
+| keycloak_adapter.resources.limits.memory | string | `"256Mi"` |  |
+| keycloak_adapter.resources.requests.cpu | string | `"50m"` |  |
+| keycloak_adapter.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| keycloak_adapter.resources.requests.memory | string | `"64Mi"` |  |
+| keycloak_adapter.roomPermissions | object | `{}` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0] | object | `{}` |  |
 | octo.enabled | bool | `false` |  |
 | octo.region | string | `"all"` |  |
 | octo.relayId | string | `"k8s-jvb"` |  |
@@ -191,6 +239,8 @@ Jitsi Meet packaged for Kubernetes
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `nil` |  |
+| testConnection.image | string | `"busybox:1.36"` |  |
+| testConnection.imagePullPolicy | string | `"Always"` |  |
 | transcription.enabled | bool | `false` |  |
 | transcription.resources | object | `{}` |  |
 | transcription.type | string | `"vosk"` |  |
@@ -212,6 +262,7 @@ Jitsi Meet packaged for Kubernetes
 | web.extraEnvs | object | `{}` |  |
 | web.httpRedirect | bool | `false` |  |
 | web.httpsEnabled | bool | `false` |  |
+| web.image.pullPolicy | string | `"Always"` |  |
 | web.image.repository | string | `"jitsi/web"` |  |
 | web.ingress.annotations | object | `{}` |  |
 | web.ingress.enabled | bool | `false` |  |
@@ -221,8 +272,7 @@ Jitsi Meet packaged for Kubernetes
 | web.ingress.tls[0].hosts[0] | string | `"jitsi.local"` |  |
 | web.ingress.tls[0].secretName | string | `"jitsi-web-certificate"` |  |
 | web.jitsiDomain | string | `"meet.example.com"` |  |
-| web.livenessProbe.httpGet.path | string | `"/"` |  |
-| web.livenessProbe.httpGet.port | int | `80` |  |
+| web.livenessProbe.tcpSocket.port | int | `80` |  |
 | web.nodeSelector | object | `{}` |  |
 | web.podAnnotations | object | `{}` |  |
 | web.podLabels | object | `{}` |  |
@@ -230,7 +280,12 @@ Jitsi Meet packaged for Kubernetes
 | web.readinessProbe.httpGet.path | string | `"/"` |  |
 | web.readinessProbe.httpGet.port | int | `80` |  |
 | web.replicaCount | int | `1` |  |
-| web.resources | object | `{}` |  |
+| web.resources.limits.cpu | string | `"1"` |  |
+| web.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| web.resources.limits.memory | string | `"1Gi"` |  |
+| web.resources.requests.cpu | string | `"100m"` |  |
+| web.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| web.resources.requests.memory | string | `"256Mi"` |  |
 | web.securityContext | object | `{}` |  |
 | web.service.externalIPs | list | `[]` |  |
 | web.service.port | int | `80` |  |

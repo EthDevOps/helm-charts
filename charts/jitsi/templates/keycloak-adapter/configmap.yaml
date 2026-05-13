@@ -1,3 +1,4 @@
+{{- if .Values.keycloak_adapter.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -18,3 +19,4 @@ metadata:
 data:
   permissions.json: |
     {{ .Values.keycloak_adapter.roomPermissions | toJson }}
+{{- end }}

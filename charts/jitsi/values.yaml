@@ -34,14 +34,62 @@ fullnameOverride: ""
 
 enableAuth: false
 enableGuests: true
+
+## NetworkPolicy applied to all jitsi-meet pods (web, jicofo, jvb, etc.).
+## Defaults are permissive — operators should tighten ingress/egress per env.
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+## Image used by the `helm test` connection pod.
+testConnection:
+  image: busybox:1.36
+  imagePullPolicy: Always
+
+keycloak_adapter:
+  enabled: false
+  imageRepository: ghcr.io/ethquokkaops/jitsi-keycloak-adapter
+  imageTag: latest
+  imagePullPolicy: Always
+  keycloak_url: ""
+  keycloak_realm: ""
+  keycloak_client_id: ""
+  enableDebug: "false"
+  allowedDomains: []
+  roomPermissions: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
 # Where Jitsi Web UI is made available
 # such as jitsi.example.com
 publicURL: "https://meet.ethquokkaops.io"
 
 tz: Europe/Berlin
 geoselector:
+  enabled: false
+  imageTag: latest
+  domain: ""
   service:
-    type: ClusterIP 
+    type: ClusterIP
+    annotations: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
 auth:
   jwtExpSeconds: 3600
   ## Use existing secret for JWT credentials instead of creating one
@@ -74,6 +122,7 @@ web:
   replicaCount: 1
   image:
     repository: jitsi/web
+    pullPolicy: Always
 
   custom:
     contInit:
@@ -127,8 +176,7 @@ web:
   # resolverIP: 10.43.0.10
 
   livenessProbe:
-    httpGet:
-      path: /
+    tcpSocket:
       port: 80
   readinessProbe:
     httpGet:
@@ -148,17 +196,17 @@ web:
     # runAsNonRoot: true
     # runAsUser: 1000
 
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  ## NOTE: jitsi/web runs as root inside the container; kube-score
+  ## container-security-context-user-group-id is ignored on the workload.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 
   nodeSelector: {}
 
@@ -170,6 +218,7 @@ jicofo:
   replicaCount: 1
   image:
     repository: jitsi/jicofo
+    pullPolicy: Always
 
   custom:
     contInit:
@@ -194,8 +243,7 @@ jicofo:
 
   livenessProbe:
     initialDelaySeconds: 30
-    httpGet:
-      path: /about/health
+    tcpSocket:
       port: 8888
 
   readinessProbe:
@@ -208,16 +256,28 @@ jicofo:
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
-  resources: {}
+  ## NOTE: jitsi/jicofo runs as root inside the container; kube-score
+  ## container-security-context-user-group-id is ignored on the workload.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
   nodeSelector: {}
   tolerations: []
   affinity: {}
   extraEnvs: {}
 
 jvb:
+  enableDeploy: true
   replicaCount: 1
   image:
     repository: jitsi/jvb
+    pullPolicy: Always
 
   xmpp:
     user: jvb
@@ -264,8 +324,7 @@ jvb:
   breweryMuc: jvbbrewery
 
   livenessProbe:
-    httpGet:
-      path: /about/health
+    tcpSocket:
       port: 8080
   readinessProbe:
     httpGet:
@@ -276,7 +335,17 @@ jvb:
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
-  resources: {}
+  ## NOTE: jitsi/jvb runs as root inside the container; kube-score
+  ## container-security-context-user-group-id is ignored on the workload.
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -287,15 +356,17 @@ jvb:
     image:
       repository: docker.io/systemli/prometheus-jitsi-meet-exporter
       tag: 1.2.3
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
 
     resources:
       requests:
         cpu: 10m
         memory: 16Mi
+        ephemeral-storage: 64Mi
       limits:
         cpu: 20m
         memory: 32Mi
+        ephemeral-storage: 128Mi
 
     prometheusAnnotations: false
     serviceMonitor:

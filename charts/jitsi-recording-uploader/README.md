@@ -1,6 +1,6 @@
 # jitsi-recording-uploader
 
-![Version: 1.1.1](https://img.shields.io/badge/Version-1.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 1.1.2](https://img.shields.io/badge/Version-1.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for Jitsi Recording Uploader - automatically uploads Jibri recordings to Google Drive
 
@@ -68,6 +68,10 @@ A Helm chart for Jitsi Recording Uploader - automatically uploads Jibri recordin
 | monitoring.interval | string | `"30s"` |  |
 | monitoring.labels | object | `{}` |  |
 | monitoring.path | string | `"/metrics"` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `3000` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podDisruptionBudget.enabled | bool | `false` |  |
@@ -85,8 +89,10 @@ A Helm chart for Jitsi Recording Uploader - automatically uploads Jibri recordin
 | probes.readiness.timeoutSeconds | int | `5` |  |
 | replicaCount | int | `1` |  |
 | resources.limits.cpu | string | `"200m"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | resources.limits.memory | string | `"256Mi"` |  |
 | resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | resources.requests.memory | string | `"128Mi"` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `false` |  |

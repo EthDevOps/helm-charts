@@ -5,10 +5,12 @@ metadata:
   name: {{ include "jitsi-meet.jvb.fullname" . }}
   labels:
     {{- include "jitsi-meet.jvb.labels" . | nindent 4 }}
-  {{- with .Values.jvb.annotations }}
   annotations:
-    {{ toYaml . | nindent 4 }}
-  {{- end }}
+    # jitsi/jvb image runs as root; cannot satisfy without a custom rebuild.
+    kube-score/ignore: container-security-context-user-group-id
+    {{- with .Values.jvb.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   replicas: {{ .Values.jvb.replicaCount }}
   selector:
