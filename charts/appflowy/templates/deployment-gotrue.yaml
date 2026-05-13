@@ -18,10 +18,14 @@ spec:
       labels:
         app: {{ .Release.Name }}-gotrue
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: gotrue
           image: {{ .Values.gotrue.image.repository }}:{{ .Values.gotrue.image.tag }}
           imagePullPolicy: {{ .Values.gotrue.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           ports:
             - name: http
               containerPort: 9999

@@ -18,10 +18,14 @@ spec:
       labels:
         app: {{ .Release.Name }}-web
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: appflowy-web
           image: {{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}
           imagePullPolicy: {{ .Values.web.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           ports:
             - name: http
               containerPort: 80

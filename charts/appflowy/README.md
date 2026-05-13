@@ -1,6 +1,6 @@
 # appflowy
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 AppFlowy Cloud - Collaborative workspace platform
 
@@ -26,29 +26,19 @@ AppFlowy Cloud - Collaborative workspace platform
 | appDomain | string | `"appflowy.example.com"` | Domain name for the AppFlowy instance |
 | cloud | object | `{"databaseMaxConnections":"40","image":{"pullPolicy":"Always","repository":"appflowyinc/appflowy_cloud","tag":"latest"},"replicaCount":1,"resources":{"limits":{"cpu":"1","ephemeral-storage":"1Gi","memory":"2Gi"},"requests":{"cpu":"200m","ephemeral-storage":"256Mi","memory":"512Mi"}},"service":{"annotations":{},"nodePort":"","port":8000,"type":"NodePort"}}` | AppFlowy Cloud core backend |
 | cloud.databaseMaxConnections | string | `"40"` | Max database connections |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | existingSecret | object | `{"jwtSecretKey":"GOTRUE_JWT_SECRET","name":""}` | Existing secret containing GOTRUE_JWT_SECRET |
 | existingSecret.jwtSecretKey | string | `"GOTRUE_JWT_SECRET"` | Key in the secret containing the JWT secret |
 | existingSecret.name | string | `""` | Name of the secret |
+| gotrue | object | `{"adminEmail":"","adminPassword":"","disableSignup":false,"existingSecret":{"adminEmailKey":"GOTRUE_ADMIN_EMAIL","adminPasswordKey":"GOTRUE_ADMIN_PASSWORD","name":""},"image":{"pullPolicy":"Always","repository":"appflowyinc/gotrue","tag":"latest"},"jwtExp":"7200","mailerAutoconfirm":false,"replicaCount":1,"resources":{"limits":{"cpu":"1","ephemeral-storage":"1Gi","memory":"1Gi"},"requests":{"cpu":"100m","ephemeral-storage":"256Mi","memory":"256Mi"}},"service":{"annotations":{},"nodePort":"","port":9999,"type":"NodePort"}}` | GoTrue authentication service |
 | gotrue.adminEmail | string | `""` | GoTrue admin credentials (ignored if existingSecret is set) |
-| gotrue.adminPassword | string | `""` |  |
 | gotrue.disableSignup | bool | `false` | Disable new user signups |
 | gotrue.existingSecret | object | `{"adminEmailKey":"GOTRUE_ADMIN_EMAIL","adminPasswordKey":"GOTRUE_ADMIN_PASSWORD","name":""}` | Existing secret for admin credentials |
-| gotrue.image.pullPolicy | string | `"Always"` |  |
-| gotrue.image.repository | string | `"appflowyinc/gotrue"` |  |
-| gotrue.image.tag | string | `"latest"` |  |
 | gotrue.jwtExp | string | `"7200"` | JWT expiry in seconds |
 | gotrue.mailerAutoconfirm | bool | `false` | Auto-confirm email addresses |
-| gotrue.replicaCount | int | `1` |  |
-| gotrue.resources.limits.cpu | string | `"1"` |  |
-| gotrue.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
-| gotrue.resources.limits.memory | string | `"1Gi"` |  |
-| gotrue.resources.requests.cpu | string | `"100m"` |  |
-| gotrue.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
-| gotrue.resources.requests.memory | string | `"256Mi"` |  |
-| gotrue.service.annotations | object | `{}` |  |
-| gotrue.service.nodePort | string | `""` |  |
-| gotrue.service.port | int | `9999` |  |
-| gotrue.service.type | string | `"NodePort"` |  |
 | networkPolicy.egress[0] | object | `{}` |  |
 | networkPolicy.enabled | bool | `true` |  |
 | networkPolicy.ingress[0].ports[0].port | int | `9999` |  |
@@ -67,8 +57,10 @@ AppFlowy Cloud - Collaborative workspace platform
 | openai | object | `{"existingSecret":{"apiKeyKey":"OPENAI_API_KEY","name":""}}` | OpenAI configuration (for search and AI services) |
 | podDisruptionBudget.enabled | bool | `true` |  |
 | podDisruptionBudget.maxUnavailable | int | `1` |  |
-| postgresql | object | `{"auth":{"database":"appflowy","password":"appflowy","username":"appflowy"},"enabled":true,"image":{"pullPolicy":"Always","repository":"pgvector/pgvector","tag":"pg16"},"networkPolicy":{"allowedNamespaces":[],"allowedPods":[],"enabled":true},"podSecurityContext":{"fsGroup":10001,"runAsGroup":10001},"resources":{"limits":{"cpu":"1","ephemeral-storage":"1Gi","memory":"2Gi"},"requests":{"cpu":"200m","ephemeral-storage":"256Mi","memory":"512Mi"}},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL","SYS_ADMIN","NET_ADMIN","SYS_PTRACE"]},"readOnlyRootFilesystem":false,"runAsNonRoot":true,"runAsUser":10001},"service":{"clusterIP":"None"}}` | PostgreSQL subchart configuration (pgvector required for AppFlowy) |
-| redis | object | `{"architecture":"standalone","enabled":true,"image":{"pullPolicy":"Always","repository":"redis","tag":"7-alpine"},"master":{"service":{"ports":{"redis":6379}}},"podAnnotations":{"kube-score/ignore":"container-security-context-user-group-id"},"podSecurityContext":{"fsGroup":10001},"resources":{"limits":{"cpu":"500m","ephemeral-storage":"512Mi","memory":"256Mi"},"requests":{"cpu":"50m","ephemeral-storage":"128Mi","memory":"64Mi"}},"securityContext":{"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsNonRoot":true,"runAsUser":10001}}` | Redis subchart configuration |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| postgresql | object | `{"auth":{"database":"appflowy","password":"appflowy","username":"appflowy"},"enabled":true,"image":{"pullPolicy":"Always","repository":"pgvector/pgvector","tag":"pg16"},"networkPolicy":{"allowedNamespaces":[],"allowedPods":[],"enabled":true},"podSecurityContext":{"fsGroup":10001,"runAsGroup":10001,"seccompProfile":{"type":"RuntimeDefault"}},"resources":{"limits":{"cpu":"1","ephemeral-storage":"1Gi","memory":"2Gi"},"requests":{"cpu":"200m","ephemeral-storage":"256Mi","memory":"512Mi"}},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL","SYS_ADMIN","NET_ADMIN","SYS_PTRACE"]},"readOnlyRootFilesystem":false,"runAsNonRoot":true,"runAsUser":10001,"seccompProfile":{"type":"RuntimeDefault"}},"service":{"clusterIP":"None"}}` | PostgreSQL subchart configuration (pgvector required for AppFlowy) |
+| redis | object | `{"architecture":"standalone","enabled":true,"image":{"pullPolicy":"Always","repository":"redis","tag":"7-alpine"},"master":{"service":{"ports":{"redis":6379}}},"podAnnotations":{"kube-score/ignore":"container-security-context-user-group-id"},"podSecurityContext":{"fsGroup":10001,"seccompProfile":{"type":"RuntimeDefault"}},"resources":{"limits":{"cpu":"500m","ephemeral-storage":"512Mi","memory":"256Mi"},"requests":{"cpu":"50m","ephemeral-storage":"128Mi","memory":"64Mi"}},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsNonRoot":true,"runAsUser":10001,"seccompProfile":{"type":"RuntimeDefault"}}}` | Redis subchart configuration |
 | s3 | object | `{"bucket":"appflowy","createBucket":true,"endpoint":"","existingSecret":{"accessKeyIdKey":"AWS_ACCESS_KEY_ID","name":"","secretAccessKeyKey":"AWS_SECRET_ACCESS_KEY"},"presignedUrlEndpoint":"","region":"us-east-1","useMinio":false}` | S3 storage configuration (uses existing S3, no minio) |
 | s3.bucket | string | `"appflowy"` | S3 bucket name |
 | s3.createBucket | bool | `true` | Create bucket on startup |

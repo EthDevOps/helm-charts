@@ -18,10 +18,14 @@ spec:
       labels:
         app: {{ .Release.Name }}-admin
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: admin-frontend
           image: {{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag }}
           imagePullPolicy: {{ .Values.admin.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           ports:
             - name: http
               containerPort: 3000

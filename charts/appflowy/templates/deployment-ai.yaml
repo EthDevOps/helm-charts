@@ -19,10 +19,14 @@ spec:
       labels:
         app: {{ .Release.Name }}-ai
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: appflowy-ai
           image: {{ .Values.ai.image.repository }}:{{ .Values.ai.image.tag }}
           imagePullPolicy: {{ .Values.ai.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           ports:
             - name: http
               containerPort: 5001
