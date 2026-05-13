@@ -1,6 +1,6 @@
 # huly
 
-![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.382](https://img.shields.io/badge/AppVersion-0.7.382-informational?style=flat-square)
+![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.382](https://img.shields.io/badge/AppVersion-0.7.382-informational?style=flat-square)
 
 Huly — open-source project management platform
 
@@ -15,7 +15,12 @@ Huly — open-source project management platform
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | account.replicas | int | `1` |  |
+| account.resources.limits.cpu | string | `"1"` |  |
+| account.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | account.resources.limits.memory | string | `"512Mi"` |  |
+| account.resources.requests.cpu | string | `"100m"` |  |
+| account.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| account.resources.requests.memory | string | `"256Mi"` |  |
 | account.service | object | `{}` |  |
 | aibot.enabled | bool | `false` |  |
 | aibot.firstName | string | `"Huly"` |  |
@@ -25,7 +30,12 @@ Huly — open-source project management platform
 | aibot.openaiSummaryModel | string | `""` |  |
 | aibot.openaiTranslateModel | string | `""` |  |
 | aibot.replicas | int | `1` |  |
+| aibot.resources.limits.cpu | string | `"1"` |  |
+| aibot.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | aibot.resources.limits.memory | string | `"512Mi"` |  |
+| aibot.resources.requests.cpu | string | `"100m"` |  |
+| aibot.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| aibot.resources.requests.memory | string | `"256Mi"` |  |
 | aibot.service | object | `{}` |  |
 | appSettings.adminEmails | string | `""` |  |
 | appSettings.defaultLanguage | string | `"en"` |  |
@@ -64,28 +74,55 @@ Huly — open-source project management platform
 | backup.schedule | string | `"0 2 * * *"` |  |
 | cockroach.enabled | bool | `true` |  |
 | cockroach.image | string | `"cockroachdb/cockroach:v24.2.6"` |  |
-| cockroach.resources | object | `{}` |  |
+| cockroach.imagePullPolicy | string | `"Always"` |  |
+| cockroach.resources.limits.cpu | string | `"2"` |  |
+| cockroach.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| cockroach.resources.limits.memory | string | `"2Gi"` |  |
+| cockroach.resources.requests.cpu | string | `"200m"` |  |
+| cockroach.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| cockroach.resources.requests.memory | string | `"512Mi"` |  |
 | cockroach.storage | string | `"10Gi"` |  |
 | cockroach.storageClassName | string | `""` |  |
 | collaborator.replicas | int | `1` |  |
+| collaborator.resources.limits.cpu | string | `"1"` |  |
+| collaborator.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | collaborator.resources.limits.memory | string | `"512Mi"` |  |
+| collaborator.resources.requests.cpu | string | `"100m"` |  |
+| collaborator.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| collaborator.resources.requests.memory | string | `"256Mi"` |  |
 | collaborator.service | object | `{}` |  |
 | domain | string | `"huly.example"` |  |
 | elastic.enabled | bool | `true` |  |
 | elastic.image | string | `"elasticsearch:7.14.2"` |  |
+| elastic.imagePullPolicy | string | `"Always"` |  |
 | elastic.javaOpts | string | `"-Xms1024m -Xmx1024m"` |  |
-| elastic.resources | object | `{}` |  |
+| elastic.resources.limits.cpu | string | `"2"` |  |
+| elastic.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| elastic.resources.limits.memory | string | `"2Gi"` |  |
+| elastic.resources.requests.cpu | string | `"200m"` |  |
+| elastic.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| elastic.resources.requests.memory | string | `"1Gi"` |  |
 | elastic.storage | string | `"10Gi"` |  |
 | elastic.storageClassName | string | `""` |  |
 | external.elastic | string | `""` |  |
 | external.mongodb | string | `""` |  |
 | external.redpanda | string | `""` |  |
 | front.replicas | int | `1` |  |
-| front.resources | object | `{}` |  |
+| front.resources.limits.cpu | string | `"1"` |  |
+| front.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| front.resources.limits.memory | string | `"512Mi"` |  |
+| front.resources.requests.cpu | string | `"50m"` |  |
+| front.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| front.resources.requests.memory | string | `"128Mi"` |  |
 | front.service | object | `{}` |  |
 | fullnameOverride | string | `""` |  |
 | fulltext.replicas | int | `1` |  |
+| fulltext.resources.limits.cpu | string | `"1"` |  |
+| fulltext.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | fulltext.resources.limits.memory | string | `"512Mi"` |  |
+| fulltext.resources.requests.cpu | string | `"100m"` |  |
+| fulltext.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| fulltext.resources.requests.memory | string | `"256Mi"` |  |
 | fulltext.service | object | `{}` |  |
 | githubIntegration.appId | string | `""` |  |
 | githubIntegration.appSlug | string | `""` |  |
@@ -95,7 +132,12 @@ Huly — open-source project management platform
 | githubIntegration.enabled | bool | `false` |  |
 | githubIntegration.privateKey | string | `""` |  |
 | githubIntegration.replicas | int | `1` |  |
+| githubIntegration.resources.limits.cpu | string | `"1"` |  |
+| githubIntegration.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | githubIntegration.resources.limits.memory | string | `"512Mi"` |  |
+| githubIntegration.resources.requests.cpu | string | `"100m"` |  |
+| githubIntegration.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| githubIntegration.resources.requests.memory | string | `"256Mi"` |  |
 | githubIntegration.service | object | `{}` |  |
 | githubIntegration.webhookSecret | string | `""` |  |
 | global.affinity | object | `{}` |  |
@@ -110,26 +152,59 @@ Huly — open-source project management platform
 | ingress.tls.enabled | bool | `true` |  |
 | kvs.enabled | bool | `true` |  |
 | kvs.replicas | int | `1` |  |
-| kvs.resources | object | `{}` |  |
+| kvs.resources.limits.cpu | string | `"1"` |  |
+| kvs.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| kvs.resources.limits.memory | string | `"512Mi"` |  |
+| kvs.resources.requests.cpu | string | `"50m"` |  |
+| kvs.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| kvs.resources.requests.memory | string | `"128Mi"` |  |
 | kvs.service | object | `{}` |  |
 | minio.enabled | bool | `false` |  |
 | minio.image | string | `"minio/minio:RELEASE.2025-01-20T14-49-07Z"` |  |
-| minio.resources | object | `{}` |  |
+| minio.imagePullPolicy | string | `"Always"` |  |
+| minio.resources.limits.cpu | string | `"1"` |  |
+| minio.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| minio.resources.limits.memory | string | `"1Gi"` |  |
+| minio.resources.requests.cpu | string | `"100m"` |  |
+| minio.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| minio.resources.requests.memory | string | `"256Mi"` |  |
 | minio.storage | string | `"50Gi"` |  |
 | minio.storageClassName | string | `""` |  |
 | mongodb.enabled | bool | `true` |  |
 | mongodb.image | string | `"mongo:7.0.16"` |  |
-| mongodb.resources | object | `{}` |  |
+| mongodb.imagePullPolicy | string | `"Always"` |  |
+| mongodb.resources.limits.cpu | string | `"1"` |  |
+| mongodb.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| mongodb.resources.limits.memory | string | `"1Gi"` |  |
+| mongodb.resources.requests.cpu | string | `"100m"` |  |
+| mongodb.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| mongodb.resources.requests.memory | string | `"256Mi"` |  |
 | mongodb.storage | string | `"5Gi"` |  |
 | mongodb.storageClassName | string | `""` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0] | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
 | redpanda.enabled | bool | `true` |  |
 | redpanda.image | string | `"docker.redpanda.com/redpandadata/redpanda:v24.3.6"` |  |
+| redpanda.imagePullPolicy | string | `"Always"` |  |
+| redpanda.resources.limits.cpu | string | `"1"` |  |
+| redpanda.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | redpanda.resources.limits.memory | string | `"512Mi"` |  |
+| redpanda.resources.requests.cpu | string | `"200m"` |  |
+| redpanda.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| redpanda.resources.requests.memory | string | `"256Mi"` |  |
 | redpanda.storage | string | `"5Gi"` |  |
 | redpanda.storageClassName | string | `""` |  |
 | rekoni.replicas | int | `1` |  |
+| rekoni.resources.limits.cpu | string | `"1"` |  |
+| rekoni.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | rekoni.resources.limits.memory | string | `"500Mi"` |  |
+| rekoni.resources.requests.cpu | string | `"100m"` |  |
+| rekoni.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| rekoni.resources.requests.memory | string | `"256Mi"` |  |
 | rekoni.service | object | `{}` |  |
 | secrets.aibotPassword | string | `""` |  |
 | secrets.crDbUrl | string | `""` |  |
@@ -142,7 +217,12 @@ Huly — open-source project management platform
 | serviceDefaults.annotations | object | `{}` |  |
 | serviceDefaults.type | string | `"ClusterIP"` |  |
 | stats.replicas | int | `1` |  |
+| stats.resources.limits.cpu | string | `"1"` |  |
+| stats.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | stats.resources.limits.memory | string | `"500Mi"` |  |
+| stats.resources.requests.cpu | string | `"50m"` |  |
+| stats.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| stats.resources.requests.memory | string | `"128Mi"` |  |
 | stats.service | object | `{}` |  |
 | storage.s3.accessKey | string | `""` |  |
 | storage.s3.bucketPrefix | string | `""` |  |
@@ -152,10 +232,22 @@ Huly — open-source project management platform
 | storage.s3.secretKey | string | `""` |  |
 | storage.type | string | `"minio"` |  |
 | transactor.replicas | int | `1` |  |
-| transactor.resources | object | `{}` |  |
+| transactor.resources.limits.cpu | string | `"2"` |  |
+| transactor.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| transactor.resources.limits.memory | string | `"1Gi"` |  |
+| transactor.resources.requests.cpu | string | `"100m"` |  |
+| transactor.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| transactor.resources.requests.memory | string | `"256Mi"` |  |
 | transactor.service | object | `{}` |  |
+| waitInit.image | string | `"busybox:1.36.1"` |  |
+| waitInit.imagePullPolicy | string | `"Always"` |  |
 | workspace.replicas | int | `1` |  |
+| workspace.resources.limits.cpu | string | `"1"` |  |
+| workspace.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | workspace.resources.limits.memory | string | `"512Mi"` |  |
+| workspace.resources.requests.cpu | string | `"100m"` |  |
+| workspace.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| workspace.resources.requests.memory | string | `"256Mi"` |  |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)

@@ -146,6 +146,37 @@ global:
   affinity: {}
 
 # ──────────────────────────────────────────────────────────────
+# Shared busybox image used by `wait-cockroach`, `wait-redpanda`,
+# `wait-mongodb`, and other tiny init containers. Pinned so kube-score
+# container-image-tag passes.
+# ──────────────────────────────────────────────────────────────
+waitInit:
+  image: busybox:1.36.1
+  imagePullPolicy: Always
+
+# ──────────────────────────────────────────────────────────────
+# NetworkPolicy covering all Huly pods. Default allows ingress on the
+# application ports and unrestricted egress so the chart works out of the
+# box. Operators are expected to tighten these per environment.
+# ──────────────────────────────────────────────────────────────
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+# ──────────────────────────────────────────────────────────────
+# PodDisruptionBudget defaults applied to every Huly Deployment.
+# maxUnavailable: 1 stays drainable for single-replica deployments while
+# still providing a budget for higher replica counts.
+# ──────────────────────────────────────────────────────────────
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+  # minAvailable: ""
+
+# ──────────────────────────────────────────────────────────────
 # Default service config block, merged into every component's `.service`.
 # Per-component overrides (e.g. front.service.type) take precedence.
 #
@@ -183,43 +214,86 @@ cockroach:
   # testing, set enabled: false and point secrets.crDbUrl at an external DB.
   enabled: true
   image: cockroachdb/cockroach:v24.2.6
+  imagePullPolicy: Always
   storage: 10Gi
   storageClassName: ""
-  resources: {}
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+      ephemeral-storage: 1Gi
 
 redpanda:
   enabled: true
   image: docker.redpanda.com/redpandadata/redpanda:v24.3.6
+  imagePullPolicy: Always
   storage: 5Gi
   storageClassName: ""
   resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
     limits:
+      cpu: "1"
       memory: 512Mi
+      ephemeral-storage: 1Gi
 
 elastic:
   enabled: true
   image: elasticsearch:7.14.2
+  imagePullPolicy: Always
   storage: 10Gi
   storageClassName: ""
   javaOpts: "-Xms1024m -Xmx1024m"
-  resources: {}
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1Gi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+      ephemeral-storage: 1Gi
 
 minio:
   # Bundled MinIO is OFF by default. Use storage.type=s3 with an external
   # store (rustfs, MinIO operator, AWS S3, etc.) for any real workload.
   enabled: false
   image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+  imagePullPolicy: Always
   storage: 50Gi
   storageClassName: ""
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 
 mongodb:
   # Only deployed when aibot.enabled=true
   enabled: true
   image: mongo:7.0.16
+  imagePullPolicy: Always
   storage: 5Gi
   storageClassName: ""
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 
 # ──────────────────────────────────────────────────────────────
 # External infrastructure endpoints (used when corresponding built-in is disabled)
@@ -238,60 +312,120 @@ external:
 # ──────────────────────────────────────────────────────────────
 front:
   replicas: 1
-  resources: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 account:
   replicas: 1
   resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
     limits:
+      cpu: "1"
       memory: 512Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 transactor:
   replicas: 1
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "2"
+      memory: 1Gi
+      ephemeral-storage: 512Mi
   service: {}
 
 collaborator:
   replicas: 1
   resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
     limits:
+      cpu: "1"
       memory: 512Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 workspace:
   replicas: 1
   resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
     limits:
+      cpu: "1"
       memory: 512Mi
+      ephemeral-storage: 512Mi
   # No service — workspace is a queue worker, not exposed.
 
 fulltext:
   replicas: 1
   resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
     limits:
+      cpu: "1"
       memory: 512Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 rekoni:
   replicas: 1
   resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
     limits:
+      cpu: "1"
       memory: 500Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 stats:
   replicas: 1
   resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+      ephemeral-storage: 128Mi
     limits:
+      cpu: "1"
       memory: 500Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 kvs:
   enabled: true
   replicas: 1
-  resources: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 githubIntegration:
@@ -306,8 +440,14 @@ githubIntegration:
   privateKey: ""
   webhookSecret: ""
   resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
     limits:
+      cpu: "1"
       memory: 512Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 aibot:
@@ -321,8 +461,14 @@ aibot:
   openaiTranslateModel: ""
   openaiSummaryModel: ""
   resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
     limits:
+      cpu: "1"
       memory: 512Mi
+      ephemeral-storage: 512Mi
   service: {}
 
 # ──────────────────────────────────────────────────────────────

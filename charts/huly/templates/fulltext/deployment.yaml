@@ -5,6 +5,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: fulltext
+  annotations:
+    # Upstream hardcoreeng/fulltext image bakes in a low uid.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: {{ .Values.fulltext.replicas }}
   selector:
@@ -25,6 +28,7 @@ spec:
       containers:
         - name: fulltext
           image: {{ .Values.hulyRegistry }}/fulltext:{{ .Values.hulyVersion }}
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 4700
@@ -38,16 +42,12 @@ spec:
             {{- include "huly.envConfig" (dict "name" "ACCOUNTS_URL" "key" "ACCOUNTS_URL_INTERNAL" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "STATS_URL" "key" "STATS_URL_INTERNAL" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "QUEUE_CONFIG" "key" "QUEUE_CONFIG" "root" .) | nindent 12 }}
+          # Single readinessProbe; identical TCP livenessProbe omitted.
           readinessProbe:
             tcpSocket:
               port: 4700
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 4700
-            initialDelaySeconds: 30
-            periodSeconds: 30
           {{- with .Values.fulltext.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

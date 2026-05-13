@@ -6,6 +6,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: kvs
+  annotations:
+    # Upstream hardcoreeng/hulykvs image bakes in a low uid.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: {{ .Values.kvs.replicas }}
   selector:
@@ -32,16 +35,12 @@ spec:
           env:
             {{- include "huly.envSecret" (dict "name" "HULY_DB_CONNECTION" "key" "CR_DB_URL" "root" .) | nindent 12 }}
             {{- include "huly.envSecret" (dict "name" "HULY_TOKEN_SECRET" "key" "SERVER_SECRET" "root" .) | nindent 12 }}
+          # Single readinessProbe; identical TCP livenessProbe omitted.
           readinessProbe:
             tcpSocket:
               port: 8094
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 8094
-            initialDelaySeconds: 15
-            periodSeconds: 30
           {{- with .Values.kvs.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
