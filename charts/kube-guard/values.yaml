@@ -4,7 +4,7 @@
 # Image configuration
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/kube-guard
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "latest"
 
 # Service account
@@ -62,16 +62,19 @@ deployment:
     limits:
       cpu: 500m
       memory: 256Mi
+      ephemeral-storage: 1Gi
     requests:
       cpu: 100m
       memory: 128Mi
+      ephemeral-storage: 256Mi
 
   # Security context
   securityContext:
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     runAsNonRoot: true
-    runAsUser: 1000
+    runAsUser: 10001
+    runAsGroup: 10001
 
   # Probes
   livenessProbe:
@@ -114,3 +117,21 @@ webhook:
 # RBAC
 rbac:
   create: true
+
+# Network policy
+networkPolicy:
+  enabled: true
+  # Default: allow ingress to the webhook port from anywhere (kube-apiserver lives
+  # outside any pod network and is the primary client of the webhook).
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8443
+  # Egress unrestricted by default; tighten per-environment as needed.
+  egress:
+    - {}
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

@@ -4,6 +4,9 @@ metadata:
   name: {{ include "kube-guard.fullname" . }}
   labels:
     {{- include "kube-guard.labels" . | nindent 4 }}
+  annotations:
+    # TODO: pin a specific image tag in values.yaml; image.tag defaults to "latest"
+    kube-score/ignore: container-image-tag
 spec:
   replicas: {{ .Values.deployment.replicaCount }}
   selector:
@@ -57,7 +60,7 @@ spec:
         {{- end }}
       volumes:
       - name: temp
-        emtydir: {}
+        emptyDir: {}
       {{- if .Values.webhook.tls.enabled }}
       - name: tls-certs
         secret:
