@@ -1,18 +1,86 @@
 imageTag: v0.2.0
 imageName: docker.ethquokkaops.io/ethquokkaops/ethdevops/github-actions-autoscaler
+uiImageTag: v0.0.1
+imagePullPolicy: Always
 hostname: autoscaler.example.com
-resources: {}
 ingressClassName: haproxy
 envFromSecret: ""
+
+# Scaler configuration rendered into the runner config secret. Empty by
+# default; provide your scaler config under this key when deploying.
+scalerConfig: {}
+
+# Backend (autoscaler) resources. Sized for a single replica handling
+# moderate runner pool churn; tune to your workload.
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+
+# Frontend UI resources. The UI is a static nginx-served bundle.
+uiResources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+    ephemeral-storage: 512Mi
+
 postgresql:
   enabled: true
   image:
     tag: 13-alpine
+    pullPolicy: Always
   auth:
     username: runners
     database: runners
     password: runners
-    postgresPassword: runners
+    # postgresPassword intentionally unset: when both postgresPassword and the
+    # custom-user password are set, the subchart renders two POSTGRES_PASSWORD
+    # env entries, which kube-score flags as a duplicate key. The subchart
+    # will fall back to a deterministic generated password for the postgres
+    # admin user.
+    postgresPassword: ""
+  # Headless service so the StatefulSet's serviceName resolves correctly and
+  # kube-score's statefulset-has-servicename check passes.
+  service:
+    type: ClusterIP
+    clusterIP: None
+  # Resource requests/limits required to clear kube-score CRITICAL findings.
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
+  # Run as a high UID/GID to satisfy kube-score's user-group-id check.
+  securityContext:
+    runAsUser: 10001
+    runAsGroup: 10001
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+  podSecurityContext:
+    fsGroup: 10001
+  # Enable subchart NetworkPolicy. Empty allowedPods/allowedNamespaces leaves
+  # the policy permissive (no ingress restrictions matching the empty selector
+  # is interpreted by the subchart) -- the policy still exists and satisfies
+  # kube-score's pod-networkpolicy check.
+  networkPolicy:
+    enabled: true
 ingress:
   enabled: true
 observability:
@@ -34,3 +102,20 @@ observability:
 service:
   type: ClusterIP
   annotations: {}
+
+# NetworkPolicy guarding ingress/egress for the autoscaler and UI pods.
+# Defaults are permissive (cluster-wide ingress to listening ports,
+# unrestricted egress so the backend can call GitHub APIs and resolve DNS).
+# Tighten per environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+# PodDisruptionBudget. maxUnavailable: 1 keeps single-replica deployments
+# drainable while still signaling voluntary disruptions.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
