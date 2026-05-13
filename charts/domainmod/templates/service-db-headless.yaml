@@ -1,0 +1,19 @@
+{{- if .Values.database.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "domainmod.db.fullname" . }}-headless
+  labels:
+    {{- include "domainmod.db.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: {{ .Values.database.service.port }}
+      targetPort: 3306
+      protocol: TCP
+      name: mysql
+  selector:
+    {{- include "domainmod.db.selectorLabels" . | nindent 4 }}
+{{- end }}

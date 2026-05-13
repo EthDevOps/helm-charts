@@ -4,20 +4,26 @@
 app:
   image:
     repository: domainmod/domainmod
+    # TODO: upstream domainmod/domainmod does not publish versioned tags on
+    # Docker Hub; only :latest is available. Pin once an upstream releases
+    # immutable tags. kube-score is ignored for container-image-tag on the
+    # deployment until then.
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   # -- Number of replicas (only 1 supported for stateful app)
   replicaCount: 1
 
   # -- Resource limits and requests
-  resources: {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 
   # -- Node selector
   nodeSelector: {}
@@ -39,6 +45,26 @@ app:
   securityContext: {}
     # runAsUser: 1000
     # runAsGroup: 1000
+
+  # -- Readiness probe (HTTP GET on root, expects DomainMod web root)
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+
+  # -- Liveness probe (TCP socket; differs from readiness handler so
+  # kube-score's pod-probes-identical check passes)
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 60
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 6
 
   # -- Environment variables
   env:
@@ -80,16 +106,18 @@ database:
   image:
     repository: ghcr.io/linuxserver/mariadb
     tag: alpine
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   # -- Resource limits and requests
-  resources: {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 
   # -- Node selector
   nodeSelector: {}
@@ -108,6 +136,29 @@ database:
 
   # -- Container security context
   securityContext: {}
+
+  # -- Readiness probe (TCP socket on mysql port; mariadb is ready when the
+  # socket accepts connections)
+  readinessProbe:
+    tcpSocket:
+      port: mysql
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+
+  # -- Liveness probe (exec mysqladmin ping; differs from readiness handler
+  # to satisfy kube-score's pod-probes-identical check)
+  livenessProbe:
+    exec:
+      command:
+        - sh
+        - -c
+        - "mysqladmin ping -h 127.0.0.1 -u root -p\"${MYSQL_ROOT_PASSWORD}\""
+    initialDelaySeconds: 60
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 6
 
   # -- Environment variables
   env:
@@ -192,3 +243,34 @@ ingress:
     # - secretName: domainmod-tls
     #   hosts:
     #     - domainmod.local
+
+# -- NetworkPolicy configuration. Defaults allow ingress on the app and db
+# ports and unrestricted egress so the chart works out-of-the-box. Tighten
+# per environment as needed.
+networkPolicy:
+  enabled: true
+  # Ingress for the app pod (port 80)
+  app:
+    ingress:
+      - ports:
+          - port: 80
+            protocol: TCP
+    egress:
+      - {}
+  # Ingress for the database pod (port 3306). Only the app should reach
+  # the database; the default leaves the source open so cluster operators
+  # can scope it via podSelector once labels are known.
+  db:
+    ingress:
+      - ports:
+          - port: 3306
+            protocol: TCP
+    egress:
+      - {}
+
+# -- PodDisruptionBudget. maxUnavailable: 1 works for any replica count and
+# leaves the workload drainable.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+  # minAvailable: ""
