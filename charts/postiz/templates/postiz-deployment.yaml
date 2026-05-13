@@ -4,6 +4,10 @@ metadata:
   name: {{ include "postiz.fullname" . }}
   labels:
     {{- include "postiz.labels" . | nindent 4 }}
+  {{- with .Values.workloadAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -37,6 +41,14 @@ spec:
             - name: http
               containerPort: 5000
               protocol: TCP
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             {{- if .Values.extraVolumeMounts }}
             {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
