@@ -13,3 +13,39 @@ semaphoreToken: ""
 
 clusterName: ""
 mattermostWebhook: ""
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+    ephemeral-storage: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+    ephemeral-storage: 512Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+networkPolicy:
+  enabled: true
+  # Default: allow all egress (needs to reach Semaphore, Mattermost, k8s API).
+  egress:
+    - {}
+  # No ingress traffic expected — controller-only workload.
+  ingress: []

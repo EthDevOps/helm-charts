@@ -1,6 +1,6 @@
 # k8s-service-trigger
 
-![Version: 0.0.8](https://img.shields.io/badge/Version-0.0.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 Triggers webhooks on service changes
 
@@ -9,9 +9,29 @@ Triggers webhooks on service changes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | clusterName | string | `""` |  |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.readOnlyRootFilesystem | bool | `true` |  |
+| containerSecurityContext.runAsGroup | int | `10001` |  |
+| containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| containerSecurityContext.runAsUser | int | `10001` |  |
+| containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | imageVersion | string | `"v0.1.0"` |  |
 | mattermostWebhook | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress | list | `[]` |  |
+| podSecurityContext.fsGroup | int | `10001` |  |
+| podSecurityContext.runAsGroup | int | `10001` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.runAsUser | int | `10001` |  |
 | project | string | `""` |  |
+| resources.limits.cpu | string | `"200m"` |  |
+| resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| resources.limits.memory | string | `"256Mi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| resources.requests.memory | string | `"128Mi"` |  |
 | secretKey | string | `"GITHUB_TOKEN"` |  |
 | secretName | string | `"my-secret"` |  |
 | semaphoreToken | string | `""` |  |
