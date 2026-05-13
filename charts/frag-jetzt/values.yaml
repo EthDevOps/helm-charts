@@ -5,34 +5,63 @@ frontend:
   image:
     repository: git-registry.arsnova.eu/arsnova/frag.jetzt
     tag: master
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   service:
     type: ClusterIP
     port: 80
     nodePort: ""
     annotations: {}
+  # Frontend is an nginx image that runs as root (port 80). Kube-score's
+  # user/group id check can't be satisfied without rebuilding upstream.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "500m"
+      memory: 256Mi
+      ephemeral-storage: 512Mi
 
 backend:
   image:
     repository: git-registry.arsnova.eu/arsnova/frag.jetzt-backend
     tag: master
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   port: 8888
   loggingLevel: ERROR
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1Gi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+      ephemeral-storage: 1Gi
 
 wsGateway:
   image:
     repository: git-registry.arsnova.eu/arsnova/arsnova-ws-gateway
     tag: frag-jetzt
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   port: 8080
   loggingLevel: ERROR
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 512Mi
 
 rabbitmq:
   image:
     repository: rabbitmq
     tag: "3.8"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   persistence:
     size: 5Gi
   plugins:
@@ -44,30 +73,70 @@ rabbitmq:
     existingSecret:
       name: ""
       passwordKey: rabbitmq-password
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 512Mi
 
 aiProvider:
   enabled: true
   image:
     repository: rubenbim/fragjetzt-ai-provider
     tag: master
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   port: 8080
   origins: ""
   secretAlgorithm: "HS256"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+      ephemeral-storage: 1Gi
+  # init-ai-db container that bootstraps the langchain DB schema. Uses the
+  # same postgres image as the ai-postgresql subchart.
+  initContainer:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+        ephemeral-storage: 64Mi
+      limits:
+        cpu: "500m"
+        memory: 256Mi
+        ephemeral-storage: 256Mi
   chroma:
     image:
       repository: chromadb/chroma
       tag: "0.5.17"
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
     persistence:
       size: 5Gi
     auth:
       token: "test-token"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: "1"
+        memory: 2Gi
+        ephemeral-storage: 1Gi
 
 ai-postgresql:
   enabled: true
   image:
     tag: 16-alpine
+    pullPolicy: Always
   auth:
     username: langchain
     password: langchain
@@ -75,6 +144,21 @@ ai-postgresql:
   replication:
     user: replicator
     password: replication_password
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 512Mi
+  networkPolicy:
+    enabled: true
+  # The bitnami/postgres image bakes in uid/gid 1001; kube-score's
+  # user/group id check can't be satisfied without rebuilding upstream.
+  workloadAnnotations:
+    kube-score/ignore: container-security-context-user-group-id
 
 keycloak:
   url: https://keycloak.ethquokkaops.io
@@ -114,14 +198,41 @@ postgresql:
   enabled: true
   image:
     tag: 16-alpine
+    pullPolicy: Always
   auth:
     username: fragjetzt
     password: fragjetzt
     database: fragjetzt
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 512Mi
+  networkPolicy:
+    enabled: true
+  # The bitnami/postgres image bakes in uid/gid 1001; kube-score's
+  # user/group id check can't be satisfied without rebuilding upstream.
+  workloadAnnotations:
+    kube-score/ignore: container-security-context-user-group-id
 
 redis:
   enabled: true
   architecture: standalone
+  image:
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: "500m"
+      memory: 256Mi
+      ephemeral-storage: 256Mi
 
 ingress:
   enabled: true
@@ -129,3 +240,20 @@ ingress:
   annotations: {}
   tls:
     secretName: frag-jetzt-tls
+
+# NetworkPolicy guarding ingress and egress for all frag-jetzt pods.
+# Defaults are permissive: any pod in the cluster can hit the workloads, and
+# pods may egress freely (DNS, keycloak, subcharts, package mirrors). Tighten
+# per environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+# PodDisruptionBudget. maxUnavailable: 1 keeps a single-replica chart drainable
+# while still letting the cluster signal voluntary disruptions.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

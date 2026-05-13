@@ -1,0 +1,32 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+{{- $apps := list
+    (dict "name" (include "frag-jetzt.frontend.fullname" .) "appLabel" (include "frag-jetzt.frontend.fullname" .))
+    (dict "name" (include "frag-jetzt.backend.fullname" .)  "appLabel" (include "frag-jetzt.backend.fullname" .))
+    (dict "name" (include "frag-jetzt.ws-gateway.fullname" .) "appLabel" (include "frag-jetzt.ws-gateway.fullname" .))
+    (dict "name" (include "frag-jetzt.rabbitmq.fullname" .) "appLabel" (include "frag-jetzt.rabbitmq.fullname" .))
+}}
+{{- if .Values.aiProvider.enabled }}
+{{- $apps = append $apps (dict "name" (printf "%s-ai-chroma" .Release.Name) "appLabel" (printf "%s-ai-chroma" .Release.Name)) }}
+{{- $apps = append $apps (dict "name" (printf "%s-ai-provider" .Release.Name) "appLabel" (printf "%s-ai-provider" .Release.Name)) }}
+{{- end }}
+{{- range $idx, $app := $apps }}
+{{- if $idx }}
+---
+{{- end }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $app.name }}
+  labels:
+    {{- include "frag-jetzt.labels" $ | nindent 4 }}
+spec:
+  {{- if $.Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ $.Values.podDisruptionBudget.minAvailable }}
+  {{- else }}
+  maxUnavailable: {{ $.Values.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ $app.appLabel }}
+{{- end }}
+{{- end }}

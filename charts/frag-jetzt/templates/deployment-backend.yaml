@@ -4,6 +4,11 @@ metadata:
   name: {{ include "frag-jetzt.backend.fullname" . }}
   labels:
     {{- include "frag-jetzt.labels" . | nindent 4 }}
+  annotations:
+    # The frag.jetzt-backend image (Spring Boot) baked the application as root
+    # in /app and does not document a non-root user; cannot run as uid > 10000
+    # without rebuilding the image.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -21,7 +26,8 @@ spec:
           image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.backend.port }}
+            - name: http
+              containerPort: {{ .Values.backend.port }}
           env:
             - name: SERVER_ROOT_URL
               value: {{ include "frag-jetzt.serverRootUrl" . | quote }}
@@ -77,4 +83,20 @@ spec:
             - name: APP_WEB_PUSH_VAPID_SUBJECT
               value: {{ .Values.vapid.subject | quote }}
             {{- end }}
-          resources: {}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 120
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}

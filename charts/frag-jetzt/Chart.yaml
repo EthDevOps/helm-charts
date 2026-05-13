@@ -3,7 +3,7 @@ name: frag-jetzt
 description: Frag.jetzt - Anonymous Q&A platform for lectures and events
 type: application
 
-version: 0.1.16
+version: 0.1.17
 
 appVersion: "master"
 home: https://frag.jetzt
@@ -14,15 +14,15 @@ maintainers:
     email: markus.keil@ethereum.org
 dependencies:
 - name: postgresql
-  version: 1.1.6
+  version: 1.1.8
   repository: https://ethdevops.github.io/helm-charts
   condition: postgresql.enabled
 - name: redis
-  version: "1.0.5"
+  version: 1.0.6
   repository: https://ethdevops.github.io/helm-charts
   condition: redis.enabled
 - name: postgresql
   alias: ai-postgresql
-  version: 1.1.6
+  version: 1.1.8
   repository: https://ethdevops.github.io/helm-charts
   condition: aiProvider.enabled
