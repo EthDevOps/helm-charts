@@ -5,6 +5,10 @@ metadata:
   labels:
     {{- include "glitchtip.labels" . | nindent 4 }}
     app.kubernetes.io/component: web
+  annotations:
+    # The upstream glitchtip image bakes in a low uid/gid; rebuilding the image
+    # is the only way to satisfy this check.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   {{- if not .Values.web.autoscaling.enabled }}
   replicas: {{ .Values.web.replicaCount }}
@@ -52,8 +56,7 @@ spec:
               protocol: TCP
           livenessProbe:
             failureThreshold: {{ .Values.web.livenessProbe.failureThreshold }}
-            httpGet:
-              path: {{ .Values.web.livenessProbe.path | default "/_health/" }}
+            tcpSocket:
               port: {{ .Values.web.port | default 8000 }}
             initialDelaySeconds: {{ .Values.web.livenessProbe.initialDelaySeconds }}
             timeoutSeconds: {{ .Values.web.livenessProbe.timeoutSeconds }}

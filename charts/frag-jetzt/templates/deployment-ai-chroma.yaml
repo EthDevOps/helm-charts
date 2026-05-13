@@ -5,6 +5,11 @@ metadata:
   name: {{ .Release.Name }}-ai-chroma
   labels:
     {{- include "frag-jetzt.labels" . | nindent 4 }}
+  annotations:
+    # The chromadb/chroma image runs uvicorn as root (uid 0) inside the
+    # container and exposes 8000 — there's no documented way to drop to a
+    # high UID without rebuilding upstream.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: 1
   strategy:
@@ -22,7 +27,8 @@ spec:
           image: {{ .Values.aiProvider.chroma.image.repository }}:{{ .Values.aiProvider.chroma.image.tag }}
           imagePullPolicy: {{ .Values.aiProvider.chroma.image.pullPolicy }}
           ports:
-            - containerPort: 8000
+            - name: http
+              containerPort: 8000
           env:
             - name: IS_PERSISTENT
               value: "TRUE"
@@ -36,10 +42,26 @@ spec:
               value: "AUTHORIZATION"
             - name: CHROMA_SERVER_AUTH_PROVIDER
               value: "chromadb.auth.token.TokenAuthServerProvider"
+          readinessProbe:
+            httpGet:
+              path: /api/v1/heartbeat
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           volumeMounts:
             - name: ai-chroma-data
               mountPath: /chroma/chroma
-          resources: {}
+          resources:
+            {{- toYaml .Values.aiProvider.chroma.resources | nindent 12 }}
       volumes:
         - name: ai-chroma-data
           persistentVolumeClaim:

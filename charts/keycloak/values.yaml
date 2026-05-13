@@ -13,7 +13,7 @@ image:
   # Overrides the Keycloak image tag whose default is the chart appVersion
   tag: ""
   # The Keycloak image pull policy
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 # Image pull secrets for the Pod
 imagePullSecrets: []
@@ -36,7 +36,7 @@ updateStrategy: RollingUpdate
 
 # Pod restart policy. One of `Always`, `OnFailure`, or `Never`
 restartPolicy: Always
-enableProbes: false
+enableProbes: true
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
   create: true
@@ -198,13 +198,15 @@ startupProbe: |
   periodSeconds: 5
 
 # Pod resource requests and limits
-resources: {}
-  # requests:
-  #   cpu: "500m"
-  #   memory: "1024Mi"
-  # limits:
-  #   cpu: "500m"
-  #   memory: "1024Mi"
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1024Mi"
+    ephemeral-storage: "256Mi"
+  limits:
+    cpu: "1"
+    memory: "2Gi"
+    ephemeral-storage: "1Gi"
 
 # Startup scripts to run before Keycloak starts up
 startupScripts:
@@ -339,7 +341,7 @@ ingress:
 ## Network policy configuration
 networkPolicy:
   # If true, the Network policies are deployed
-  enabled: false
+  enabled: true
 
   # Additional Network policy labels
   labels: {}
@@ -373,9 +375,9 @@ pgchecker:
     # Docker image used to check Postgresql readiness at startup
     repository: busybox
     # Image tag for the pgchecker image
-    tag: 1.32
+    tag: "1.36"
     # Image pull policy for the pgchecker image
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   # SecurityContext for the pgchecker container
   securityContext:
     allowPrivilegeEscalation: false
@@ -387,9 +389,11 @@ pgchecker:
     requests:
       cpu: "20m"
       memory: "32Mi"
+      ephemeral-storage: "64Mi"
     limits:
       cpu: "20m"
       memory: "32Mi"
+      ephemeral-storage: "128Mi"
 
 postgresql:
   # If `true`, the Postgresql dependency is enabled
@@ -405,12 +409,23 @@ postgresql:
   fullnameOverride: ""
   # PostgreSQL network policy configuration
   networkPolicy:
-    enabled: false
+    enabled: true
   # PostgreSQL service configuration
   service:
     port: 5432
   image:
     tag: 17-alpine
+    pullPolicy: Always
+  # PostgreSQL container resources (limits required for kube-score)
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+      ephemeral-storage: "256Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+      ephemeral-storage: "1Gi"
 
 serviceMonitor:
   # If `true`, a ServiceMonitor resource for the prometheus-operator is created

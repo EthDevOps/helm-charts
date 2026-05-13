@@ -4,6 +4,10 @@ metadata:
   name: {{ include "frag-jetzt.ws-gateway.fullname" . }}
   labels:
     {{- include "frag-jetzt.labels" . | nindent 4 }}
+  annotations:
+    # The arsnova-ws-gateway image runs the Spring Boot jar as the default
+    # baked image user; not configurable to a high UID without rebuilding.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -21,7 +25,8 @@ spec:
           image: {{ .Values.wsGateway.image.repository }}:{{ .Values.wsGateway.image.tag }}
           imagePullPolicy: {{ .Values.wsGateway.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.wsGateway.port }}
+            - name: http
+              containerPort: {{ .Values.wsGateway.port }}
           env:
             - name: SERVER_PORT
               value: {{ .Values.wsGateway.port | quote }}
@@ -52,4 +57,20 @@ spec:
               value: {{ include "frag-jetzt.serverRootUrl" . | quote }}
             - name: LOGGING_LEVEL_ROOT
               value: {{ .Values.wsGateway.loggingLevel | quote }}
-          resources: {}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.wsGateway.resources | nindent 12 }}

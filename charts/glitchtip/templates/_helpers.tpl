@@ -137,11 +137,16 @@ Glitchtip shared environment variables (SECRET_KEY, GLITCHTIP_DOMAIN)
 - name: SECRET_KEY
   {{- if .Values.glitchtip.secretKey }}
   value: {{ .Values.glitchtip.secretKey | quote }}
+  {{- else if .Values.glitchtip.existingSecret }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.glitchtip.existingSecret }}
+      key: {{ .Values.glitchtip.existingSecretKey }}
   {{- else }}
   valueFrom:
     secretKeyRef:
-      name: {{ required "one of glitchtip.existingSecret or glitchtip.secretKey is required" .Values.glitchtip.existingSecret }}
-      key: {{ .Values.glitchtip.existingSecretKey }}
+      name: {{ include "glitchtip.fullname" . }}
+      key: SECRET_KEY
   {{- end }}
 - name: GLITCHTIP_DOMAIN
   value: {{ .Values.glitchtip.domain | quote }}

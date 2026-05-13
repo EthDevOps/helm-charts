@@ -4,6 +4,10 @@ metadata:
   name: {{ include "frag-jetzt.rabbitmq.fullname" . }}
   labels:
     {{- include "frag-jetzt.labels" . | nindent 4 }}
+  annotations:
+    # The official rabbitmq:3.8 image runs as the `rabbitmq` user (uid 999)
+    # which is below kube-score's 10000 threshold and baked into the image.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: 1
   strategy:
@@ -33,6 +37,20 @@ spec:
                 secretKeyRef:
                   name: {{ include "frag-jetzt.secretName" . }}
                   key: {{ .Values.rabbitmq.auth.existingSecret.passwordKey | default "rabbitmq-password" }}
+          readinessProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: amqp
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           volumeMounts:
             - name: rabbitmq-data
               mountPath: /var/lib/rabbitmq
@@ -40,7 +58,8 @@ spec:
               mountPath: /etc/rabbitmq/enabled_plugins
               subPath: enabled_plugins
               readOnly: true
-          resources: {}
+          resources:
+            {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
       volumes:
         - name: rabbitmq-data
           persistentVolumeClaim:

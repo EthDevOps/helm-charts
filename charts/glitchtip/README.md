@@ -1,6 +1,6 @@
 # glitchtip
 
-![Version: 8.1.1](https://img.shields.io/badge/Version-8.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 6.0.10](https://img.shields.io/badge/AppVersion-6.0.10-informational?style=flat-square)
+![Version: 8.1.2](https://img.shields.io/badge/Version-8.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 6.0.10](https://img.shields.io/badge/AppVersion-6.0.10-informational?style=flat-square)
 
 Open source error tracking that is compatible with Sentry
 
@@ -31,7 +31,7 @@ Open source error tracking that is compatible with Sentry
 | glitchtip.secretKey | string | `nil` | Secret key of the application. Set here or via existingSecret, not both. |
 | glitchtip.valkey.existingSecret | string | `nil` | Existing secret containing the REDIS_URL |
 | glitchtip.valkey.existingSecretKey | string | `"REDIS_URL"` | Key within the existingSecret that contains the REDIS_URL |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"glitchtip/glitchtip"` |  |
 | image.tag | string | `"6.0.10"` |  |
 | imagePullSecrets | list | `[]` |  |
@@ -43,28 +43,62 @@ Open source error tracking that is compatible with Sentry
 | migrationJob.extraEnvFrom | list | `[]` |  |
 | migrationJob.extraEnvVars | list | `[]` |  |
 | migrationJob.podAnnotations | object | `{}` |  |
+| migrationJob.resources.limits.cpu | string | `"1000m"` |  |
+| migrationJob.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| migrationJob.resources.limits.memory | string | `"512Mi"` |  |
+| migrationJob.resources.requests.cpu | string | `"100m"` |  |
+| migrationJob.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| migrationJob.resources.requests.memory | string | `"256Mi"` |  |
 | monitoring.enabled | bool | `false` |  |
 | monitoring.interval | string | `"30s"` |  |
 | monitoring.path | string | `"/metrics"` |  |
 | monitoring.scrapeTimeout | string | `"10s"` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `8000` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| networkPolicy.ingress[0].ports[1].port | int | `9100` |  |
+| networkPolicy.ingress[0].ports[1].protocol | string | `"TCP"` |  |
 | podSecurityContext | object | `{}` |  |
 | postgresql.cluster.instances | int | `1` |  |
 | postgresql.cluster.storage.size | string | `"1Gi"` |  |
 | postgresql.cluster.storage.storageClass | string | `nil` |  |
-| postgresql.enabled | bool | `false` |  |
+| postgresql.enabled | bool | `true` |  |
 | securityContext | object | `{}` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `false` |  |
 | serviceAccount.name | string | `nil` |  |
 | tests.configuration.enabled | bool | `true` |  |
+| tests.connection.image | string | `"busybox:1.36"` |  |
 | valkey.dataStorage.enabled | bool | `false` |  |
-| valkey.enabled | bool | `true` |  |
+| valkey.enabled | bool | `false` |  |
+| valkey.image.pullPolicy | string | `"Always"` |  |
+| valkey.initResources.limits.cpu | string | `"100m"` |  |
+| valkey.initResources.limits.ephemeral-storage | string | `"128Mi"` |  |
+| valkey.initResources.limits.memory | string | `"128Mi"` |  |
+| valkey.initResources.requests.cpu | string | `"50m"` |  |
+| valkey.initResources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| valkey.initResources.requests.memory | string | `"64Mi"` |  |
+| valkey.networkPolicy.egress[0] | object | `{}` |  |
+| valkey.networkPolicy.ingress[0].ports[0].port | int | `6379` |  |
+| valkey.networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| valkey.podSecurityContext.fsGroup | int | `10001` |  |
+| valkey.podSecurityContext.runAsGroup | int | `10001` |  |
+| valkey.podSecurityContext.runAsUser | int | `10001` |  |
+| valkey.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | valkey.replicaCount | int | `1` |  |
 | valkey.resources.limits.cpu | string | `"200m"` |  |
+| valkey.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | valkey.resources.limits.memory | string | `"256Mi"` |  |
 | valkey.resources.requests.cpu | string | `"100m"` |  |
+| valkey.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
 | valkey.resources.requests.memory | string | `"128Mi"` |  |
+| valkey.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| valkey.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| valkey.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| valkey.securityContext.runAsNonRoot | bool | `true` |  |
+| valkey.securityContext.runAsUser | int | `10001` |  |
 | web.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].key | string | `"app.kubernetes.io/component"` |  |
 | web.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].operator | string | `"In"` |  |
 | web.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchExpressions[0].values[0] | string | `"web"` |  |
@@ -97,8 +131,10 @@ Open source error tracking that is compatible with Sentry
 | web.readinessProbe.timeoutSeconds | int | `2` |  |
 | web.replicaCount | int | `2` |  |
 | web.resources.limits.cpu | string | `"1000m"` |  |
+| web.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | web.resources.limits.memory | string | `"512Mi"` |  |
 | web.resources.requests.cpu | string | `"100m"` |  |
+| web.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | web.resources.requests.memory | string | `"256Mi"` |  |
 | web.service.port | int | `80` |  |
 | web.service.type | string | `"ClusterIP"` |  |
@@ -123,10 +159,18 @@ Open source error tracking that is compatible with Sentry
 | worker.metricsPort | int | `9100` | Port for Prometheus metrics (VTASKS_METRICS_PORT) |
 | worker.nodeSelector | object | `{}` |  |
 | worker.podAnnotations | object | `{}` |  |
+| worker.readinessProbe.exec.command[0] | string | `"/bin/sh"` |  |
+| worker.readinessProbe.exec.command[1] | string | `"-c"` |  |
+| worker.readinessProbe.exec.command[2] | string | `"test -f /tmp/worker_health"` |  |
+| worker.readinessProbe.initialDelaySeconds | int | `10` |  |
+| worker.readinessProbe.periodSeconds | int | `30` |  |
+| worker.readinessProbe.timeoutSeconds | int | `10` |  |
 | worker.replicaCount | int | `1` |  |
 | worker.resources.limits.cpu | string | `"900m"` |  |
+| worker.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | worker.resources.limits.memory | string | `"768Mi"` |  |
 | worker.resources.requests.cpu | string | `"100m"` |  |
+| worker.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | worker.resources.requests.memory | string | `"350Mi"` |  |
 | worker.tolerations | list | `[]` |  |
 

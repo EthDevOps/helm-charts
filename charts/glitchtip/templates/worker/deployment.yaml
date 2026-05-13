@@ -6,6 +6,10 @@ metadata:
   labels:
     {{- include "glitchtip.labels" . | nindent 4 }}
     app.kubernetes.io/component: worker
+  annotations:
+    # The upstream glitchtip image bakes in a low uid/gid; rebuilding the image
+    # is the only way to satisfy this check.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: {{ .Values.worker.replicaCount }}
   selector:
@@ -52,6 +56,10 @@ spec:
           {{- if .Values.worker.livenessProbe }}
           livenessProbe:
             {{- .Values.worker.livenessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.worker.readinessProbe }}
+          readinessProbe:
+            {{- .Values.worker.readinessProbe | toYaml | nindent 12 }}
           {{- end }}
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}

@@ -1,0 +1,19 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "netbox.fullname" . }}
+  labels:
+    {{- include "netbox.labels" . | nindent 4 }}
+    app.kubernetes.io/component: netbox
+spec:
+  {{- if .Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  {{- else }}
+  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "netbox.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: netbox
+{{- end }}

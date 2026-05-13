@@ -6,6 +6,11 @@ metadata:
   name: {{ .Release.Name }}-ai-provider
   labels:
     {{- include "frag-jetzt.labels" . | nindent 4 }}
+  annotations:
+    # The fragjetzt-ai-provider image runs uvicorn as root and the init
+    # container uses the postgres client image which bakes in uid 1001 — neither
+    # can be reconfigured to a high UID without rebuilding upstream.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: 1
   strategy:
@@ -21,16 +26,20 @@ spec:
       initContainers:
         - name: init-ai-db
           image: {{ (index .Values "ai-postgresql").image.registry | default "" }}{{ ternary "/" "" (not (empty ((index .Values "ai-postgresql").image.registry | default ""))) }}postgres:{{ (index .Values "ai-postgresql").image.tag }}
+          imagePullPolicy: {{ (index .Values "ai-postgresql").image.pullPolicy | default "Always" }}
           command: ["/bin/bash", "/scripts/init-replication.sh"]
           volumeMounts:
             - name: init-script
               mountPath: /scripts
+          resources:
+            {{- toYaml .Values.aiProvider.initContainer.resources | nindent 12 }}
       containers:
         - name: ai-provider
           image: {{ .Values.aiProvider.image.repository }}:{{ .Values.aiProvider.image.tag }}
           imagePullPolicy: {{ .Values.aiProvider.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.aiProvider.port }}
+            - name: http
+              containerPort: {{ .Values.aiProvider.port }}
           env:
             - name: ORIGINS
               value: {{ .Values.aiProvider.origins | default (include "frag-jetzt.serverRootUrl" .) | quote }}
@@ -59,7 +68,23 @@ spec:
               value: "8000"
             - name: CHROMA_SERVER_AUTH_CREDENTIALS
               value: {{ .Values.aiProvider.chroma.auth.token | quote }}
-          resources: {}
+          readinessProbe:
+            httpGet:
+              path: /ai/docs
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.aiProvider.resources | nindent 12 }}
       volumes:
         - name: init-script
           configMap:

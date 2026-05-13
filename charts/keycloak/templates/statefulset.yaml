@@ -2,12 +2,16 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "keycloak.fullname" . }}
-  {{- with .Values.statefulsetAnnotations }}
   annotations:
+    # Keycloak image bakes in uid/gid 1000; cannot satisfy kube-score
+    # container-security-context-user-group-id without rebuilding the image.
+    # Same applies to the busybox-based pgchecker init container.
+    kube-score/ignore: container-security-context-user-group-id
+    {{- with .Values.statefulsetAnnotations }}
     {{- range $key, $value := . }}
     {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
     {{- end }}
-  {{- end }}
+    {{- end }}
   labels:
     {{- include "keycloak.labels" . | nindent 4 }}
     {{- range $key, $value := .Values.statefulsetLabels }}

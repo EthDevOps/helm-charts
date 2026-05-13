@@ -4,6 +4,11 @@ metadata:
   name: {{ .Release.Name }}-github-autoscaler
   labels:
     app: {{ .Release.Name }}-github-autoscaler
+  annotations:
+    # The upstream github-actions-autoscaler image does not set a non-root
+    # user. Pinning a high UID here would require rebuilding the image,
+    # so we accept the upstream behavior and ignore the kube-score check.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   strategy:
     type: Recreate
@@ -22,17 +27,33 @@ spec:
       containers:
         - name: github-autoscaler
           image: {{ .Values.imageName }}:{{ .Values.imageTag }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           ports:
             - name: http
-              containerPort: 8080 
+              containerPort: 8080
             - name: metrics
-              containerPort: 9000 
+              containerPort: 9000
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           env:
           - name: CONFIG_DIR
             value: "/data/config"
-          - name: ALLOW_PRODUCTION_PREFIX 
+          - name: ALLOW_PRODUCTION_PREFIX
             value: "true"
           {{- if .Values.observability.otelExporterEndpoint }}
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
@@ -94,9 +115,11 @@ spec:
             {{- end }}
           {{- end }}
           {{- end }}
+          {{- if .Values.envFromSecret }}
           envFrom:
           - secretRef:
               name: {{ .Values.envFromSecret }}
+          {{- end }}
           volumeMounts:
             - name: config
               mountPath: /data/config

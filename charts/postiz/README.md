@@ -1,6 +1,6 @@
 # postiz-app
 
-![Version: 1.1.1](https://img.shields.io/badge/Version-1.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.0](https://img.shields.io/badge/AppVersion-1.3.0-informational?style=flat-square)
+![Version: 1.2.0](https://img.shields.io/badge/Version-1.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.0](https://img.shields.io/badge/AppVersion-1.3.0-informational?style=flat-square)
 
 A Social Media Scheduling App
 
@@ -15,8 +15,8 @@ A Social Media Scheduling App
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://ethdevops.github.io/helm-charts | postgresql | 1.1.3 |
-| https://ethdevops.github.io/helm-charts | redis | 1.0.4 |
+| https://ethdevops.github.io/helm-charts | postgresql | 1.1.8 |
+| https://ethdevops.github.io/helm-charts | redis | 1.0.6 |
 
 ## Values
 
@@ -38,7 +38,7 @@ A Social Media Scheduling App
 | extraVolumeMounts | list | `[]` |  |
 | extraVolumes | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"ghcr.io/gitroomhq/postiz-app"` |  |
 | image.tag | string | `"latest"` |  |
 | imagePullSecrets | list | `[]` |  |
@@ -51,22 +51,61 @@ A Social Media Scheduling App
 | ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
 | ingress.hosts[0].paths[0].port | int | `80` |  |
 | ingress.tls | list | `[]` |  |
+| livenessProbe.failureThreshold | int | `6` |  |
+| livenessProbe.initialDelaySeconds | int | `60` |  |
+| livenessProbe.periodSeconds | int | `20` |  |
+| livenessProbe.tcpSocket.port | string | `"http"` |  |
+| livenessProbe.timeoutSeconds | int | `5` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `5000` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
-| podSecurityContext | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
+| podSecurityContext.fsGroup | int | `1000` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | postgresql.auth.database | string | `"postiz"` |  |
 | postgresql.auth.password | string | `"postiz-password"` |  |
 | postgresql.auth.username | string | `"postiz"` |  |
 | postgresql.enabled | bool | `true` |  |
+| postgresql.image.pullPolicy | string | `"Always"` |  |
 | postgresql.image.tag | string | `"15-alpine"` |  |
+| postgresql.networkPolicy.enabled | bool | `true` |  |
+| postgresql.resources.limits.cpu | string | `"1"` |  |
+| postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| postgresql.resources.limits.memory | string | `"1Gi"` |  |
+| postgresql.resources.requests.cpu | string | `"250m"` |  |
+| postgresql.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| postgresql.resources.requests.memory | string | `"256Mi"` |  |
 | postgresql.service.ports.postgresql | int | `5432` |  |
+| readinessProbe.failureThreshold | int | `6` |  |
+| readinessProbe.httpGet.path | string | `"/"` |  |
+| readinessProbe.httpGet.port | string | `"http"` |  |
+| readinessProbe.initialDelaySeconds | int | `30` |  |
+| readinessProbe.periodSeconds | int | `10` |  |
+| readinessProbe.timeoutSeconds | int | `5` |  |
 | redis.auth.enabled | bool | `true` |  |
 | redis.auth.password | string | `"postiz-redis-password"` |  |
 | redis.enabled | bool | `true` |  |
+| redis.image.pullPolicy | string | `"Always"` |  |
 | redis.master.service.ports.redis | int | `6379` |  |
+| redis.resources.limits.cpu | string | `"500m"` |  |
+| redis.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| redis.resources.limits.memory | string | `"512Mi"` |  |
+| redis.resources.requests.cpu | string | `"100m"` |  |
+| redis.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| redis.resources.requests.memory | string | `"128Mi"` |  |
 | replicaCount | int | `1` |  |
-| resources | object | `{}` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"2Gi"` |  |
+| resources.requests.cpu | string | `"200m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"1Gi"` |  |
 | secrets.CLOUDFLARE_ACCESS_KEY | string | `""` |  |
 | secrets.CLOUDFLARE_ACCOUNT_ID | string | `""` |  |
 | secrets.CLOUDFLARE_BUCKETNAME | string | `""` |  |
@@ -84,7 +123,12 @@ A Social Media Scheduling App
 | secrets.RESEND_API_KEY | string | `""` |  |
 | secrets.X_API_KEY | string | `""` |  |
 | secrets.X_API_SECRET | string | `""` |  |
-| securityContext | object | `{}` |  |
+| securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| securityContext.runAsGroup | int | `1000` |  |
+| securityContext.runAsNonRoot | bool | `true` |  |
+| securityContext.runAsUser | int | `1000` |  |
 | service.additionalPorts | list | `[]` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
@@ -92,6 +136,7 @@ A Social Media Scheduling App
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
 | tolerations | list | `[]` |  |
+| workloadAnnotations.kube-score/ignore | string | `"container-image-tag, container-security-context-user-group-id"` |  |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)

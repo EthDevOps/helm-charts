@@ -4,6 +4,11 @@ metadata:
   name: {{ .Release.Name }}-github-autoscaler-ui
   labels:
     app: {{ .Release.Name }}-github-autoscaler-ui
+  annotations:
+    # The upstream github-actions-autoscaler-ui image is served by nginx and
+    # runs as root by default. Pinning a high UID would require rebuilding
+    # the image, so we accept the upstream behavior.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   strategy:
     type: Recreate
@@ -18,10 +23,26 @@ spec:
       containers:
         - name: github-autoscaler
           image: docker.ethquokkaops.io/ethquokkaops/ethdevops/github-actions-autoscaler-ui:{{ .Values.uiImageTag }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.uiResources | nindent 12 }}
           ports:
             - name: http
-              containerPort: 80 
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
       nodeSelector:
         kubernetes.io/os: linux
