@@ -2,10 +2,18 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-notion-trigger
+  labels:
+    app: {{ .Release.Name }}
+  annotations:
+    # The upstream notion-backup-tool image runs as root and does not expose
+    # a configurable uid/gid; we'd need to rebuild it to satisfy
+    # `container-security-context-user-group-id`.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   schedule: "{{ .Values.triggerSchedule }}"
   timeZone: 'Etc/UTC'
   concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.startingDeadlineSeconds }}
   jobTemplate:
     spec:
       template:
@@ -17,6 +25,9 @@ spec:
           containers:
             - name: notion-backup
               image: docker.ethquokkaops.io/ethquokkaops/ethdevops/notion-backup-tool:{{ .Values.imageTag }}
+              imagePullPolicy: {{ .Values.imagePullPolicy }}
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
               volumeMounts:
                 - name: credential-cache
                   mountPath: /data/credentials
@@ -38,10 +49,10 @@ spec:
             kubernetes.io/os: linux
           volumes:
             - name: credential-cache
-              persistentVolumeClaim: 
+              persistentVolumeClaim:
                 claimName: {{ .Release.Name }}-cred-cache
             - name: working-dir
-              persistentVolumeClaim: 
+              persistentVolumeClaim:
                 claimName: {{ .Release.Name }}-working
             - name: pgp-key-vol
               secret:
