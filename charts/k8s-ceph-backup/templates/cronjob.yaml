@@ -9,10 +9,18 @@ metadata:
   labels:
     {{- include "k8s-ceph-backup.labels" $ | nindent 4 }}
     backup-namespace: {{ $backup.namespace }}
+  annotations:
+    # The k8s-ceph-backup image runs as root because it shells out to `rbd`
+    # (Ceph RBD client) and `gpg`, both of which expect to manage files in
+    # /etc/ceph and /root/.gnupg. Satisfying
+    # container-security-context-user-group-id would require rebuilding the
+    # image with a non-root user.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   schedule: {{ $backup.schedule | default "0 2 * * *" | quote }}
   timeZone: {{ $.Values.cronjob.timeZone | default "UTC" | quote }}
   concurrencyPolicy: {{ $.Values.cronjob.concurrencyPolicy | default "Forbid" }}
+  startingDeadlineSeconds: {{ $.Values.cronjob.startingDeadlineSeconds | default 600 }}
   successfulJobsHistoryLimit: {{ $.Values.cronjob.successfulJobsHistoryLimit | default 3 }}
   failedJobsHistoryLimit: {{ $.Values.cronjob.failedJobsHistoryLimit | default 1 }}
   suspend: {{ $.Values.cronjob.suspend | default false }}
@@ -28,7 +36,7 @@ spec:
           containers:
           - name: {{ $.Chart.Name }}
             image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
-            imagePullPolicy: {{ $.Values.image.pullPolicy | default "IfNotPresent" }}
+            imagePullPolicy: {{ $.Values.image.pullPolicy | default "Always" }}
             args:
               - --namespace
               - {{ $backup.namespace }}
@@ -91,10 +99,14 @@ metadata:
   namespace: {{ .Values.namespace | default .Release.Namespace }}
   labels:
     {{- include "k8s-ceph-backup.labels" . | nindent 4 }}
+  annotations:
+    # See note in keyed CronJob above; the image requires root for rbd + gpg.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   schedule: {{ .Values.cronjob.schedule | default "0 2 * * *" | quote }}
   timeZone: {{ .Values.cronjob.timeZone | default "UTC" | quote }}
   concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy | default "Forbid" }}
+  startingDeadlineSeconds: {{ .Values.cronjob.startingDeadlineSeconds | default 600 }}
   successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit | default 3 }}
   failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit | default 1 }}
   suspend: {{ .Values.cronjob.suspend | default false }}
@@ -109,7 +121,7 @@ spec:
           containers:
           - name: {{ .Chart.Name }}
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-            imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+            imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
             {{- if .Values.args }}
             args: {{ .Values.args | toJson }}
             {{- end }}

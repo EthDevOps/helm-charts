@@ -1,6 +1,6 @@
 # k8s-ceph-backup
 
-![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 0.0.10](https://img.shields.io/badge/Version-0.0.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 Creates backups of PVC via CEPH
 
@@ -26,6 +26,7 @@ Creates backups of PVC via CEPH
 | cronjob.failedJobsHistoryLimit | int | `1` |  |
 | cronjob.restartPolicy | string | `"OnFailure"` |  |
 | cronjob.schedule | string | `"0 2 * * *"` |  |
+| cronjob.startingDeadlineSeconds | int | `600` |  |
 | cronjob.successfulJobsHistoryLimit | int | `3` |  |
 | cronjob.suspend | bool | `false` |  |
 | cronjob.timeZone | string | `"UTC"` |  |
@@ -54,14 +55,19 @@ Creates backups of PVC via CEPH
 | externalSecrets.secretStore.kind | string | `"SecretStore"` |  |
 | externalSecrets.secretStore.name | string | `""` |  |
 | fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-ceph-backup"` |  |
 | image.tag | string | `"v0.0.2"` |  |
 | nameOverride | string | `""` |  |
 | namespace | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress | list | `[]` |  |
 | resources.limits.cpu | string | `"500m"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | resources.limits.memory | string | `"512Mi"` |  |
 | resources.requests.cpu | string | `"250m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | resources.requests.memory | string | `"64Mi"` |  |
 | secrets.ceph.cephConf | string | `"[global]\n    auth_client_required = cephx\n    auth_cluster_required = cephx\n    auth_service_required = cephx\n    mon_allow_pool_delete = true\n    ms_bind_ipv4 = true\n    ms_bind_ipv6 = false\n    osd_pool_default_min_size = 2\n    osd_pool_default_size = 3\n[client]\n    keyring = /etc/ceph/keyring\n"` |  |
 | secrets.ceph.external | bool | `false` |  |
