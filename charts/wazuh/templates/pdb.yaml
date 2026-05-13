@@ -1,0 +1,37 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+{{- /*
+One PodDisruptionBudget per component (indexer StatefulSet, dashboard Deployment,
+manager master/worker StatefulSets). maxUnavailable: 1 keeps single-replica
+components drainable while still honouring a voluntary disruption budget at
+higher replica counts.
+*/ -}}
+{{- $fullname := include "wazuh.fullname" . -}}
+{{- $components := list
+  (dict "name" "indexer" "selector" (dict "app" (printf "%s-indexer" $fullname)))
+  (dict "name" "dashboard" "selector" (dict "app" (printf "%s-dashboard" $fullname)))
+  (dict "name" "manager-master" "selector" (dict "app" (printf "%s-manager" $fullname) "node-type" "master"))
+  (dict "name" "manager-worker" "selector" (dict "app" (printf "%s-manager" $fullname) "node-type" "worker"))
+-}}
+{{- range $idx, $c := $components }}
+{{- if $idx }}
+---
+{{- end }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $fullname }}-{{ $c.name }}
+  labels:
+    app: {{ $fullname }}-{{ $c.name }}
+spec:
+  {{- if $.Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ $.Values.podDisruptionBudget.minAvailable }}
+  {{- else }}
+  maxUnavailable: {{ $.Values.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- range $k, $v := $c.selector }}
+      {{ $k }}: {{ $v | quote }}
+      {{- end }}
+{{- end }}
+{{- end }}

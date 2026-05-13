@@ -7,6 +7,26 @@ cert-manager:
 nameOverride: null
 fullnameOverride: null
 
+# Utility init container image used by the manager initContainers (update-index,
+# install-wodle-gworkspace). Pinned to avoid `latest` tag.
+utilityImage:
+  alpine: "alpine:3.20"
+  busybox: "busybox:1.36"
+  pullPolicy: Always
+
+networkPolicy:
+  enabled: true
+  # Default ingress/egress are intentionally permissive so the chart works
+  # out-of-the-box. Operators are expected to tighten them per environment.
+  ingress:
+    - {}
+  egress:
+    - {}
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+
 indexer:
   replicas: 3
 
@@ -19,11 +39,11 @@ indexer:
     metrics: 9600
 
   updateStrategy: RollingUpdate
-  
+
   images:
     repository: wazuh/wazuh-indexer
     tag: "4.14.4"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     imagePullSecrets:
       enabled: false
       secret: {}
@@ -32,24 +52,33 @@ indexer:
     requests:
       cpu: 500m
       memory: 1Gi
+      ephemeral-storage: 256Mi
     limits:
+      cpu: "2"
       memory: 2Gi
+      ephemeral-storage: 1Gi
 
   initContainers:
     volumeMountHack:
       resources:
         limits:
+          cpu: 200m
           memory: 256Mi
+          ephemeral-storage: 256Mi
         requests:
           cpu: 50m
           memory: 128Mi
+          ephemeral-storage: 128Mi
     increaseTheVmMaxMapCount:
       resources:
         limits:
+          cpu: 200m
           memory: 256Mi
+          ephemeral-storage: 256Mi
         requests:
           cpu: 50m
           memory: 128Mi
+          ephemeral-storage: 128Mi
 
   config:
     opensearch: |-
@@ -82,15 +111,18 @@ dashboard:
   images:
     repository: wazuh/wazuh-dashboard
     tag: "4.14.4"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     updateStrategy: OnDelete
-  
+
   resources:
     limits:
+      cpu: "1"
       memory: 1Gi
+      ephemeral-storage: 1Gi
     requests:
       cpu: 500m
       memory: 512Mi
+      ephemeral-storage: 256Mi
 
   # with this you will be able to access kibana on http port instead of https
   # if you use Ambassador edgestack this is necessary becasue
@@ -102,15 +134,15 @@ dashboard:
     annotations: {}
     httpPort: 5601
     type: ClusterIP
-  
+
   cred:
     existingSecret: ""
     username: "kibanaserver"
     password: "kibanaserver"
-  
+
   config: |
     {{- include "wazuh.dashboard.config" . | indent 2 -}}
-  
+
   ingress:
     enabled: false
     tls: []
@@ -126,6 +158,7 @@ wazuh:
   images:
     repository: wazuh/wazuh-manager
     tag: "4.14.4"
+    pullPolicy: Always
     pullSecret: regcred
 
   extraOssConfig: ""
@@ -152,9 +185,17 @@ wazuh:
   authd:
     existingSecret: ""
     pass: "password"
-  
+
   initContainer:
-    resources: {}
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+        ephemeral-storage: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+        ephemeral-storage: 256Mi
 
   master:
     annotations: {}
@@ -168,11 +209,14 @@ wazuh:
 
     resources:
       limits:
+        cpu: "2"
         memory: 1Gi
+        ephemeral-storage: 1Gi
       requests:
         cpu: 500m
         memory: 512Mi
-    
+        ephemeral-storage: 256Mi
+
     # If defined, storageClassName: <storageClass>
     # If set to "-", storageClassName: "", which disables dynamic provisioning
     # If undefined (the default) or set to null, no storageClassName spec is
@@ -198,14 +242,17 @@ wazuh:
 
     resources:
       limits:
+        cpu: "2"
         memory: 1Gi
+        ephemeral-storage: 1Gi
       requests:
         cpu: 500m
         memory: 512Mi
+        ephemeral-storage: 256Mi
 
     storageClass: null
     storageSize: 50Gi
-    
+
     conf: |
       {{- include "wazuh.worker.conf" . | indent 2 -}}
     # To be appended to the worker.conf

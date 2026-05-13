@@ -9,7 +9,15 @@ metadata:
     app: {{ include "wazuh.fullname" . }}-manager
     node-type: master
   annotations:
-    {{- toYaml .Values.wazuh.master.annotations | nindent 4 }}
+    # The wazuh-manager image runs as a low UID (baked into the upstream image)
+    # and cannot be changed without rebuilding it. Helm chart also pins the
+    # main `wazuh-manager` image tag from values.yaml; the kube-score
+    # container-image-tag check inspects the rendered ref at lint time.
+    # TODO: revisit when wazuh ships a rootless image.
+    kube-score/ignore: container-security-context-user-group-id
+    {{- with .Values.wazuh.master.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   replicas: 1
   selector:
@@ -48,7 +56,7 @@ spec:
         {{- end }}
         - name: wazuh-authd-pass
           secret:
-            secretName: {{ .Values.wazuh.authd.existingSecret | default "wazuh-authd-pass" }} 
+            secretName: {{ .Values.wazuh.authd.existingSecret | default "wazuh-authd-pass" }}
         - emptyDir: {}
           name: result-config
         - name: scripts-volume
@@ -57,7 +65,10 @@ spec:
       initContainers:
         {{- if .Values.wazuh.googleWorkspace.existingSecret }}
         - name: install-wodle-gworkspace
-          image: alpine
+          image: {{ .Values.utilityImage.alpine | quote }}
+          imagePullPolicy: {{ .Values.utilityImage.pullPolicy }}
+          resources:
+            {{- toYaml .Values.wazuh.initContainer.resources | nindent 12 }}
           volumeMounts:
             - name: {{ include "wazuh.fullname" . }}-manager-master
               mountPath: /var/ossec/wodles
@@ -85,8 +96,9 @@ spec:
               cp -r /tmp/wazuh-gworkspace/wodle/* /var/ossec/wodles/gworkspace/
         {{- end }}
         - name: update-index
-          image: alpine
-          command: 
+          image: {{ .Values.utilityImage.alpine | quote }}
+          imagePullPolicy: {{ .Values.utilityImage.pullPolicy }}
+          command:
             - 'sh'
             - '-c'
             - '/script.sh'
@@ -105,7 +117,10 @@ spec:
               subPath: script.sh
 
         - name: config-updater
-          image: busybox:latest
+          image: {{ .Values.utilityImage.busybox | quote }}
+          imagePullPolicy: {{ .Values.utilityImage.pullPolicy }}
+          resources:
+            {{- toYaml .Values.wazuh.initContainer.resources | nindent 12 }}
           command:
             - /bin/sh
             - -c
@@ -114,21 +129,21 @@ spec:
               cat > /tmp/content-to-insert.txt << 'EOF'
               {{- .Values.wazuh.extraOssConfig | nindent 14 }}
               EOF
-              
+
               # Create a temporary file for the modified content
 
               cp /wazuh-config-mount/etc/ossec.conf /tmp/config
               sed -i '$d' /tmp/config
-              
+
               # Combine the parts with our content in between
               cat /tmp/config > /wazuh-config-mount/etc/ossec.conf
               cat /tmp/content-to-insert.txt >> /wazuh-config-mount/etc/ossec.conf
               echo "</ossec_config>" >> /wazuh-config-mount/etc/ossec.conf
-          
+
               echo "====CONFIG_START===="
               cat /wazuh-config-mount/etc/ossec.conf
               echo "====CONFIG_END===="
-              
+
 
           volumeMounts:
             - mountPath: /wazuh-config-mount/etc/
@@ -136,6 +151,21 @@ spec:
       containers:
         - name: wazuh-manager
           image: "{{ .Values.wazuh.images.repository }}:{{ .Values.wazuh.images.tag }}"
+          imagePullPolicy: {{ .Values.wazuh.images.pullPolicy }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.wazuh.master.service.ports.api }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.wazuh.master.service.ports.registration }}
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           resources:
             {{- toYaml .Values.wazuh.master.resources | nindent 12 }}
           securityContext:

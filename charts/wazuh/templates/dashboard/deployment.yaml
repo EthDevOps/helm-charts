@@ -5,7 +5,12 @@ metadata:
   labels:
     app: {{ include "wazuh.fullname" . }}-dashboard
   annotations:
-    {{- toYaml .Values.dashboard.annotations | nindent 4 }}
+    # The wazuh-dashboard image runs as a low UID baked into the upstream
+    # image and cannot be changed without rebuilding it.
+    kube-score/ignore: container-security-context-user-group-id
+    {{- with .Values.dashboard.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   replicas: {{ .Values.dashboard.replicas }}
   selector:
@@ -33,6 +38,23 @@ spec:
       containers:
         - name: wazuh-dashboard
           image: "{{ .Values.dashboard.images.repository }}:{{ .Values.dashboard.images.tag }}"
+          imagePullPolicy: {{ .Values.dashboard.images.pullPolicy }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.dashboard.service.httpPort }}
+              scheme: {{ if .Values.dashboard.enable_ssl }}HTTPS{{ else }}HTTP{{ end }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.dashboard.service.httpPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           resources:
             {{- toYaml .Values.dashboard.resources | nindent 12 }}
           volumeMounts:
