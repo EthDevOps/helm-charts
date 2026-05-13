@@ -6,9 +6,30 @@ replicaCount: 1
 
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/netbox-docker
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
+
+# NetworkPolicy for the NetBox web, worker, and housekeeping pods.
+# Kube-score only checks for the existence of a matching policy. The defaults
+# here are permissive (allow all ingress to ports 8080/9100 and all egress) so
+# the chart works out-of-the-box. Tighten per-environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - ports:
+        - port: 8080
+          protocol: TCP
+        - port: 9100
+          protocol: TCP
+  egress:
+    - {}
+
+# Pod disruption budget for the NetBox web Deployment.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+  # minAvailable: 1
 
 # You can also use an existing secret for the superuser password and API token
 # See `existingSecret` for details
@@ -430,10 +451,26 @@ postgresql:
   enabled: true
   image:
     tag: 13-alpine
+    pullPolicy: Always
 
   auth:
     username: netbox
     database: netbox
+
+  # Enable NetworkPolicy for the bundled PostgreSQL subchart.
+  networkPolicy:
+    enabled: true
+
+  # Resource defaults for the bundled PostgreSQL subchart.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 
 ## External database settings
 # These are used if postgresql.enabled is false, and are ignored otherwise
@@ -457,6 +494,27 @@ redis:
   # To use an external Redis instance, set this to false and configure the
   # settings under *both* tasksRedis *and* cachingRedis
   enabled: true
+
+  image:
+    pullPolicy: Always
+
+  # Resource defaults for the bundled Redis subchart.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+
+  # The redis image runs as uid 999 and cannot be changed without rebuilding.
+  # The redis subchart does not ship its own NetworkPolicy template, so the
+  # `pod-networkpolicy` finding for the redis pod is unreachable via parent
+  # overrides — it remains a subchart-only issue.
+  podAnnotations:
+    kube-score/ignore: container-security-context-user-group-id
 
 tasksRedis:
   database: 0
@@ -636,17 +694,15 @@ ingress:
 # Set this to true to automatically mount the service account token in the main container
 automountServiceAccountToken: false
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 2Gi
+    ephemeral-storage: 1Gi
 
 topologySpreadConstraints: []
   #  - maxSkew: 1
@@ -668,9 +724,17 @@ init:
   image:
     repository: docker.ethquokkaops.io/dh/busybox
     tag: 1.36.1
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
-  resources: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+      ephemeral-storage: 128Mi
 
   securityContext:
     capabilities:
@@ -685,9 +749,17 @@ test:
   image:
     repository: docker.ethquokkaops.io/dh/busybox
     tag: 1.36.1
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
-  resources: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+      ephemeral-storage: 128Mi
 
 autoscaling:
   enabled: false
@@ -752,6 +824,8 @@ housekeeping:
   schedule: '0 0 * * *'
   successfulJobsHistoryLimit: 5
   suspend: false
+  # Cancel jobs that miss their schedule by more than this many seconds.
+  startingDeadlineSeconds: 300
 
   podAnnotations: {}
 
@@ -779,13 +853,15 @@ housekeeping:
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+      ephemeral-storage: 512Mi
 
   nodeSelector: {}
 
@@ -856,13 +932,15 @@ worker:
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+      ephemeral-storage: 512Mi
 
   autoscaling:
     enabled: false

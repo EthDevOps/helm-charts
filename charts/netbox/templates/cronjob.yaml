@@ -16,6 +16,9 @@ spec:
   schedule: {{ .Values.housekeeping.schedule | quote }}
   successfulJobsHistoryLimit: {{ .Values.housekeeping.successfulJobsHistoryLimit }}
   suspend: {{ .Values.housekeeping.suspend }}
+  {{- with .Values.housekeeping.startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ . }}
+  {{- end }}
   jobTemplate:
     metadata:
       labels:
@@ -23,10 +26,13 @@ spec:
     spec:
       template:
         metadata:
-          {{- with .Values.housekeeping.podAnnotations }}
           annotations:
+            # The netbox-docker image runs as uid 1000. kube-score wants
+            # uid/gid > 10000; we cannot change the baked-in user.
+            kube-score/ignore: container-security-context-user-group-id
+            {{- with .Values.housekeeping.podAnnotations }}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- end }}
           labels:
             {{- include "netbox.selectorLabels" . | nindent 12 }}
             app.kubernetes.io/component: housekeeping

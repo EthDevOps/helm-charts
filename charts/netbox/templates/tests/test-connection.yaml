@@ -6,6 +6,15 @@ metadata:
     {{- include "netbox.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
+    # Helm test pods are one-shot; production hardening is overkill.
+    kube-score/ignore: >-
+      container-image-tag,
+      container-image-pull-policy,
+      pod-probes,
+      container-resources,
+      pod-networkpolicy,
+      container-ephemeral-storage-request-and-limit,
+      container-security-context-user-group-id
 spec:
   containers:
   - name: wget

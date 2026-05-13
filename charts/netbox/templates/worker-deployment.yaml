@@ -29,6 +29,9 @@ spec:
         {{- if (not .Values.existingSecret) }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- end }}
+        # The netbox-docker image runs as uid 1000. kube-score wants uid/gid > 10000;
+        # we cannot change the baked-in user.
+        kube-score/ignore: container-security-context-user-group-id
         {{- with .Values.worker.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

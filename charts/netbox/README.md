@@ -1,6 +1,6 @@
 # netbox
 
-![Version: 5.1.12](https://img.shields.io/badge/Version-5.1.12-informational?style=flat-square) ![AppVersion: v3.6.4](https://img.shields.io/badge/AppVersion-v3.6.4-informational?style=flat-square)
+![Version: 5.1.13](https://img.shields.io/badge/Version-5.1.13-informational?style=flat-square) ![AppVersion: v3.6.4](https://img.shields.io/badge/AppVersion-v3.6.4-informational?style=flat-square)
 
 IP address management (IPAM) and data center infrastructure management (DCIM) tool
 
@@ -18,8 +18,8 @@ Kubernetes: `>=1.25.0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://ethdevops.github.io/helm-charts | postgresql | 1.1.3 |
-| https://ethdevops.github.io/helm-charts | redis | 1.0.3 |
+| https://ethdevops.github.io/helm-charts | postgresql | 1.1.8 |
+| https://ethdevops.github.io/helm-charts | redis | 1.0.6 |
 
 ## Values
 
@@ -132,7 +132,12 @@ Kubernetes: `>=1.25.0`
 | housekeeping.podLabels | object | `{}` |  |
 | housekeeping.podSecurityContext.fsGroup | int | `1000` |  |
 | housekeeping.podSecurityContext.runAsNonRoot | bool | `true` |  |
-| housekeeping.resources | object | `{}` |  |
+| housekeeping.resources.limits.cpu | string | `"500m"` |  |
+| housekeeping.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| housekeeping.resources.limits.memory | string | `"1Gi"` |  |
+| housekeeping.resources.requests.cpu | string | `"100m"` |  |
+| housekeeping.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| housekeeping.resources.requests.memory | string | `"256Mi"` |  |
 | housekeeping.restartPolicy | string | `"OnFailure"` |  |
 | housekeeping.schedule | string | `"0 0 * * *"` |  |
 | housekeeping.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
@@ -140,11 +145,12 @@ Kubernetes: `>=1.25.0`
 | housekeeping.securityContext.runAsGroup | int | `1000` |  |
 | housekeeping.securityContext.runAsNonRoot | bool | `true` |  |
 | housekeeping.securityContext.runAsUser | int | `1000` |  |
+| housekeeping.startingDeadlineSeconds | int | `300` |  |
 | housekeeping.successfulJobsHistoryLimit | int | `5` |  |
 | housekeeping.suspend | bool | `false` |  |
 | housekeeping.tolerations | list | `[]` |  |
 | httpProxies | list | `[]` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/netbox-docker"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
@@ -154,10 +160,15 @@ Kubernetes: `>=1.25.0`
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths[0] | string | `"/"` |  |
 | ingress.tls | list | `[]` |  |
-| init.image.pullPolicy | string | `"IfNotPresent"` |  |
+| init.image.pullPolicy | string | `"Always"` |  |
 | init.image.repository | string | `"docker.ethquokkaops.io/dh/busybox"` |  |
 | init.image.tag | string | `"1.36.1"` |  |
-| init.resources | object | `{}` |  |
+| init.resources.limits.cpu | string | `"200m"` |  |
+| init.resources.limits.ephemeral-storage | string | `"128Mi"` |  |
+| init.resources.limits.memory | string | `"128Mi"` |  |
+| init.resources.requests.cpu | string | `"50m"` |  |
+| init.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| init.resources.requests.memory | string | `"64Mi"` |  |
 | init.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | init.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | init.securityContext.runAsGroup | int | `1000` |  |
@@ -176,6 +187,12 @@ Kubernetes: `>=1.25.0`
 | maxPageSize | int | `1000` |  |
 | metricsEnabled | bool | `false` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `8080` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| networkPolicy.ingress[0].ports[1].port | int | `9100` |  |
+| networkPolicy.ingress[0].ports[1].protocol | string | `"TCP"` |  |
 | nodeSelector | object | `{}` |  |
 | overrideUnitConfig | object | `{}` |  |
 | paginateCount | int | `50` |  |
@@ -188,13 +205,23 @@ Kubernetes: `>=1.25.0`
 | plugins | list | `[]` |  |
 | pluginsConfig | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext.fsGroup | int | `1000` |  |
 | podSecurityContext.runAsNonRoot | bool | `true` |  |
 | postgresql.auth.database | string | `"netbox"` |  |
 | postgresql.auth.username | string | `"netbox"` |  |
 | postgresql.enabled | bool | `true` |  |
+| postgresql.image.pullPolicy | string | `"Always"` |  |
 | postgresql.image.tag | string | `"13-alpine"` |  |
+| postgresql.networkPolicy.enabled | bool | `true` |  |
+| postgresql.resources.limits.cpu | string | `"1"` |  |
+| postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| postgresql.resources.limits.memory | string | `"1Gi"` |  |
+| postgresql.resources.requests.cpu | string | `"100m"` |  |
+| postgresql.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| postgresql.resources.requests.memory | string | `"256Mi"` |  |
 | powerFeedDefaultAmperage | int | `15` |  |
 | powerFeedDefaultVoltage | int | `120` |  |
 | powerFeedMaxUtilisation | int | `80` |  |
@@ -207,6 +234,14 @@ Kubernetes: `>=1.25.0`
 | readinessProbe.successThreshold | int | `1` |  |
 | readinessProbe.timeoutSeconds | int | `1` |  |
 | redis.enabled | bool | `true` |  |
+| redis.image.pullPolicy | string | `"Always"` |  |
+| redis.podAnnotations.kube-score/ignore | string | `"container-security-context-user-group-id"` |  |
+| redis.resources.limits.cpu | string | `"200m"` |  |
+| redis.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
+| redis.resources.limits.memory | string | `"256Mi"` |  |
+| redis.resources.requests.cpu | string | `"50m"` |  |
+| redis.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| redis.resources.requests.memory | string | `"64Mi"` |  |
 | releaseCheck.url | string | `nil` |  |
 | remoteAuth.autoCreateGroups | bool | `false` |  |
 | remoteAuth.autoCreateUser | bool | `false` |  |
@@ -232,7 +267,12 @@ Kubernetes: `>=1.25.0`
 | reportsPersistence.size | string | `"1Gi"` |  |
 | reportsPersistence.storageClass | string | `""` |  |
 | reportsPersistence.subPath | string | `""` |  |
-| resources | object | `{}` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"2Gi"` |  |
+| resources.requests.cpu | string | `"200m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"512Mi"` |  |
 | rqDefaultTimeout | int | `300` |  |
 | secretKey | string | `""` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
@@ -284,10 +324,15 @@ Kubernetes: `>=1.25.0`
 | tasksRedis.sentinels | list | `[]` |  |
 | tasksRedis.ssl | bool | `false` |  |
 | tasksRedis.username | string | `""` |  |
-| test.image.pullPolicy | string | `"IfNotPresent"` |  |
+| test.image.pullPolicy | string | `"Always"` |  |
 | test.image.repository | string | `"docker.ethquokkaops.io/dh/busybox"` |  |
 | test.image.tag | string | `"1.36.1"` |  |
-| test.resources | object | `{}` |  |
+| test.resources.limits.cpu | string | `"100m"` |  |
+| test.resources.limits.ephemeral-storage | string | `"128Mi"` |  |
+| test.resources.limits.memory | string | `"128Mi"` |  |
+| test.resources.requests.cpu | string | `"50m"` |  |
+| test.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| test.resources.requests.memory | string | `"64Mi"` |  |
 | timeFormat | string | `"g:i a"` |  |
 | timeZone | string | `"UTC"` |  |
 | tolerations | list | `[]` |  |
@@ -312,7 +357,12 @@ Kubernetes: `>=1.25.0`
 | worker.podSecurityContext.fsGroup | int | `1000` |  |
 | worker.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | worker.replicaCount | int | `1` |  |
-| worker.resources | object | `{}` |  |
+| worker.resources.limits.cpu | string | `"500m"` |  |
+| worker.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| worker.resources.limits.memory | string | `"1Gi"` |  |
+| worker.resources.requests.cpu | string | `"100m"` |  |
+| worker.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| worker.resources.requests.memory | string | `"256Mi"` |  |
 | worker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | worker.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | worker.securityContext.runAsGroup | int | `1000` |  |
