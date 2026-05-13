@@ -79,6 +79,15 @@ metadata:
   annotations:
     "helm.sh/hook": test
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    # Helm test pod: one-shot, production hardening is overkill.
+    kube-score/ignore: >-
+      container-image-tag,
+      container-image-pull-policy,
+      pod-probes,
+      container-resources,
+      pod-networkpolicy,
+      container-ephemeral-storage-request-and-limit,
+      container-security-context-user-group-id
 spec:
   containers:
     - name: test-runner

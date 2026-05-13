@@ -6,10 +6,19 @@ metadata:
 {{ include "glitchtip.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
+    # Helm test pod: one-shot, production hardening is overkill.
+    kube-score/ignore: >-
+      container-image-tag,
+      container-image-pull-policy,
+      pod-probes,
+      container-resources,
+      pod-networkpolicy,
+      container-ephemeral-storage-request-and-limit,
+      container-security-context-user-group-id
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: {{ .Values.tests.connection.image | quote }}
       command: ['wget']
       args:  ['-qO-', '{{ include "glitchtip.fullname" . }}-web:{{ .Values.web.service.port }}']
   restartPolicy: Never
