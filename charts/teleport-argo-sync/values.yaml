@@ -1,5 +1,7 @@
 image:
+  repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/teleport-argocd-sync
   tag: v0.0.5
+  pullPolicy: Always
 
 teleport:
   domain: teleport.example.com
@@ -19,4 +21,52 @@ clusters:
     labels:
       hello: world
 
+# CronJob configuration
+cronjob:
+  schedule: "*/10 * * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  # Cancel jobs that cannot be scheduled within this window
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
 
+# Persistent volume for teleport state
+persistence:
+  size: 1Gi
+  accessMode: ReadWriteOnce
+  storageClassName: ""
+
+# Resources for the sync container
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+    ephemeral-storage: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+    ephemeral-storage: 512Mi
+
+# Container security context.
+# The upstream teleport-argocd-sync image runs as root by default and writes
+# to /var/lib/teleport — we do not override the user here. The workload
+# carries kube-score/ignore: container-security-context-user-group-id.
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+
+podSecurityContext: {}
+
+# NetworkPolicy
+networkPolicy:
+  enabled: true
+  # Sync job does not expose ports — no ingress traffic expected.
+  ingress: []
+  # Allow all egress by default (Teleport + ArgoCD APIs are external);
+  # tighten per-environment if needed.
+  egress:
+    - {}

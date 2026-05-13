@@ -1,6 +1,6 @@
 # teleport-argo-sync
 
-![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.0.5](https://img.shields.io/badge/Version-0.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for teleport-argo-sync
 
@@ -22,7 +22,31 @@ A Helm chart for teleport-argo-sync
 | clusters[0].name | string | `"my-cluster"` |  |
 | clusters[1].labels.hello | string | `"world"` |  |
 | clusters[1].name | string | `"another-cluster"` |  |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
+| cronjob.concurrencyPolicy | string | `"Forbid"` |  |
+| cronjob.failedJobsHistoryLimit | int | `1` |  |
+| cronjob.schedule | string | `"*/10 * * * *"` |  |
+| cronjob.startingDeadlineSeconds | int | `300` |  |
+| cronjob.successfulJobsHistoryLimit | int | `3` |  |
+| cronjob.timeZone | string | `"Etc/UTC"` |  |
+| image.pullPolicy | string | `"Always"` |  |
+| image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/teleport-argocd-sync"` |  |
 | image.tag | string | `"v0.0.5"` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress | list | `[]` |  |
+| persistence.accessMode | string | `"ReadWriteOnce"` |  |
+| persistence.size | string | `"1Gi"` |  |
+| persistence.storageClassName | string | `""` |  |
+| podSecurityContext | object | `{}` |  |
+| resources.limits.cpu | string | `"500m"` |  |
+| resources.limits.ephemeral-storage | string | `"512Mi"` |  |
+| resources.limits.memory | string | `"512Mi"` |  |
+| resources.requests.cpu | string | `"50m"` |  |
+| resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| resources.requests.memory | string | `"128Mi"` |  |
 | teleport.domain | string | `"teleport.example.com"` |  |
 | teleport.token | string | `"abcdef122344"` |  |
 
