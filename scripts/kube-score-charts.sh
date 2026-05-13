@@ -7,7 +7,9 @@
 #   kube-score-charts.sh --from-files <file> [<file>...]
 #
 # Tune which kube-score tests run by editing KUBE_SCORE_FLAGS below, or by
-# adding `kube-score/ignore: <test>` annotations to specific manifests.
+# adding `kube-score/ignore: <test>` annotations to specific manifests. For
+# per-chart skips (e.g. unreachable subchart findings), drop a
+# `.kubescore-ignore` file in the chart dir with one test name per line.
 set -euo pipefail
 
 KUBE_SCORE_FLAGS=(
@@ -65,7 +67,16 @@ for chart in "${chart_dirs[@]}"; do
     failed=1
     continue
   }
-  if ! printf "%s\n" "${rendered}" | kube-score score "${KUBE_SCORE_FLAGS[@]}" -; then
+  chart_flags=()
+  if [[ -f "${chart}/.kubescore-ignore" ]]; then
+    while IFS= read -r line; do
+      line="${line%%#*}"
+      line="${line//[[:space:]]/}"
+      [[ -z "${line}" ]] && continue
+      chart_flags+=(--ignore-test "${line}")
+    done < "${chart}/.kubescore-ignore"
+  fi
+  if ! printf "%s\n" "${rendered}" | kube-score score "${KUBE_SCORE_FLAGS[@]}" "${chart_flags[@]}" -; then
     failed=1
   fi
 done
