@@ -1,6 +1,6 @@
 # prosody
 
-![Version: 1.4.10](https://img.shields.io/badge/Version-1.4.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
+![Version: 1.5.0](https://img.shields.io/badge/Version-1.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
 
 Prosody XMPP server for Jitsi Meet on Kubernetes
 
@@ -9,13 +9,21 @@ Prosody XMPP server for Jitsi Meet on Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
+| custom.contInit._10_config | string | `""` |  |
+| custom.defaults._jitsi_meet_cfg_lua | bool | `true` |  |
+| custom.defaults._prosody_cfg_lua | string | `""` |  |
+| custom.defaults._saslauthd_conf | string | `""` |  |
 | customPluginUrls | list | `[]` |  |
 | dataDir | string | `"/config/data"` |  |
 | domain | string | `nil` |  |
 | extraEnvFrom | list | `[]` |  |
 | extraEnvs | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| global.clusterDomain | string | `"cluster.local"` |  |
+| global.podAnnotations | object | `{}` |  |
+| global.podLabels | object | `{}` |  |
+| global.releaseSecretsOverride.enabled | bool | `false` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"nginx"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
@@ -23,9 +31,35 @@ Prosody XMPP server for Jitsi Meet on Kubernetes
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths | list | `[]` |  |
 | ingress.tls | list | `[]` |  |
-| livenessProbe.httpGet.path | string | `"/http-bind"` |  |
-| livenessProbe.httpGet.port | string | `"bosh-insecure"` |  |
+| initContainer.image | string | `"alpine:3.20"` |  |
+| initContainer.imagePullPolicy | string | `"Always"` |  |
+| initContainer.resources.limits.cpu | string | `"200m"` |  |
+| initContainer.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
+| initContainer.resources.limits.memory | string | `"128Mi"` |  |
+| initContainer.resources.requests.cpu | string | `"50m"` |  |
+| initContainer.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| initContainer.resources.requests.memory | string | `"64Mi"` |  |
+| initContainerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| initContainerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| initContainerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| livenessProbe.failureThreshold | int | `6` |  |
+| livenessProbe.initialDelaySeconds | int | `30` |  |
+| livenessProbe.periodSeconds | int | `30` |  |
+| livenessProbe.tcpSocket.port | string | `"bosh-insecure"` |  |
+| livenessProbe.timeoutSeconds | int | `5` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `5222` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| networkPolicy.ingress[0].ports[1].port | int | `5269` |  |
+| networkPolicy.ingress[0].ports[1].protocol | string | `"TCP"` |  |
+| networkPolicy.ingress[0].ports[2].port | int | `5280` |  |
+| networkPolicy.ingress[0].ports[2].protocol | string | `"TCP"` |  |
+| networkPolicy.ingress[0].ports[3].port | int | `5281` |  |
+| networkPolicy.ingress[0].ports[3].protocol | string | `"TCP"` |  |
+| networkPolicy.ingress[0].ports[4].port | int | `5347` |  |
+| networkPolicy.ingress[0].ports[4].protocol | string | `"TCP"` |  |
 | nodeSelector | object | `{}` |  |
 | persistence.enabled | bool | `true` |  |
 | persistence.size | string | `"3G"` |  |
@@ -33,9 +67,18 @@ Prosody XMPP server for Jitsi Meet on Kubernetes
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
+| readinessProbe.failureThreshold | int | `3` |  |
 | readinessProbe.httpGet.path | string | `"/http-bind"` |  |
 | readinessProbe.httpGet.port | string | `"bosh-insecure"` |  |
-| resources | object | `{}` |  |
+| readinessProbe.initialDelaySeconds | int | `10` |  |
+| readinessProbe.periodSeconds | int | `10` |  |
+| readinessProbe.timeoutSeconds | int | `3` |  |
+| resources.limits.cpu | string | `"100m"` |  |
+| resources.limits.ephemeral-storage | string | `"256Mi"` |  |
+| resources.limits.memory | string | `"128Mi"` |  |
+| resources.requests.cpu | string | `"50m"` |  |
+| resources.requests.ephemeral-storage | string | `"128Mi"` |  |
+| resources.requests.memory | string | `"64Mi"` |  |
 | secretEnvs | object | `{}` |  |
 | securityContext | object | `{}` |  |
 | service.ports.bosh-insecure | int | `5280` |  |
@@ -47,6 +90,7 @@ Prosody XMPP server for Jitsi Meet on Kubernetes
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `nil` |  |
+| testConnection.image | string | `"busybox:1.36"` |  |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------
