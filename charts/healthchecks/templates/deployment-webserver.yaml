@@ -4,6 +4,11 @@ metadata:
   name: {{ .Release.Name }}-hc-web
   labels:
     app: {{ .Release.Name }}-hc-web
+  annotations:
+    # The upstream healthchecks/healthchecks image runs uwsgi as root inside
+    # the container; there is no high-UID alternative without rebuilding the
+    # image. Suppress the kube-score check rather than gut functionality.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   selector:
     matchLabels:
@@ -15,7 +20,8 @@ spec:
     spec:
       containers:
       - name: web
-        image: docker.ethquokkaops.io/dh/healthchecks/healthchecks:{{ .Values.imageTag }}
+        image: {{ .Values.web.image.repository }}:{{ .Values.imageTag }}
+        imagePullPolicy: {{ .Values.web.image.pullPolicy }}
         envFrom:
           - configMapRef:
               name: {{ .Release.Name }}-hc-config
@@ -29,7 +35,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: {{ .Release.Name }}-hc-secrets
-                key: DISCORD_CLIENT_SECRET 
+                key: DISCORD_CLIENT_SECRET
           - name: EMAIL_HOST_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -42,10 +48,26 @@ spec:
                 key: SECRET_KEY
 
         ports:
-          - containerPort: 8000
+          - name: http
+            containerPort: 8000
         # Uncomment the following lines to enable SMTP on port 2525
         #- name: smtp
         #  containerPort: 2525
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 6
         {{- with .Values.web.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
