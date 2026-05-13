@@ -1,6 +1,6 @@
 # keycloak
 
-![Version: 18.10.9](https://img.shields.io/badge/Version-18.10.9-informational?style=flat-square) ![AppVersion: 26.1](https://img.shields.io/badge/AppVersion-26.1-informational?style=flat-square)
+![Version: 18.10.10](https://img.shields.io/badge/Version-18.10.10-informational?style=flat-square) ![AppVersion: 26.1](https://img.shields.io/badge/AppVersion-26.1-informational?style=flat-square)
 
 Open Source Identity and Access Management For Modern Applications and Services
 
@@ -25,7 +25,7 @@ Open Source Identity and Access Management For Modern Applications and Services
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://ethdevops.github.io/helm-charts | postgresql | 1.1.3 |
+| https://ethdevops.github.io/helm-charts | postgresql | 1.1.8 |
 
 ## Values
 
@@ -49,7 +49,7 @@ Open Source Identity and Access Management For Modern Applications and Services
 | autoscaling.minReplicas | int | `3` |  |
 | clusterDomain | string | `"cluster.local"` |  |
 | command | list | `[]` |  |
-| enableProbes | bool | `false` |  |
+| enableProbes | bool | `true` |  |
 | enableServiceLinks | bool | `true` |  |
 | extraContainers | string | `""` |  |
 | extraEnv | string | `"- name: KC_HTTP_ENABLED\n  value: \"true\"\n- name: KC_PROXY_HEADERS\n  value: \"xforwarded\"\n# - name: KC_HOSTNAME\n#   value: \"https://your.keycloak.domain\"\n# - name: KEYCLOAK_LOGLEVEL\n#   value: DEBUG\n# - name: WILDFLY_LOGLEVEL\n#   value: DEBUG\n# - name: CACHE_OWNERS_COUNT\n#   value: \"2\"\n# - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT\n#   value: \"2\"\n"` |  |
@@ -69,7 +69,7 @@ Open Source Identity and Access Management For Modern Applications and Services
 | extraVolumes | string | `""` |  |
 | fullnameOverride | string | `""` |  |
 | hostAliases | list | `[]` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"quay.io/keycloak/keycloak"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
@@ -91,16 +91,18 @@ Open Source Identity and Access Management For Modern Applications and Services
 | lifecycleHooks | string | `""` |  |
 | livenessProbe | string | `"httpGet:\n  path: /health/live\n  port: http\ninitialDelaySeconds: 0\ntimeoutSeconds: 5\n"` |  |
 | nameOverride | string | `""` |  |
-| networkPolicy.enabled | bool | `false` |  |
+| networkPolicy.enabled | bool | `true` |  |
 | networkPolicy.extraFrom | list | `[]` |  |
 | networkPolicy.labels | object | `{}` |  |
 | nodeSelector | object | `{}` |  |
-| pgchecker.image.pullPolicy | string | `"IfNotPresent"` |  |
+| pgchecker.image.pullPolicy | string | `"Always"` |  |
 | pgchecker.image.repository | string | `"busybox"` |  |
-| pgchecker.image.tag | float | `1.32` |  |
+| pgchecker.image.tag | string | `"1.36"` |  |
 | pgchecker.resources.limits.cpu | string | `"20m"` |  |
+| pgchecker.resources.limits.ephemeral-storage | string | `"128Mi"` |  |
 | pgchecker.resources.limits.memory | string | `"32Mi"` |  |
 | pgchecker.resources.requests.cpu | string | `"20m"` |  |
+| pgchecker.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
 | pgchecker.resources.requests.memory | string | `"32Mi"` |  |
 | pgchecker.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | pgchecker.securityContext.runAsGroup | int | `1000` |  |
@@ -113,12 +115,19 @@ Open Source Identity and Access Management For Modern Applications and Services
 | podSecurityContext.fsGroup | int | `1000` |  |
 | postgresql.enabled | bool | `true` |  |
 | postgresql.fullnameOverride | string | `""` |  |
+| postgresql.image.pullPolicy | string | `"Always"` |  |
 | postgresql.image.tag | string | `"17-alpine"` |  |
-| postgresql.networkPolicy.enabled | bool | `false` |  |
+| postgresql.networkPolicy.enabled | bool | `true` |  |
 | postgresql.postgresqlDatabase | string | `"keycloak"` |  |
 | postgresql.postgresqlPassword | string | `"keycloak"` |  |
 | postgresql.postgresqlPasswordKey | string | `"password"` |  |
 | postgresql.postgresqlUsername | string | `"keycloak"` |  |
+| postgresql.resources.limits.cpu | string | `"1"` |  |
+| postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| postgresql.resources.limits.memory | string | `"1Gi"` |  |
+| postgresql.resources.requests.cpu | string | `"250m"` |  |
+| postgresql.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| postgresql.resources.requests.memory | string | `"256Mi"` |  |
 | postgresql.service.port | int | `5432` |  |
 | priorityClassName | string | `""` |  |
 | prometheusRule.annotations | object | `{}` |  |
@@ -129,7 +138,12 @@ Open Source Identity and Access Management For Modern Applications and Services
 | rbac.rules | list | `[]` |  |
 | readinessProbe | string | `"httpGet:\n  path: /health/ready\n  port: http\ninitialDelaySeconds: 30\ntimeoutSeconds: 1\n"` |  |
 | replicas | int | `1` |  |
-| resources | object | `{}` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"2Gi"` |  |
+| resources.requests.cpu | string | `"500m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"1024Mi"` |  |
 | restartPolicy | string | `"Always"` |  |
 | route.annotations | object | `{}` |  |
 | route.enabled | bool | `false` |  |
