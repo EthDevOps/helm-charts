@@ -1,6 +1,6 @@
 # discourse-vanilla
 
-![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 A Helm chart for deploying Discourse forum server on Kubernetes
 
@@ -17,18 +17,25 @@ A Helm chart for deploying Discourse forum server on Kubernetes
 | forum.mail.port | int | `587` |  |
 | forum.mail.user | string | `"mailuser"` |  |
 | forum.name | string | `"default"` |  |
-| forum.version | string | `"latest"` |  |
+| forum.version | string | `"v2025.11.0"` |  |
 | forum.workers | int | `4` |  |
 | fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/discourse"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
-| livenessProbe.httpGet.path | string | `"/"` |  |
-| livenessProbe.httpGet.port | string | `"http"` |  |
-| livenessProbe.initialDelaySeconds | int | `30` |  |
-| livenessProbe.periodSeconds | int | `10` |  |
+| livenessProbe.failureThreshold | int | `6` |  |
+| livenessProbe.initialDelaySeconds | int | `60` |  |
+| livenessProbe.periodSeconds | int | `20` |  |
+| livenessProbe.tcpSocket.port | string | `"http"` |  |
+| livenessProbe.timeoutSeconds | int | `5` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `80` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| networkPolicy.ingress[0].ports[1].port | int | `443` |  |
+| networkPolicy.ingress[0].ports[1].protocol | string | `"TCP"` |  |
 | nodeSelector | object | `{}` |  |
 | persistence.enabled | bool | `true` |  |
 | persistence.logs.accessMode | string | `"ReadWriteOnce"` |  |
@@ -38,14 +45,23 @@ A Helm chart for deploying Discourse forum server on Kubernetes
 | persistence.shared.size | string | `"32Gi"` |  |
 | persistence.shared.storageClass | string | `""` |  |
 | podAnnotations | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
+| readinessProbe.failureThreshold | int | `3` |  |
 | readinessProbe.httpGet.path | string | `"/"` |  |
 | readinessProbe.httpGet.port | string | `"http"` |  |
-| readinessProbe.initialDelaySeconds | int | `10` |  |
-| readinessProbe.periodSeconds | int | `5` |  |
+| readinessProbe.initialDelaySeconds | int | `30` |  |
+| readinessProbe.periodSeconds | int | `10` |  |
+| readinessProbe.timeoutSeconds | int | `5` |  |
 | replicaCount | int | `1` |  |
-| resources | object | `{}` |  |
+| resources.limits.cpu | string | `"2"` |  |
+| resources.limits.ephemeral-storage | string | `"2Gi"` |  |
+| resources.limits.memory | string | `"4Gi"` |  |
+| resources.requests.cpu | string | `"500m"` |  |
+| resources.requests.ephemeral-storage | string | `"512Mi"` |  |
+| resources.requests.memory | string | `"2Gi"` |  |
 | securityContext | object | `{}` |  |
 | service.annotations | object | `{}` |  |
 | service.httpsPort | int | `443` |  |

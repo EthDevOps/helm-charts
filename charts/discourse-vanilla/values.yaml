@@ -9,14 +9,14 @@ replicaCount: 1
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/discourse
   # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
 # Forum configuration
 forum:
   name: "default"
-  version: "latest"
+  version: "v2025.11.0"
   hostname: "forum.discource.example"
   workers: 4
   admins: []
@@ -70,6 +70,10 @@ podLabels: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
+# Discourse's official launcher-style image bakes in services that run as
+# root (postgres, redis, nginx, sidekiq managed by runit). We can't drop
+# privileges without rebuilding the image, so we leave securityContext empty
+# and silence kube-score's uid/gid check on the StatefulSet itself.
 securityContext: {}
   # capabilities:
   #   drop:
@@ -90,32 +94,57 @@ service:
   # Additional annotations for the service
   annotations: {}
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  requests:
+    cpu: 500m
+    memory: 2Gi
+    ephemeral-storage: 512Mi
+  limits:
+    cpu: "2"
+    memory: 4Gi
+    ephemeral-storage: 2Gi
 
-# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+# Probes split by handler so a slow app sheds traffic without being killed.
+# readiness: HTTP GET on the main entry point — must serve a response.
+# liveness:  TCP socket check on :http — only restarts if the process dies.
 livenessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 60
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+readinessProbe:
   httpGet:
     path: /
     port: http
   initialDelaySeconds: 30
   periodSeconds: 10
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
-  initialDelaySeconds: 10
-  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 3
 
+
+# NetworkPolicy gating ingress to the HTTP/HTTPS ports and allowing all egress
+# (Discourse needs to reach SMTP, the DB, Let's Encrypt, RubyGems, etc.).
+# Operators should tighten egress per-environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - ports:
+        - port: 80
+          protocol: TCP
+        - port: 443
+          protocol: TCP
+  egress:
+    - {}
+
+# PodDisruptionBudget keeps the StatefulSet drainable while ensuring the
+# control plane respects a voluntary disruption budget. maxUnavailable: 1
+# works for any replica count.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+  # minAvailable: ""
 
 # Additional volumes on the output Deployment definition.
 volumes: []
