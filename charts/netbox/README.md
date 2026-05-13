@@ -1,6 +1,6 @@
 # netbox
 
-![Version: 5.1.13](https://img.shields.io/badge/Version-5.1.13-informational?style=flat-square) ![AppVersion: v3.6.4](https://img.shields.io/badge/AppVersion-v3.6.4-informational?style=flat-square)
+![Version: 5.1.14](https://img.shields.io/badge/Version-5.1.14-informational?style=flat-square) ![AppVersion: v3.6.4](https://img.shields.io/badge/AppVersion-v3.6.4-informational?style=flat-square)
 
 IP address management (IPAM) and data center infrastructure management (DCIM) tool
 
@@ -132,6 +132,7 @@ Kubernetes: `>=1.25.0`
 | housekeeping.podLabels | object | `{}` |  |
 | housekeeping.podSecurityContext.fsGroup | int | `1000` |  |
 | housekeeping.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| housekeeping.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | housekeeping.resources.limits.cpu | string | `"500m"` |  |
 | housekeeping.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | housekeeping.resources.limits.memory | string | `"1Gi"` |  |
@@ -140,11 +141,13 @@ Kubernetes: `>=1.25.0`
 | housekeeping.resources.requests.memory | string | `"256Mi"` |  |
 | housekeeping.restartPolicy | string | `"OnFailure"` |  |
 | housekeeping.schedule | string | `"0 0 * * *"` |  |
+| housekeeping.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | housekeeping.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | housekeeping.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | housekeeping.securityContext.runAsGroup | int | `1000` |  |
 | housekeeping.securityContext.runAsNonRoot | bool | `true` |  |
 | housekeeping.securityContext.runAsUser | int | `1000` |  |
+| housekeeping.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | housekeeping.startingDeadlineSeconds | int | `300` |  |
 | housekeeping.successfulJobsHistoryLimit | int | `5` |  |
 | housekeeping.suspend | bool | `false` |  |
@@ -169,11 +172,13 @@ Kubernetes: `>=1.25.0`
 | init.resources.requests.cpu | string | `"50m"` |  |
 | init.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
 | init.resources.requests.memory | string | `"64Mi"` |  |
+| init.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | init.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | init.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | init.securityContext.runAsGroup | int | `1000` |  |
 | init.securityContext.runAsNonRoot | bool | `true` |  |
 | init.securityContext.runAsUser | int | `1000` |  |
+| init.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | internalIPs[0] | string | `"127.0.0.1"` |  |
 | internalIPs[1] | string | `"::1"` |  |
 | jobRetention | int | `90` |  |
@@ -210,18 +215,27 @@ Kubernetes: `>=1.25.0`
 | podLabels | object | `{}` |  |
 | podSecurityContext.fsGroup | int | `1000` |  |
 | podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | postgresql.auth.database | string | `"netbox"` |  |
 | postgresql.auth.username | string | `"netbox"` |  |
 | postgresql.enabled | bool | `true` |  |
 | postgresql.image.pullPolicy | string | `"Always"` |  |
 | postgresql.image.tag | string | `"13-alpine"` |  |
 | postgresql.networkPolicy.enabled | bool | `true` |  |
+| postgresql.podSecurityContext.fsGroup | int | `10001` |  |
+| postgresql.podSecurityContext.runAsGroup | int | `10001` |  |
+| postgresql.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | postgresql.resources.limits.cpu | string | `"1"` |  |
 | postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | postgresql.resources.limits.memory | string | `"1Gi"` |  |
 | postgresql.resources.requests.cpu | string | `"100m"` |  |
 | postgresql.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | postgresql.resources.requests.memory | string | `"256Mi"` |  |
+| postgresql.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| postgresql.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| postgresql.securityContext.runAsNonRoot | bool | `true` |  |
+| postgresql.securityContext.runAsUser | int | `10001` |  |
+| postgresql.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | powerFeedDefaultAmperage | int | `15` |  |
 | powerFeedDefaultVoltage | int | `120` |  |
 | powerFeedMaxUtilisation | int | `80` |  |
@@ -236,12 +250,19 @@ Kubernetes: `>=1.25.0`
 | redis.enabled | bool | `true` |  |
 | redis.image.pullPolicy | string | `"Always"` |  |
 | redis.podAnnotations.kube-score/ignore | string | `"container-security-context-user-group-id"` |  |
+| redis.podSecurityContext.fsGroup | int | `999` |  |
+| redis.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | redis.resources.limits.cpu | string | `"200m"` |  |
 | redis.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
 | redis.resources.limits.memory | string | `"256Mi"` |  |
 | redis.resources.requests.cpu | string | `"50m"` |  |
 | redis.resources.requests.ephemeral-storage | string | `"64Mi"` |  |
 | redis.resources.requests.memory | string | `"64Mi"` |  |
+| redis.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| redis.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| redis.securityContext.runAsNonRoot | bool | `true` |  |
+| redis.securityContext.runAsUser | int | `999` |  |
+| redis.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | releaseCheck.url | string | `nil` |  |
 | remoteAuth.autoCreateGroups | bool | `false` |  |
 | remoteAuth.autoCreateUser | bool | `false` |  |
@@ -275,11 +296,13 @@ Kubernetes: `>=1.25.0`
 | resources.requests.memory | string | `"512Mi"` |  |
 | rqDefaultTimeout | int | `300` |  |
 | secretKey | string | `""` |  |
+| securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | securityContext.runAsGroup | int | `1000` |  |
 | securityContext.runAsNonRoot | bool | `true` |  |
 | securityContext.runAsUser | int | `1000` |  |
+| securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | service.annotations | object | `{}` |  |
 | service.clusterIP | string | `""` |  |
 | service.clusterIPs | list | `[]` |  |
@@ -356,6 +379,7 @@ Kubernetes: `>=1.25.0`
 | worker.podLabels | object | `{}` |  |
 | worker.podSecurityContext.fsGroup | int | `1000` |  |
 | worker.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| worker.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | worker.replicaCount | int | `1` |  |
 | worker.resources.limits.cpu | string | `"500m"` |  |
 | worker.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
@@ -363,11 +387,13 @@ Kubernetes: `>=1.25.0`
 | worker.resources.requests.cpu | string | `"100m"` |  |
 | worker.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
 | worker.resources.requests.memory | string | `"256Mi"` |  |
+| worker.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | worker.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | worker.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | worker.securityContext.runAsGroup | int | `1000` |  |
 | worker.securityContext.runAsNonRoot | bool | `true` |  |
 | worker.securityContext.runAsUser | int | `1000` |  |
+| worker.securityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | worker.tolerations | list | `[]` |  |
 | worker.updateStrategy | object | `{}` |  |
 
