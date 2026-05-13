@@ -2,10 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-cryptpad
-  {{- with .Values.commonAnnotations }}
   annotations:
+    # The cryptpad image bakes in USER 4001, so we cannot raise the uid/gid
+    # above 10000 without rebuilding upstream. Silence the kube-score check.
+    kube-score/ignore: container-security-context-user-group-id
+    {{- with .Values.commonAnnotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
   labels:
     app: {{ .Release.Name }}-cryptpad
     app.kubernetes.io/component: cryptpad
@@ -27,25 +30,18 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- with .Values.extraInitContainers }}
-      {{- toYaml . | nindent 6 }}
-      {{- end }}
       initContainers:
-        - name: init-pvc-permissions
-          image: cubebackup/cubebackup
-          command: ["/bin/sh", "-c", "chown -R 4001:4001 /data && chown -R 4001:4001 /blob && chown -R 4001:4001 /block && chown -R 4001:4001 /datastore"]
-          volumeMounts:
-          - name: blob
-            mountPath: /blob
-          - name: block
-            mountPath: /block
-          - name: datastore
-            mountPath: /data
-          - name: files
-            mountPath: /datastore
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Release.Name }}-cryptpad
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          {{- toYaml .Values.containerSecurityContext | nindent 10 }}
         env:
         - name: CPAD_MAIN_DOMAIN
           value: {{ .Values.baseDomain | quote }}
@@ -74,6 +70,14 @@ spec:
         - name: websocket
           containerPort: 3003
           protocol: TCP
+        {{- with .Values.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: config
           readOnly: true
