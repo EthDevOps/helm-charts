@@ -6,6 +6,10 @@ metadata:
   labels:
     {{- include "gnosis-safe.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgresql
+  annotations:
+    # The official postgres image initializes /var/lib/postgresql/data as
+    # uid/gid 999 and cannot be relocated above 10000 without rebuilding.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: 1
   selector:
@@ -21,7 +25,7 @@ spec:
       containers:
         - name: postgresql
           image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
           ports:
             - name: postgresql
               containerPort: 5432
@@ -34,22 +38,25 @@ spec:
             - name: POSTGRES_DB
               value: {{ .Values.postgresql.auth.database }}
           {{- if .Values.postgresql.healthcheck.enabled }}
-          livenessProbe:
-            exec:
-              command:
-                - pg_isready
-            timeoutSeconds: 5
-            periodSeconds: 30
           readinessProbe:
             exec:
               command:
                 - pg_isready
+                - -U
+                - {{ .Values.postgresql.auth.username }}
             timeoutSeconds: 5
             periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: postgresql
+            timeoutSeconds: 5
+            periodSeconds: 30
           {{- end }}
           volumeMounts:
             - name: postgresql-data
               mountPath: /var/lib/postgresql
+          resources:
+            {{- toYaml .Values.postgresqlResources | nindent 12 }}
       volumes:
         - name: postgresql-data
           {{- if .Values.persistence.enabled }}

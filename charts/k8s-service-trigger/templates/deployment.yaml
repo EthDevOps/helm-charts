@@ -15,6 +15,8 @@ spec:
         app: service-monitor
     spec:
       serviceAccountName: service-monitor
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
       - name: service-monitor
         image: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-service-trigger:{{ .Values.imageVersion }}
@@ -29,17 +31,9 @@ spec:
         - configMapRef:
             name: {{ .Release.Name }}-config
         resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "200m"
-            memory: "256Mi"
+          {{- toYaml .Values.resources | nindent 10 }}
         securityContext:
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          runAsUser: 1000
-          readOnlyRootFilesystem: true
+          {{- toYaml .Values.containerSecurityContext | nindent 10 }}
         volumeMounts:
         - name: tmp
           mountPath: /tmp

@@ -1,6 +1,6 @@
 # node-red ⚙
 
-![Version: 0.34.0](https://img.shields.io/badge/Version-0.34.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.0.8](https://img.shields.io/badge/AppVersion-4.0.8-informational?style=flat-square)
+![Version: 0.34.1](https://img.shields.io/badge/Version-0.34.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.0.8](https://img.shields.io/badge/AppVersion-4.0.8-informational?style=flat-square)
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/node-red&style=for-the-badge)](https://artifacthub.io/packages/search?repo=node-red)
 [![SIT](https://img.shields.io/badge/SIT-awesome-blueviolet.svg?style=for-the-badge)](https://jobs.schwarz)
@@ -16,7 +16,7 @@ A Helm chart for Node-Red, a low-code programming for event-driven applications
 To install the chart using the OCI artifact, run:
 
 ```bash
-helm install node-red oci://ghcr.io/schwarzit/charts/node-red --version 0.34.0
+helm install node-red oci://ghcr.io/schwarzit/charts/node-red --version 0.34.1
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ helm repo update
 To install the chart with the release name node-red run:
 
 ```bash
-helm install node-red node-red/node-red --version 0.34.0
+helm install node-red node-red/node-red --version 0.34.1
 ```
 
 After a few seconds, node-red should be running.
@@ -71,7 +71,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | extraVolumeMounts | string | `nil` | Extra Volume Mounts for the node-red pod |
 | extraVolumes | string | `nil` | Extra Volumes for the pod |
 | fullnameOverride | string | `""` | String to fully override "node-red.fullname" |
-| image.pullPolicy | string | `"IfNotPresent"` | The image pull policy |
+| image.pullPolicy | string | `"Always"` | The image pull policy |
 | image.registry | string | `"docker.io"` | The image registry to pull from |
 | image.repository | string | `"nodered/node-red"` | The image repository to pull from |
 | image.tag | string | `""` | The image tag to pull, default: `Chart.appVersion` |
@@ -84,7 +84,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` | Ingress type of path |
 | ingress.tls | list | `[]` | Ingress TLS configuration |
 | initContainers | list | `[]` | containers which are run before the app containers are started |
-| livenessProbe | object | `{"httpGet":{"path":"/","port":"http"}}` | Liveness probe for the Deployment |
+| livenessProbe | object | `{"tcpSocket":{"port":"http"}}` | Liveness probe for the Deployment |
 | metrics.enabled | bool | `false` | Deploy metrics service |
 | metrics.path | string | `"/metrics"` |  |
 | metrics.serviceMonitor.additionalLabels | object | `{}` | Prometheus ServiceMonitor labels |
@@ -96,6 +96,10 @@ The command removes all the Kubernetes components associated with the chart and 
 | metrics.serviceMonitor.relabelings | list | `[]` | Prometheus [RelabelConfigs] to apply to samples before scraping |
 | metrics.serviceMonitor.selector | object | `{}` | Prometheus ServiceMonitor selector |
 | nameOverride | string | `""` | Provide a name in place of node-red |
+| networkPolicy | object | `{"egress":[{}],"enabled":true,"ingress":[{"ports":[{"port":1880,"protocol":"TCP"}]}]}` | NetworkPolicy configuration for the node-red pod |
+| networkPolicy.egress | list | `[{}]` | Egress rules. Default permits all egress; tighten in your environment as needed. |
+| networkPolicy.enabled | bool | `true` | Enable NetworkPolicy for node-red |
+| networkPolicy.ingress | list | `[{"ports":[{"port":1880,"protocol":"TCP"}]}]` | Ingress rules. Empty list means no restrictions on ingress sources, but only to the configured pod ports. |
 | nodeSelector | object | `{}` | Node selector |
 | npmrc.content | string | `"# Custom npmrc config\n"` | Configuration to add custom npmrc config |
 | npmrc.enabled | bool | `false` | Enable custom npmrc config |
@@ -112,7 +116,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | rbac.createClusterRole | bool | `false` | Create a ClusterRole resource for the node-red pod. default: false |
 | rbac.enabled | bool | `true` |  |
 | readinessProbe | object | `{"httpGet":{"path":"/","port":"http"}}` | Readiness probe for the Deployment |
-| resources | object | `{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | CPU/Memory resource requests/limits |
+| resources | object | `{"limits":{"cpu":"500m","ephemeral-storage":"1Gi","memory":"512Mi"},"requests":{"cpu":"100m","ephemeral-storage":"256Mi","memory":"128Mi"}}` | CPU/Memory resource requests/limits |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"readOnlyRootFilesystem":true,"runAsGroup":10003,"runAsNonRoot":true,"runAsUser":10003,"seccompProfile":{"type":"RuntimeDefault"}}` | Security Context see [values.yaml](values.yaml) |
 | service.annotations | object | `{}` | Annotations for the service |
 | service.labels | object | `{}` | Labels for the service |

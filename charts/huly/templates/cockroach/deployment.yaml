@@ -6,6 +6,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: cockroach
+  annotations:
+    # cockroachdb/cockroach upstream image runs as uid/gid 0 / 0 by default.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: 1
   strategy:
@@ -23,6 +26,7 @@ spec:
       containers:
         - name: cockroach
           image: {{ .Values.cockroach.image }}
+          imagePullPolicy: {{ .Values.cockroach.imagePullPolicy | default "Always" }}
           args:
             - start-single-node
             - --insecure

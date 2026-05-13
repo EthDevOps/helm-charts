@@ -1,11 +1,79 @@
 baseDomain: example.com
 containerPort: 3000
 imageRepository: docker.ethquokkaops.io/example
+# TODO: pin image tag and remove kube-score/ignore: container-image-tag
 imageVersion: latest
+imagePullPolicy: Always
+
 ingress:
   enabled: true
   className: haproxy
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 
+service:
+  type: ClusterIP
+  annotations: {}
 
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+    ephemeral-storage: 64Mi
+  limits:
+    cpu: 150m
+    memory: 512Mi
+    ephemeral-storage: 256Mi
+
+# The default `securityContext` is suitable for images that allow running as a
+# non-root user with a high UID. Charts whose images bake in a low UID can
+# override `runAsUser`/`runAsGroup` accordingly.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Readiness/liveness probes hit the container port. Override the path or
+# switch to tcpSocket if the upstream image needs different semantics.
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 6
+
+livenessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}

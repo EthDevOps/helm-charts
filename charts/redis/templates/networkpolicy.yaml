@@ -1,0 +1,48 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "redis.fullname" . }}-netpol
+  labels:
+    {{- include "redis.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "redis.selectorLabels" . | nindent 6 }}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  {{- if or .Values.networkPolicy.allowedPods .Values.networkPolicy.allowedNamespaces }}
+  {{- if .Values.networkPolicy.allowedPods }}
+  - from:
+    {{- range .Values.networkPolicy.allowedPods }}
+    - podSelector:
+        matchLabels:
+          {{- toYaml . | nindent 10 }}
+    {{- end }}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+  {{- end }}
+  {{- if .Values.networkPolicy.allowedNamespaces }}
+  - from:
+    {{- range .Values.networkPolicy.allowedNamespaces }}
+    - namespaceSelector:
+        matchLabels:
+          {{- toYaml . | nindent 10 }}
+    {{- end }}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+  {{- end }}
+  {{- else }}
+  ## Default: allow ingress on the redis port from any source. Tighten via
+  ## `networkPolicy.allowedPods` / `networkPolicy.allowedNamespaces`.
+  - ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+  {{- end }}
+  egress:
+  - {} # Allow all outbound traffic for DNS resolution and other essential services
+{{- end }}

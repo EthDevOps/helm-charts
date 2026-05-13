@@ -16,6 +16,9 @@ metadata:
   labels:
     {{- include "huly.componentLabels" (dict "component" "minio" "root" .) | nindent 4 }}
     app: minio
+  annotations:
+    # Upstream minio/minio runs as a low uid by default.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: 1
   strategy:
@@ -35,6 +38,7 @@ spec:
       containers:
         - name: minio
           image: {{ .Values.minio.image }}
+          imagePullPolicy: {{ .Values.minio.imagePullPolicy | default "Always" }}
           args:
             - server
             - /data

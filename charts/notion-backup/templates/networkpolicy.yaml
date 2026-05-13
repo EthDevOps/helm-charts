@@ -1,0 +1,45 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-notion-job
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- with .Values.networkPolicy.cronjob.ingress }}
+  ingress:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.networkPolicy.cronjob.egress }}
+  egress:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-selenium-webdriver
+  labels:
+    app: {{ .Release.Name }}-selenium-webdriver
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Release.Name }}-selenium-webdriver
+  policyTypes:
+    - Ingress
+    - Egress
+  {{- with .Values.networkPolicy.selenium.ingress }}
+  ingress:
+    {{- tpl (toYaml .) $ | nindent 4 }}
+  {{- end }}
+  {{- with .Values.networkPolicy.selenium.egress }}
+  egress:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

@@ -1,6 +1,6 @@
 # bookstack
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v25.12.3](https://img.shields.io/badge/AppVersion-v25.12.3-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v25.12.3](https://img.shields.io/badge/AppVersion-v25.12.3-informational?style=flat-square)
 
 BookStack - A platform for organising and storing information
 
@@ -20,6 +20,12 @@ BookStack - A platform for organising and storing information
 | bookstack.existingSecret.name | string | `""` |  |
 | bookstack.pgid | int | `1000` |  |
 | bookstack.puid | int | `1000` |  |
+| bookstack.resources.limits.cpu | string | `"1"` |  |
+| bookstack.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| bookstack.resources.limits.memory | string | `"2Gi"` |  |
+| bookstack.resources.requests.cpu | string | `"100m"` |  |
+| bookstack.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| bookstack.resources.requests.memory | string | `"512Mi"` |  |
 | bookstack.timezone | string | `"Etc/UTC"` |  |
 | externalDatabase.database | string | `"bookstack"` |  |
 | externalDatabase.existingSecret.name | string | `""` |  |
@@ -27,7 +33,7 @@ BookStack - A platform for organising and storing information
 | externalDatabase.host | string | `""` |  |
 | externalDatabase.port | int | `3306` |  |
 | externalDatabase.username | string | `"bookstack"` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"lscr.io/linuxserver/bookstack"` |  |
 | image.tag | string | `"version-v25.12.3"` |  |
 | ingress.annotations | object | `{}` |  |
@@ -38,16 +44,25 @@ BookStack - A platform for organising and storing information
 | mariadb.existingSecret.name | string | `""` |  |
 | mariadb.existingSecret.passwordKey | string | `"DB_PASSWORD"` |  |
 | mariadb.existingSecret.rootPasswordKey | string | `"MYSQL_ROOT_PASSWORD"` |  |
-| mariadb.image.pullPolicy | string | `"IfNotPresent"` |  |
+| mariadb.image.pullPolicy | string | `"Always"` |  |
 | mariadb.image.repository | string | `"lscr.io/linuxserver/mariadb"` |  |
 | mariadb.image.tag | string | `"11.4.8"` |  |
 | mariadb.password | string | `""` |  |
 | mariadb.persistence.size | string | `"5Gi"` |  |
 | mariadb.pgid | int | `1000` |  |
 | mariadb.puid | int | `1000` |  |
+| mariadb.resources.limits.cpu | string | `"1"` |  |
+| mariadb.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| mariadb.resources.limits.memory | string | `"1Gi"` |  |
+| mariadb.resources.requests.cpu | string | `"100m"` |  |
+| mariadb.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| mariadb.resources.requests.memory | string | `"256Mi"` |  |
 | mariadb.rootPassword | string | `""` |  |
 | mariadb.timezone | string | `"Etc/UTC"` |  |
 | mariadb.username | string | `"bookstack"` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0] | object | `{}` |  |
 | oidc.authEndpoint | string | `""` |  |
 | oidc.autoInitiate | bool | `false` |  |
 | oidc.displayNameClaims | string | `"name"` |  |
@@ -64,6 +79,8 @@ BookStack - A platform for organising and storing information
 | oidc.tokenEndpoint | string | `""` |  |
 | oidc.userinfoEndpoint | string | `""` |  |
 | persistence.size | string | `"2Gi"` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
 | replicaCount | int | `1` |  |
 | service.annotations | object | `{}` |  |
 | service.type | string | `"ClusterIP"` |  |

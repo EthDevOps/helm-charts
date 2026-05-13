@@ -1,4 +1,34 @@
 rancherHost: "https://rancher.example.com"
 rancherApiToken: "token-name:token"
 labelDomain: "myTeam.io"
+targetEnvironment: "production"
 
+image:
+  repository: ubuntu
+  # NOTE: main image left unpinned; resolves to `:latest`. Pin a digest or
+  # tag once the runtime version is decided. kube-score is suppressed via
+  # the workload annotation `kube-score/ignore: container-image-tag`.
+  tag: ""
+  pullPolicy: Always
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+    ephemeral-storage: 1Gi
+
+networkPolicy:
+  enabled: true
+  # The watcher only makes egress calls (Rancher API + kube-apiserver). It
+  # doesn't expose any ports, so default ingress is empty (deny all).
+  ingress: []
+  egress:
+    - {}
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

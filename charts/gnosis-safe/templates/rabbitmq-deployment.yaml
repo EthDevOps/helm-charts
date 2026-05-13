@@ -6,6 +6,10 @@ metadata:
   labels:
     {{- include "gnosis-safe.labels" . | nindent 4 }}
     app.kubernetes.io/component: rabbitmq
+  annotations:
+    # The official rabbitmq image runs as uid/gid 999 and cannot be raised
+    # above 10000 without rebuilding the image.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: 1
   selector:
@@ -21,20 +25,12 @@ spec:
       containers:
         - name: rabbitmq
           image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ .Values.rabbitmq.image.pullPolicy }}
           ports:
             - name: amqp
               containerPort: 5672
               protocol: TCP
           {{- if .Values.rabbitmq.healthcheck.enabled }}
-          livenessProbe:
-            exec:
-              command:
-                - rabbitmq-diagnostics
-                - -q
-                - ping
-            timeoutSeconds: 30
-            periodSeconds: 30
           readinessProbe:
             exec:
               command:
@@ -43,5 +39,12 @@ spec:
                 - ping
             timeoutSeconds: 30
             periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: amqp
+            timeoutSeconds: 30
+            periodSeconds: 30
           {{- end }}
+          resources:
+            {{- toYaml .Values.rabbitmqResources | nindent 12 }}
 {{- end }}

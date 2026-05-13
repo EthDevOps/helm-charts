@@ -6,6 +6,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: mongodb
+  annotations:
+    # mongo:7 upstream image runs as uid 999.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: 1
   strategy:
@@ -23,19 +26,16 @@ spec:
       containers:
         - name: mongodb
           image: {{ .Values.mongodb.image }}
+          imagePullPolicy: {{ .Values.mongodb.imagePullPolicy | default "Always" }}
           ports:
             - name: mongo
               containerPort: 27017
+          # Single readinessProbe; identical TCP livenessProbe omitted.
           readinessProbe:
             tcpSocket:
               port: 27017
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 27017
-            initialDelaySeconds: 15
-            periodSeconds: 30
           volumeMounts:
             - name: data
               mountPath: /data/db

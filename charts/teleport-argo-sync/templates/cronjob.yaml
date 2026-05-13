@@ -2,15 +2,31 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-sync
+  labels:
+    app: {{ .Release.Name }}-sync
+    app.kubernetes.io/component: sync
+  annotations:
+    # TODO: image runs as root and writes to /var/lib/teleport; revisit when
+    # the upstream image supports a non-root user.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
-  schedule: "*/10 * * * *"
-  timeZone: 'Etc/UTC'
-  concurrencyPolicy: Forbid
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  timeZone: {{ .Values.cronjob.timeZone | quote }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy }}
+  startingDeadlineSeconds: {{ .Values.cronjob.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit }}
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app: {{ .Release.Name }}-sync
+            app.kubernetes.io/component: sync
         spec:
           restartPolicy: OnFailure
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
           volumes:
             - name: teleport-persist
               persistentVolumeClaim:
@@ -20,7 +36,10 @@ spec:
                 name: {{ .Release.Name }}-clusters
           containers:
           - name: {{ .Release.Name }}-sync
-            image: docker.ethquokkaops.io/ethquokkaops/ethdevops/teleport-argocd-sync:{{ .Values.image.tag }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            securityContext:
+              {{- toYaml .Values.containerSecurityContext | nindent 14 }}
             volumeMounts:
             - name: clusters-config
               mountPath: "/config"
@@ -29,4 +48,5 @@ spec:
             envFrom:
               - secretRef:
                   name: {{ .Release.Name }}-config
-
+            resources:
+              {{- toYaml .Values.resources | nindent 14 }}

@@ -5,8 +5,14 @@ metadata:
   name: {{ include "domainmod.db.fullname" . }}
   labels:
     {{- include "domainmod.db.labels" . | nindent 4 }}
+  annotations:
+    # The linuxserver/mariadb image runs services as root via its s6
+    # supervisor before dropping to PUID/PGID. The container itself starts
+    # as root and there is no upstream support for runAsUser at the
+    # container level. Ignore the kube-score uid/gid check.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
-  serviceName: {{ include "domainmod.db.fullname" . }}
+  serviceName: {{ include "domainmod.db.fullname" . }}-headless
   replicas: 1
   selector:
     matchLabels:
@@ -63,6 +69,14 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /config
+          {{- end }}
+          {{- with .Values.database.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.database.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .Values.database.resources }}
           resources:

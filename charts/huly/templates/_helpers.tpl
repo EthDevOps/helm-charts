@@ -110,13 +110,50 @@ checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sh
 {{- end }}
 
 {{/*
+Common resources block for the small `wait-*` init containers (busybox).
+Kept tiny — these just block on a TCP connect — but explicit so kube-score
+clears container-resources and container-ephemeral-storage-request-and-limit.
+*/}}
+{{- define "huly.waitInitResources" -}}
+resources:
+  requests:
+    cpu: 10m
+    memory: 16Mi
+    ephemeral-storage: 32Mi
+  limits:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
+{{- end }}
+
+{{/*
+Hardened securityContext for the busybox wait-* init containers.
+Runs as a high uid/gid (busybox supports running as any user) so kube-score
+clears container-security-context-user-group-id without an ignore annotation.
+*/}}
+{{- define "huly.waitInitSecurityContext" -}}
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+{{- end }}
+
+{{/*
 Init container that waits for CockroachDB to accept connections.
 */}}
 {{- define "huly.waitForCockroach" -}}
 {{- if .Values.cockroach.enabled }}
 - name: wait-cockroach
-  image: busybox:1.36
+  image: {{ .Values.waitInit.image }}
+  imagePullPolicy: {{ .Values.waitInit.imagePullPolicy }}
   command: ['sh', '-c', 'until nc -z cockroach 26257; do echo "waiting for cockroach..."; sleep 2; done']
+  {{- include "huly.waitInitSecurityContext" . | nindent 2 }}
+  {{- include "huly.waitInitResources" . | nindent 2 }}
 {{- end }}
 {{- end }}
 
@@ -126,8 +163,11 @@ Init container that waits for MongoDB to accept connections.
 {{- define "huly.waitForMongodb" -}}
 {{- if .Values.mongodb.enabled }}
 - name: wait-mongodb
-  image: busybox:1.36
+  image: {{ .Values.waitInit.image }}
+  imagePullPolicy: {{ .Values.waitInit.imagePullPolicy }}
   command: ['sh', '-c', 'until nc -z mongodb 27017; do echo "waiting for mongodb..."; sleep 2; done']
+  {{- include "huly.waitInitSecurityContext" . | nindent 2 }}
+  {{- include "huly.waitInitResources" . | nindent 2 }}
 {{- end }}
 {{- end }}
 
@@ -137,9 +177,22 @@ Init container that waits for Redpanda to accept connections.
 {{- define "huly.waitForRedpanda" -}}
 {{- if .Values.redpanda.enabled }}
 - name: wait-redpanda
-  image: busybox:1.36
+  image: {{ .Values.waitInit.image }}
+  imagePullPolicy: {{ .Values.waitInit.imagePullPolicy }}
   command: ['sh', '-c', 'until nc -z redpanda 9092; do echo "waiting for redpanda..."; sleep 2; done']
+  {{- include "huly.waitInitSecurityContext" . | nindent 2 }}
+  {{- include "huly.waitInitResources" . | nindent 2 }}
 {{- end }}
+{{- end }}
+
+{{/*
+Comma-joined kube-score/ignore list applied to every workload that runs
+upstream Huly / third-party images we don't build. The images bake in low
+uids and ship a single tag at a time, so we can't satisfy
+container-security-context-user-group-id without rebuilding upstream.
+*/}}
+{{- define "huly.kubeScoreIgnore" -}}
+container-security-context-user-group-id
 {{- end }}
 
 {{/*

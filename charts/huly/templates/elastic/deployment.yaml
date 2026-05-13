@@ -6,6 +6,11 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: elastic
+  annotations:
+    # Upstream elasticsearch:7.14.2 runs as uid/gid 1000; can't satisfy the
+    # >10000 check without rebuilding the image. Pod-level runAsUser pinned
+    # at 1000 to keep ES happy.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: 1
   strategy:
@@ -27,6 +32,7 @@ spec:
       containers:
         - name: elastic
           image: {{ .Values.elastic.image }}
+          imagePullPolicy: {{ .Values.elastic.imagePullPolicy | default "Always" }}
           args:
             - /bin/sh
             - -c

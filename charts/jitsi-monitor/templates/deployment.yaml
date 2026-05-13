@@ -2,6 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-monitor
+  annotations:
+    # The upstream jitsi-monitor-docker image runs as a user with a uid below
+    # 10000, so we cannot satisfy container-security-context-user-group-id
+    # without rebuilding the image. Silence the kube-score check.
+    kube-score/ignore: container-security-context-user-group-id
   labels:
     app: {{ .Release.Name }}-monitor
 spec:
@@ -14,7 +19,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-monitor
       {{- if .Values.podAnnotations }}
-      annotations: 
+      annotations:
         {{- .Values.podAnnotations | toYaml | nindent 8 }}
       {{- end }}
     spec:
@@ -22,12 +27,16 @@ spec:
         - name: jitsi-monitor
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           ports:
             - containerPort: {{ .Values.service.port }}
               name: http
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: screenshots
               mountPath: /app/screenshots

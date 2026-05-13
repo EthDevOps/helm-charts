@@ -6,6 +6,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: github
+  annotations:
+    # Upstream hardcoreeng/github image bakes in a low uid.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: {{ .Values.githubIntegration.replicas }}
   selector:
@@ -23,6 +26,7 @@ spec:
       containers:
         - name: github
           image: {{ .Values.hulyRegistry }}/github:{{ .Values.hulyVersion }}
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3500
@@ -44,16 +48,12 @@ spec:
               value: {{ .Values.githubIntegration.botName | quote }}
             - name: SERVICE_ID
               value: "github-service"
+          # Single readinessProbe; identical TCP livenessProbe omitted.
           readinessProbe:
             tcpSocket:
               port: 3500
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 3500
-            initialDelaySeconds: 30
-            periodSeconds: 30
           {{- with .Values.githubIntegration.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

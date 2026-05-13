@@ -4,6 +4,14 @@ metadata:
   name: {{ .Release.Name }}-selenium-webdriver
   labels:
     app: {{ .Release.Name }}-selenium-webdriver
+  annotations:
+    # TODO: pin a specific selenium/standalone-chrome version in
+    #       values.yaml (`seleniumImageTag`) and remove
+    #       `container-image-tag` from this ignore list.
+    # The selenium/standalone-chrome image runs as the `seluser` user (uid
+    # 1200, which is < 10000), so we cannot satisfy
+    # `container-security-context-user-group-id` without rebuilding the image.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   selector:
     matchLabels:
@@ -16,9 +24,23 @@ spec:
       containers:
         - name: selenium-webdriver
           image: docker.ethquokkaops.io/dh/selenium/standalone-chrome:{{ .Values.seleniumImageTag }}
+          imagePullPolicy: {{ .Values.seleniumImagePullPolicy }}
           ports:
             - name: webdriver
               containerPort: 4444
+          resources:
+            {{- toYaml .Values.selenium.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: webdriver
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: webdriver
+            initialDelaySeconds: 30
+            periodSeconds: 20
           volumeMounts:
             - name: dshm
               mountPath: /dev/shm

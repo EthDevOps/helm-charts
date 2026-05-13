@@ -4,10 +4,12 @@ metadata:
   name: {{ include "jitsi-meet.jicofo.fullname" . }}
   labels:
     {{- include "jitsi-meet.jicofo.labels" . | nindent 4 }}
-  {{- with .Values.jicofo.annotations }}
   annotations:
-    {{ toYaml . | nindent 4 }}
-  {{- end }}
+    # jitsi/jicofo image runs as root; cannot satisfy without a custom rebuild.
+    kube-score/ignore: container-security-context-user-group-id
+    {{- with .Values.jicofo.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   replicas: {{ .Values.jicofo.replicaCount }}
   {{- with .Values.jicofo.strategy }}

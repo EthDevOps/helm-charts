@@ -4,8 +4,12 @@ metadata:
   name: {{ include "postgresql.fullname" . }}
   labels:
     {{- include "postgresql.labels" . | nindent 4 }}
+  {{- with .Values.workloadAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  serviceName: {{ include "postgresql.fullname" . }}
+  serviceName: {{ include "postgresql.fullname" . }}-headless
   replicas: 1
   selector:
     matchLabels:

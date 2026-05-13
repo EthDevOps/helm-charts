@@ -4,6 +4,10 @@ metadata:
   name: {{ include "quokka-service-registry.fullname" . }}
   labels:
     {{- include "quokka-service-registry.labels" . | nindent 4 }}
+  annotations:
+    # The upstream service-registry image runs as uid/gid 1000 baked in.
+    # Cannot bump to >10000 without rebuilding the image.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}

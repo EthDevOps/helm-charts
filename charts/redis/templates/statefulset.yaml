@@ -4,6 +4,10 @@ metadata:
   name: {{ include "redis.fullname" . }}
   labels:
     {{- include "redis.labels" . | nindent 4 }}
+  {{- with .Values.workloadAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   serviceName: {{ include "redis.headlessService" . }}
   replicas: 1

@@ -4,8 +4,13 @@ metadata:
   name: {{ include "discourse.fullname" . }}
   labels:
     {{- include "discourse.labels" . | nindent 4 }}
+  annotations:
+    # Discourse's official launcher-style image runs services as root
+    # (postgres, redis, nginx, sidekiq via runit). Cannot drop privileges
+    # without rebuilding the image upstream.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
-  serviceName: {{ include "discourse.fullname" . }}
+  serviceName: {{ include "discourse.fullname" . }}-headless
   {{- if not (and .Values.autoscaling .Values.autoscaling.enabled) }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}

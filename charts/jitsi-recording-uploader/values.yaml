@@ -48,9 +48,11 @@ resources:
   limits:
     cpu: 200m
     memory: 256Mi
+    ephemeral-storage: 1Gi
   requests:
     cpu: 100m
     memory: 128Mi
+    ephemeral-storage: 256Mi
 
 # Node selector
 nodeSelector: {}
@@ -198,3 +200,17 @@ autoscaling:
   maxReplicas: 1
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+
+# NetworkPolicy
+networkPolicy:
+  enabled: true
+  # Ingress rules; defaults allow ingress to the app's port from any source.
+  # Tighten per-environment as needed.
+  ingress:
+    - ports:
+        - port: 3000
+          protocol: TCP
+  # Egress rules; defaults to unrestricted egress so the uploader can reach
+  # Google Drive APIs out-of-the-box.
+  egress:
+    - {}

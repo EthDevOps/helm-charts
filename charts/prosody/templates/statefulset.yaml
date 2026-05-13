@@ -4,12 +4,15 @@ metadata:
   name: {{ include "prosody.fullname" . }}
   labels:
     {{- include "prosody.labels" . | nindent 4 }}
-  {{- with .Values.annotations }}
   annotations:
+    # Upstream prosody image runs as uid/gid 101; cannot raise above 10000
+    # without rebuilding it. Same applies to the alpine-based init container.
+    kube-score/ignore: container-security-context-user-group-id
+    {{- with .Values.annotations }}
     {{ toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
-  serviceName: "{{ include "prosody.fullname" . }}"
+  serviceName: "{{ include "prosody.fullname" . }}-headless"
   replicas: {{ if .Values.useExternalProsody }}0{{ else }}1{{end}}
   selector:
     matchLabels:
@@ -37,8 +40,15 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: download-plugins
-          image: alpine
+          image: {{ .Values.initContainer.image }}
+          imagePullPolicy: {{ .Values.initContainer.imagePullPolicy }}
+          {{- with .Values.initContainerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command: ['sh', '-c', 'apk add wget && wget -i /urls/plugins.txt -P /prosody-plugins-custom && sed -i "s/create-persistent-lobby-room/create-lobby-room/g" /prosody-plugins-custom/mod_lobby_autostart.lua 2>/dev/null; true']
+          resources:
+            {{- toYaml .Values.initContainer.resources | nindent 12 }}
           volumeMounts:
           - name: custom-plugins
             mountPath: /prosody-plugins-custom

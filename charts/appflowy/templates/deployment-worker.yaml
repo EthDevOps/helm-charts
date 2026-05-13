@@ -2,6 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-worker
+  annotations:
+    # AppFlowy worker ships only :latest and bakes in a low uid; silence
+    # kube-score checks we can't satisfy without rebuilding the upstream
+    # image.
+    # TODO: pin a specific version once upstream publishes tagged releases.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.worker.replicaCount }}
   selector:

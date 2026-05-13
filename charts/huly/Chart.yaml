@@ -2,7 +2,7 @@ apiVersion: v2
 name: huly
 description: Huly — open-source project management platform
 type: application
-version: 0.2.3
+version: 0.2.4
 appVersion: "0.7.382"
 home: https://huly.io
 sources:

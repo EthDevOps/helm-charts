@@ -6,6 +6,10 @@ metadata:
   labels:
     app: {{ .Release.Name }}-postgres
     app.kubernetes.io/component: postgres
+  annotations:
+    # postgres:16-alpine bakes in uid 70 for the postgres user; we can't
+    # satisfy the uid/gid > 10000 check without rebuilding the image.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   serviceName: {{ .Release.Name }}-postgres
   replicas: 1
@@ -21,7 +25,7 @@ spec:
       containers:
       - name: postgres
         image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
         env:
         - name: POSTGRES_USER
           value: "{{ .Values.postgres.user }}"
@@ -38,6 +42,20 @@ spec:
         - name: postgres
           containerPort: 5432
           protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+              - /bin/sh
+              - -c
+              - exec pg_isready -U "{{ .Values.postgres.user }}" -d "{{ .Values.postgres.database }}" -h 127.0.0.1 -p 5432
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: postgres
+          initialDelaySeconds: 30
+          periodSeconds: 10
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
@@ -66,4 +84,5 @@ spec:
     port: 5432
     targetPort: postgres
   clusterIP: None
-{{- end }} 
+  publishNotReadyAddresses: true
+{{- end }}

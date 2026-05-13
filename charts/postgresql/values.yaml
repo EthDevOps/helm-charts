@@ -93,10 +93,10 @@ image:
   repository: postgres
   tag: 16-alpine
   ## Specify a imagePullPolicy
-  ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+  ## Defaults to 'Always' to ensure imagePullSecrets are re-checked on each pod start
   ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -250,7 +250,7 @@ persistence:
 ## @param networkPolicy.allowedNamespaces List of namespace selectors that are allowed to connect
 ##
 networkPolicy:
-  enabled: false
+  enabled: true
   ## Allow specific pods to connect (by label selector)
   ## e.g:
   ## allowedPods:
@@ -491,6 +491,11 @@ resources:
   requests:
     memory: 256Mi
     cpu: 250m
+    ephemeral-storage: 256Mi
+  limits:
+    memory: 2Gi
+    cpu: "1"
+    ephemeral-storage: 1Gi
 
 ## Configure Pods liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
@@ -594,6 +599,16 @@ podLabels: {}
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations: {}
+
+## @param workloadAnnotations Annotations to apply to the StatefulSet workload metadata
+## Useful for kube-score/ignore hints on checks that can't be satisfied by the image
+## (e.g. postgres bakes in uid 1001 so container-security-context-user-group-id can't pass)
+##
+workloadAnnotations:
+  ## The official postgres image (and bitnami variant) runs as uid/gid 1001.
+  ## Both are below 10000, which kube-score flags; the image bakes this in so
+  ## the only way to satisfy the check would be rebuilding the image.
+  kube-score/ignore: container-security-context-user-group-id
 
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity

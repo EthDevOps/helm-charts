@@ -4,6 +4,13 @@ metadata:
   name: {{ include "domainmod.fullname" . }}
   labels:
     {{- include "domainmod.labels" . | nindent 4 }}
+  annotations:
+    # The upstream domainmod/domainmod image runs Apache/PHP as the root
+    # user (no upstream support for a non-root UID). The image also only
+    # publishes the :latest tag on Docker Hub; there are no versioned
+    # tags to pin. Both checks are ignored at the workload level until
+    # upstream changes either situation.
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   replicas: {{ .Values.app.replicaCount }}
   selector:
@@ -61,6 +68,14 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/www/html
+          {{- end }}
+          {{- with .Values.app.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.app.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .Values.app.resources }}
           resources:

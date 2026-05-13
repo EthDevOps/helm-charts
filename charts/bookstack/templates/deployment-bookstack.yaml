@@ -2,6 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-bookstack
+  annotations:
+    # linuxserver/bookstack starts as root via s6-overlay so it can chown the
+    # /config volume and then drops privileges to the configured PUID/PGID
+    # (default 1000/1000 — both below kube-score's 10000 threshold). The image
+    # cannot be reconfigured to run as a high UID without rebuilding upstream.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -17,6 +23,7 @@ spec:
       containers:
         - name: bookstack
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: PUID
               value: {{ .Values.bookstack.puid | quote }}
@@ -109,7 +116,25 @@ spec:
             {{- end }}
           {{- end }}
           ports:
-            - containerPort: 80
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.bookstack.resources | nindent 12 }}
           volumeMounts:
             - name: bookstack-storage
               mountPath: /config

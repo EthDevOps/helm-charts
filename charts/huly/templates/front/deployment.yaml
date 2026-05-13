@@ -5,6 +5,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: front
+  annotations:
+    # Upstream hardcoreeng/front image bakes in a low uid.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: {{ .Values.front.replicas }}
   selector:
@@ -22,6 +25,7 @@ spec:
       containers:
         - name: front
           image: {{ .Values.hulyRegistry }}/front:{{ .Values.hulyVersion }}
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
@@ -62,6 +66,9 @@ spec:
             - name: HIDE_LOCAL_LOGIN
               value: "true"
             {{- end }}
+          # readinessProbe uses HTTP; livenessProbe falls back to a TCP check
+          # so kube-score pod-probes-identical passes and a slow request loop
+          # can't restart the pod.
           readinessProbe:
             httpGet:
               path: /
@@ -69,8 +76,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 30

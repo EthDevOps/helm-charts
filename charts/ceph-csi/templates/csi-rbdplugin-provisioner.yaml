@@ -19,6 +19,16 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: csi-rbdplugin-provisioner
+  annotations:
+    # The cephcsi provisioner container mounts /dev and /sys from the host
+    # and the upstream cephcsi image runs as root (uid 0). The sidecars
+    # (csi-provisioner, csi-attacher, csi-resizer, csi-snapshotter) also
+    # ship without a configurable non-root user. The image tag uses the
+    # upstream-recommended mutable channel ("canary"); pin a stable release
+    # per environment.
+    kube-score/ignore: >-
+      container-security-context-user-group-id,
+      container-image-tag
 spec:
   replicas: 3
   selector:
@@ -28,6 +38,10 @@ spec:
     metadata:
       labels:
         app: csi-rbdplugin-provisioner
+      annotations:
+        kube-score/ignore: >-
+          container-security-context-user-group-id,
+          container-image-tag
     spec:
       affinity:
         podAntiAffinity:
@@ -44,6 +58,7 @@ spec:
       containers:
         - name: csi-rbdplugin
           # for stable functionality replace canary with latest release version
+          # TODO: pin a specific version
           image: quay.io/cephcsi/cephcsi:canary
           args:
             - "--nodeid=$(NODE_ID)"
@@ -77,7 +92,13 @@ spec:
               value: unix:///csi/csi-provisioner.sock
             - name: CSI_ADDONS_ENDPOINT
               value: unix:///csi/csi-addons.sock
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
@@ -121,11 +142,23 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           ports:
             - containerPort: 8090
               name: http-endpoint
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: 8090
+            initialDelaySeconds: 10
+            periodSeconds: 30
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
@@ -146,7 +179,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           ports:
             - containerPort: 8092
               name: http-endpoint
@@ -170,7 +209,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           ports:
             - containerPort: 8093
               name: http-endpoint
@@ -196,7 +241,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           ports:
             - containerPort: 8091
               name: http-endpoint
@@ -206,6 +257,7 @@ spec:
               mountPath: /csi
         - name: csi-rbdplugin-controller
           # for stable functionality replace canary with latest release version
+          # TODO: pin a specific version
           image: quay.io/cephcsi/cephcsi:canary
           args:
             - "--type=controller"
@@ -218,7 +270,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: ceph-csi-config
               mountPath: /etc/ceph-csi-config/
@@ -246,10 +304,16 @@ spec:
             - containerPort: 8680
               name: http-metrics
               protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: Always
       volumes:
         - name: host-dev
           hostPath:

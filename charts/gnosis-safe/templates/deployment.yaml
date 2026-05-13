@@ -4,6 +4,11 @@ metadata:
   name: {{ include "gnosis-safe.fullname" . }}
   labels:
     {{- include "gnosis-safe.labels" . | nindent 4 }}
+  annotations:
+    # The upstream safe-transaction-service image bakes uid/gid 999 and uses
+    # the `main` tag. Both findings require a rebuilt image to fix and are
+    # tracked via TODOs in values.yaml.
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -46,11 +51,24 @@ spec:
           volumeMounts:
             - name: nginx-shared
               mountPath: /nginx
+          readinessProbe:
+            httpGet:
+              path: /
+              port: apphttp
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: apphttp
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         - name: nginx
           image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8000
@@ -62,6 +80,21 @@ spec:
               readOnly: true
             - name: nginx-shared
               mountPath: /nginx
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.nginxResources | nindent 12 }}
       volumes:
         - name: nginx-shared
           emptyDir: {}

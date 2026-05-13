@@ -30,6 +30,7 @@ healthcheckUrl: "http://localhost"
 backupSchedule: "30 * * * *"
 minioExtraArgs: ""
 imageTag: "v0.12.0"
+imagePullPolicy: Always
 enableDebug: "0"
 enableOverwrite: "0"
 bandwidthLimit: "100M"
@@ -45,3 +46,44 @@ filters:
   #   + **/23861500/**
   #   - *
   rules: ""
+
+# CronJob scheduling controls
+cronjob:
+  # Cancel scheduled jobs that can't start within this window (seconds)
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+
+# Resource requests and limits for the sync container
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 2Gi
+
+# Pod-level security context. The s3-sync-docker image runs as root because
+# rclone/mc need to manage on-disk config files; container-level uid/gid is
+# left to the image. See kube-score/ignore on the CronJob.
+podSecurityContext: {}
+
+# Container-level security context
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+
+# NetworkPolicy configuration
+networkPolicy:
+  # Enable NetworkPolicy for the sync job
+  enabled: true
+  # Ingress rules (empty by default — sync job does not expose ports)
+  ingress: []
+  # Egress rules (allow all by default; restrict per-environment if needed)
+  egress:
+    - {}

@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: workspace
+  annotations:
+    # Upstream hardcoreeng/workspace image bakes in a low uid. Workspace is
+    # a queue worker (no Service, no HTTP/TCP listener), so it has no probes
+    # — pod-probes only fires on Deployments that are targeted by a Service.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: {{ .Values.workspace.replicas }}
   selector:
@@ -25,6 +30,7 @@ spec:
       containers:
         - name: workspace
           image: {{ .Values.hulyRegistry }}/workspace:{{ .Values.hulyVersion }}
+          imagePullPolicy: Always
           env:
             {{- include "huly.envSecret" (dict "name" "SERVER_SECRET" "key" "SERVER_SECRET" "root" .) | nindent 12 }}
             {{- include "huly.envSecret" (dict "name" "DB_URL" "key" "CR_DB_URL" "root" .) | nindent 12 }}

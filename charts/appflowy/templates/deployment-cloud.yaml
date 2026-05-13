@@ -2,6 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-cloud
+  annotations:
+    # AppFlowy appflowy_cloud ships only :latest today and bakes in a low
+    # uid; silence kube-score checks we can't satisfy without rebuilding
+    # the upstream image.
+    # TODO: pin a specific version once upstream publishes tagged releases.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.cloud.replicaCount }}
   selector:
@@ -17,7 +23,8 @@ spec:
           image: {{ .Values.cloud.image.repository }}:{{ .Values.cloud.image.tag }}
           imagePullPolicy: {{ .Values.cloud.image.pullPolicy }}
           ports:
-            - containerPort: 8000
+            - name: http
+              containerPort: 8000
           env:
             - name: RUST_LOG
               value: "info"
@@ -93,15 +100,21 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          # Probes split by handler so a slow request loop doesn't restart
+          # the pod: liveness only checks the TCP socket; readiness hits the
+          # HTTP health endpoint.
           livenessProbe:
-            httpGet:
-              path: /api/health
-              port: 8000
+            tcpSocket:
+              port: http
             initialDelaySeconds: 30
-            periodSeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           readinessProbe:
             httpGet:
               path: /api/health
-              port: 8000
+              port: http
             initialDelaySeconds: 10
             periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 3

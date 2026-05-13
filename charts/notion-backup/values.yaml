@@ -1,6 +1,16 @@
+# Schedule for the download CronJob (full backup pull)
+backupSchedule: "0 0 * * *"
+# Schedule for the trigger CronJob (kick off Notion-side export)
+triggerSchedule: "0 22 * * *"
+
+# Cancel scheduled jobs that miss their start window by this many seconds
+startingDeadlineSeconds: 600
+
 imageTag: v0.0.1
+imagePullPolicy: Always
 seleniumImageTag: latest
-healthcheckUrl: http://healthchecks.io/1234 
+seleniumImagePullPolicy: Always
+healthcheckUrl: http://healthchecks.io/1234
 workspaces: "test1,test2"
 s3:
   host: http://s3host
@@ -19,4 +29,50 @@ notion:
 gpgPublicKey: |
   pubkey
 
+# Resources for the notion-backup CronJob containers (download + trigger)
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 2Gi
 
+# Resources for the selenium-webdriver Deployment
+selenium:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+      ephemeral-storage: 1Gi
+
+networkPolicy:
+  enabled: true
+  # CronJobs make outbound calls to Notion, IMAP, S3, healthchecks, and the
+  # in-cluster selenium webdriver. The webdriver Deployment accepts ingress
+  # from the backup CronJobs on port 4444.
+  cronjob:
+    ingress: []
+    egress:
+      - {}
+  selenium:
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: '{{ .Release.Name }}'
+        ports:
+          - port: 4444
+            protocol: TCP
+    egress:
+      - {}
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

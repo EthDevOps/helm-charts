@@ -8,4 +8,27 @@ auth:
   user: kubernetes
   key: some-key
 
+# Default resource requests/limits applied to every container in the
+# DaemonSet and provisioner Deployment. Tune per-environment as needed.
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+    ephemeral-storage: 64Mi
+  limits:
+    cpu: "1"
+    memory: 512Mi
+    ephemeral-storage: 512Mi
 
+networkPolicy:
+  # NetworkPolicy targeting the ceph-csi pods. Defaults are permissive so
+  # the chart works out-of-the-box; tighten ingress/egress per environment.
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

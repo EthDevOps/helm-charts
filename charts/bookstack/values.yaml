@@ -4,7 +4,7 @@ appDomain: bookstack.example.com
 image:
   repository: lscr.io/linuxserver/bookstack
   tag: version-v25.12.3
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 bookstack:
   puid: 1000
@@ -18,13 +18,22 @@ bookstack:
     # Name of an existing secret containing the APP_KEY
     name: ""
     appKeyKey: APP_KEY
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+      ephemeral-storage: 1Gi
 
 mariadb:
   enabled: true
   image:
     repository: lscr.io/linuxserver/mariadb
     tag: "11.4.8"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   puid: 1000
   pgid: 1000
   timezone: Etc/UTC
@@ -40,6 +49,15 @@ mariadb:
     rootPasswordKey: MYSQL_ROOT_PASSWORD
   persistence:
     size: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 
 # External database configuration (used when mariadb.enabled is false)
 externalDatabase:
@@ -82,3 +100,20 @@ ingress:
 service:
   type: ClusterIP
   annotations: {}
+
+# NetworkPolicy guarding ingress and egress for both bookstack and mariadb pods.
+# Defaults are permissive: anyone in the cluster can hit bookstack on port 80
+# and bookstack can reach mariadb on 3306. Egress is unrestricted so app can
+# call DNS, OIDC issuer, package mirrors, etc. Tighten per environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+# PodDisruptionBudget. maxUnavailable: 1 keeps a single-replica chart drainable
+# while still letting the cluster signal voluntary disruptions.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

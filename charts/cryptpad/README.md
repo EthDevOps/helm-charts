@@ -1,6 +1,6 @@
 # cryptpad
 
-![Version: 0.0.27](https://img.shields.io/badge/Version-0.0.27-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2024.12.0](https://img.shields.io/badge/AppVersion-2024.12.0-informational?style=flat-square)
+![Version: 0.0.29](https://img.shields.io/badge/Version-0.0.29-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2024.12.0](https://img.shields.io/badge/AppVersion-2024.12.0-informational?style=flat-square)
 
 A Helm chart for cryptpad
 
@@ -17,7 +17,14 @@ A Helm chart for cryptpad
 | admins | list | `[]` |  |
 | baseDomain | string | `"pad.example.com"` |  |
 | commonAnnotations | object | `{}` |  |
-| extraInitContainers | object | `{}` |  |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.runAsGroup | int | `4001` |  |
+| containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| containerSecurityContext.runAsUser | int | `4001` |  |
+| containerSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| extraInitContainers | list | `[]` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/cryptpad-docker"` |  |
 | image.tag | string | `"main"` |  |
 | ingress.annotations | object | `{}` |  |
@@ -25,12 +32,42 @@ A Helm chart for cryptpad
 | ingress.enabled | bool | `true` |  |
 | ingress.tls.secretName | string | `"chart-example-tls"` |  |
 | installOffice | string | `"no"` |  |
+| livenessProbe.failureThreshold | int | `6` |  |
+| livenessProbe.initialDelaySeconds | int | `30` |  |
+| livenessProbe.periodSeconds | int | `30` |  |
+| livenessProbe.tcpSocket.port | string | `"http"` |  |
+| livenessProbe.timeoutSeconds | int | `5` |  |
 | loginSalt | string | `"abcdefg"` |  |
 | maxPremiumUploadSize | int | `100` |  |
 | maxUploadSize | int | `1` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `3000` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| networkPolicy.ingress[0].ports[1].port | int | `3003` |  |
+| networkPolicy.ingress[0].ports[1].protocol | string | `"TCP"` |  |
 | podAnnotations | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
 | podLabels | object | `{}` |  |
-| resources | object | `{}` |  |
+| podSecurityContext.fsGroup | int | `4001` |  |
+| podSecurityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
+| podSecurityContext.runAsGroup | int | `4001` |  |
+| podSecurityContext.runAsNonRoot | bool | `true` |  |
+| podSecurityContext.runAsUser | int | `4001` |  |
+| podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| readinessProbe.failureThreshold | int | `3` |  |
+| readinessProbe.httpGet.path | string | `"/"` |  |
+| readinessProbe.httpGet.port | string | `"http"` |  |
+| readinessProbe.initialDelaySeconds | int | `10` |  |
+| readinessProbe.periodSeconds | int | `10` |  |
+| readinessProbe.timeoutSeconds | int | `3` |  |
+| resources.limits.cpu | string | `"2"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"2Gi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"512Mi"` |  |
 | sandboxDomain | string | `"sandbox.example.com"` |  |
 | service.annotations | object | `{}` |  |
 | service.type | string | `"ClusterIP"` |  |

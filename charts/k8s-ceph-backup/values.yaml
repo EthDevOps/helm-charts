@@ -18,10 +18,12 @@ cronjob:
   suspend: false
   # Restart policy for the job pods
   restartPolicy: "OnFailure"
+  # Cancel scheduled jobs that miss their start window by this many seconds
+  startingDeadlineSeconds: 600
 
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-ceph-backup
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: v0.0.2
 
@@ -54,13 +56,24 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+    ephemeral-storage: 1Gi
   requests:
     cpu: 250m
     memory: 64Mi
+    ephemeral-storage: 256Mi
 
 # Temporary storage configuration
 tempStorage:
   sizeLimit: "10Gi"
+
+# NetworkPolicy for backup CronJob pods.
+# The job makes outbound calls only (Ceph MON/OSD, MinIO/S3, Kubernetes API).
+# It doesn't expose any listening ports, so ingress is empty.
+networkPolicy:
+  enabled: true
+  ingress: []
+  egress:
+    - {}
 
 # Application configuration
 config:

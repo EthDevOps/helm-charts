@@ -1,0 +1,5 @@
+# Temporary: findings on the postgresql subchart StatefulSet.
+# Clear by bumping the postgresql dep to 1.1.8 once it's published to
+# https://ethdevops.github.io/helm-charts, then deleting this file.
+container-security-context-user-group-id
+statefulset-has-servicename

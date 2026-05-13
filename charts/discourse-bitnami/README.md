@@ -1,6 +1,6 @@
 # discourse
 
-![Version: 16.0.1](https://img.shields.io/badge/Version-16.0.1-informational?style=flat-square) ![AppVersion: 3.4.3](https://img.shields.io/badge/AppVersion-3.4.3-informational?style=flat-square)
+![Version: 16.0.2](https://img.shields.io/badge/Version-16.0.2-informational?style=flat-square) ![AppVersion: 3.4.3](https://img.shields.io/badge/AppVersion-3.4.3-informational?style=flat-square)
 
 Discourse is an open source discussion platform with built-in moderation and governance systems that let discussion communities protect themselves from bad actors even without official moderators.
 
@@ -124,7 +124,7 @@ Discourse is an open source discussion platform with built-in moderation and gov
 | hostAliases | list | `[]` |  |
 | image.debug | bool | `false` |  |
 | image.digest | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.pullSecrets | list | `[]` |  |
 | image.registry | string | `"docker.io"` |  |
 | image.repository | string | `"bitnami/discourse"` |  |
@@ -185,6 +185,8 @@ Discourse is an open source discussion platform with built-in moderation and gov
 | postgresql.auth.postgresPassword | string | `"bitnami"` |  |
 | postgresql.auth.username | string | `"bn_discourse"` |  |
 | postgresql.enabled | bool | `true` |  |
+| postgresql.image.pullPolicy | string | `"Always"` |  |
+| postgresql.primary.annotations.kube-score/ignore | string | `"container-security-context-user-group-id"` |  |
 | postgresql.primary.resources | object | `{}` |  |
 | postgresql.primary.resourcesPreset | string | `"nano"` |  |
 | priorityClassName | string | `""` |  |
@@ -193,6 +195,8 @@ Discourse is an open source discussion platform with built-in moderation and gov
 | redis.auth.existingSecret | string | `""` |  |
 | redis.auth.password | string | `""` |  |
 | redis.enabled | bool | `true` |  |
+| redis.image.pullPolicy | string | `"Always"` |  |
+| redis.master.annotations.kube-score/ignore | string | `"container-security-context-user-group-id"` |  |
 | redis.master.resources | object | `{}` |  |
 | redis.master.resourcesPreset | string | `"nano"` |  |
 | replicaCount | int | `1` |  |

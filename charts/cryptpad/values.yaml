@@ -15,11 +15,61 @@ sso:
 
 podAnnotations: {}
 podLabels: {}
-extraInitContainers: {}
-resources: {}
+extraInitContainers: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "2"
+    memory: 2Gi
+    ephemeral-storage: 1Gi
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+livenessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+# Pod Security Standards: defaults below satisfy the "restricted" profile.
+# The cryptpad upstream image runs as uid/gid 4001; fsGroup chowns the mounted
+# PVCs at startup so a privileged chown init container is no longer needed.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 4001
+  runAsGroup: 4001
+  fsGroup: 4001
+  fsGroupChangePolicy: OnRootMismatch
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 4001
+  runAsGroup: 4001
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
 image:
   repository: docker.ethquokkaops.io/ethquokkaops/ethdevops/cryptpad-docker
   tag: main
+  pullPolicy: Always
 
 service:
   type: ClusterIP
@@ -33,3 +83,21 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   tls:
     secretName: chart-example-tls
+
+# Permissive default NetworkPolicy: ingress allowed on the cryptpad ports,
+# egress unrestricted (cryptpad needs DNS + outbound for SSO/IDPs).
+networkPolicy:
+  enabled: true
+  ingress:
+    - ports:
+        - port: 3000
+          protocol: TCP
+        - port: 3003
+          protocol: TCP
+  egress:
+    - {}
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+  # minAvailable: ""  # set this instead of maxUnavailable if preferred

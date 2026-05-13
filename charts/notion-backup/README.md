@@ -1,6 +1,6 @@
 # notion-backup
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.1](https://img.shields.io/badge/AppVersion-v0.0.1-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.1](https://img.shields.io/badge/AppVersion-v0.0.1-informational?style=flat-square)
 
 Creates backups from Notion
 
@@ -18,20 +18,46 @@ Creates backups from Notion
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| backupSchedule | string | `"0 0 * * *"` |  |
 | gpgPublicKey | string | `"pubkey\n"` |  |
 | healthcheckUrl | string | `"http://healthchecks.io/1234"` |  |
+| imagePullPolicy | string | `"Always"` |  |
 | imageTag | string | `"v0.0.1"` |  |
 | imap.host | string | `"imap.mail.org"` |  |
 | imap.password | string | `"baz"` |  |
 | imap.username | string | `"bob"` |  |
+| networkPolicy.cronjob.egress[0] | object | `{}` |  |
+| networkPolicy.cronjob.ingress | list | `[]` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.selenium.egress[0] | object | `{}` |  |
+| networkPolicy.selenium.ingress[0].from[0].podSelector.matchLabels.app | string | `"{{ .Release.Name }}"` |  |
+| networkPolicy.selenium.ingress[0].ports[0].port | int | `4444` |  |
+| networkPolicy.selenium.ingress[0].ports[0].protocol | string | `"TCP"` |  |
 | notion.otpSecret | string | `"oof"` |  |
 | notion.password | string | `"baz"` |  |
 | notion.username | string | `"bob"` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"2Gi"` |  |
+| resources.limits.memory | string | `"1Gi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"256Mi"` |  |
 | s3.accessKey | string | `"foo"` |  |
 | s3.bucket | string | `"da-bucket"` |  |
 | s3.host | string | `"http://s3host"` |  |
 | s3.secretKey | string | `"bar"` |  |
+| selenium.resources.limits.cpu | string | `"1"` |  |
+| selenium.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| selenium.resources.limits.memory | string | `"2Gi"` |  |
+| selenium.resources.requests.cpu | string | `"200m"` |  |
+| selenium.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| selenium.resources.requests.memory | string | `"512Mi"` |  |
+| seleniumImagePullPolicy | string | `"Always"` |  |
 | seleniumImageTag | string | `"latest"` |  |
+| startingDeadlineSeconds | int | `600` |  |
+| triggerSchedule | string | `"0 22 * * *"` |  |
 | workspaces | string | `"test1,test2"` |  |
 
 ----------------------------------------------

@@ -3,6 +3,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-bookstack-mariadb
+  annotations:
+    # linuxserver/mariadb starts as root via s6-overlay so it can chown the
+    # /config volume and then drops privileges to the configured PUID/PGID
+    # (default 1000/1000 — both below kube-score's 10000 threshold). The image
+    # cannot be reconfigured to run as a high UID without rebuilding upstream.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: 1
   strategy:
@@ -18,6 +24,7 @@ spec:
       containers:
         - name: mariadb
           image: {{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}
+          imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
           env:
             - name: PUID
               value: {{ .Values.mariadb.puid | quote }}
@@ -50,7 +57,28 @@ spec:
                   key: MYSQL_ROOT_PASSWORD
                   {{- end }}
           ports:
-            - containerPort: 3306
+            - name: mysql
+              containerPort: 3306
+          readinessProbe:
+            tcpSocket:
+              port: mysql
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  mariadb-admin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.mariadb.resources | nindent 12 }}
           volumeMounts:
             - name: mariadb-storage
               mountPath: /config

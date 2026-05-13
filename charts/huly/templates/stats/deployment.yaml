@@ -5,6 +5,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: stats
+  annotations:
+    # Upstream hardcoreeng/stats image bakes in a low uid.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: {{ .Values.stats.replicas }}
   selector:
@@ -22,6 +25,7 @@ spec:
       containers:
         - name: stats
           image: {{ .Values.hulyRegistry }}/stats:{{ .Values.hulyVersion }}
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 4900
@@ -29,16 +33,12 @@ spec:
             - name: PORT
               value: "4900"
             {{- include "huly.envSecret" (dict "name" "SERVER_SECRET" "key" "SERVER_SECRET" "root" .) | nindent 12 }}
+          # Single readinessProbe; identical TCP livenessProbe omitted.
           readinessProbe:
             tcpSocket:
               port: 4900
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 4900
-            initialDelaySeconds: 15
-            periodSeconds: 30
           {{- with .Values.stats.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

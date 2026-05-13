@@ -1,6 +1,14 @@
+# Backup once per day at midnight
+backupSchedule: "0 0 * * *"
+
+# Cancel scheduled jobs that miss their start window by this many seconds
+startingDeadlineSeconds: 600
+
 imageTag: v0.0.1
+imagePullPolicy: Always
 seleniumImageTag: latest
-healthcheckUrl: http://healthchecks.io/1234 
+seleniumImagePullPolicy: Always
+healthcheckUrl: http://healthchecks.io/1234
 hackmdHost: hackmd.org
 s3:
   host: http://s3host
@@ -21,4 +29,50 @@ cookie:
 gpgPublicKey: |
   pubkey
 
+# Resources for the hackmd-backup CronJob container
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 2Gi
 
+# Resources for the selenium-webdriver Deployment
+selenium:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+      ephemeral-storage: 1Gi
+
+networkPolicy:
+  enabled: true
+  # CronJob makes outbound calls to HackMD, S3, GitHub, and the in-cluster
+  # selenium webdriver. The webdriver Deployment accepts ingress from the
+  # backup CronJob on port 4444.
+  cronjob:
+    ingress: []
+    egress:
+      - {}
+  selenium:
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: '{{ .Release.Name }}'
+        ports:
+          - port: 4444
+            protocol: TCP
+    egress:
+      - {}
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

@@ -1,6 +1,6 @@
 # safe-infrastructure
 
-![Version: 0.1.19](https://img.shields.io/badge/Version-0.1.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.1.20](https://img.shields.io/badge/Version-0.1.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for Safe Infrastructure services
 
@@ -38,6 +38,7 @@ A Helm chart for Safe Infrastructure services
 | cfg.env.pythonDontWriteBytecode | string | `"true"` |  |
 | cfg.env.rootLogLevel | string | `"DEBUG"` |  |
 | cfg.image | string | `"safeglobal/safe-config-service"` |  |
+| cfg.pullPolicy | string | `"Always"` |  |
 | cfg.replicas | int | `1` |  |
 | cgw.env.emailApiApplicationCode | string | `""` |  |
 | cgw.env.emailApiFromEmail | string | `"changeme@example.com"` |  |
@@ -66,6 +67,7 @@ A Helm chart for Safe Infrastructure services
 | cgw.env.stakingApiKey | string | `""` |  |
 | cgw.env.stakingTestnetApiKey | string | `""` |  |
 | cgw.image | string | `"safeglobal/safe-client-gateway-nest"` |  |
+| cgw.pullPolicy | string | `"Always"` |  |
 | cgw.replicas | int | `1` |  |
 | credentials.cfg.secretKey | string | `"insecure_key_for_dev"` |  |
 | credentials.cgw.authToken | string | `"your_privileged_endpoints_token"` |  |
@@ -81,7 +83,9 @@ A Helm chart for Safe Infrastructure services
 | credentials.postgres.database | string | `"postgres"` |  |
 | credentials.postgres.password | string | `"postgres"` |  |
 | credentials.postgres.user | string | `"postgres"` |  |
-| databases.postgres.image | string | `"postgres:14-alpine"` |  |
+| databases.postgres.image.pullPolicy | string | `"Always"` |  |
+| databases.postgres.image.repository | string | `"postgres"` |  |
+| databases.postgres.image.tag | string | `"14-alpine"` |  |
 | databases.postgres.maxConnections | int | `250` |  |
 | events.env.amqpExchange | string | `"safe-transaction-service-events"` |  |
 | events.env.amqpQueue | string | `"safe-events-service"` |  |
@@ -89,6 +93,7 @@ A Helm chart for Safe Infrastructure services
 | events.env.urlBasePath | string | `"/events"` |  |
 | events.env.webhooksCacheTtl | string | `"300000"` |  |
 | events.image | string | `"safeglobal/safe-events-service"` |  |
+| events.pullPolicy | string | `"Always"` |  |
 | events.replicas | int | `1` |  |
 | global.reverseProxyPort | int | `8000` |  |
 | global.rpcNodeUrl | string | `""` |  |
@@ -103,16 +108,38 @@ A Helm chart for Safe Infrastructure services
 | images.eventsVersion | string | `"latest"` |  |
 | images.txsVersion | string | `"latest"` |  |
 | images.uiVersion | string | `"latest"` |  |
-| nginx.image | string | `"nginx:alpine"` |  |
+| initResources.limits.cpu | string | `"200m"` |  |
+| initResources.limits.ephemeral-storage | string | `"256Mi"` |  |
+| initResources.limits.memory | string | `"256Mi"` |  |
+| initResources.requests.cpu | string | `"50m"` |  |
+| initResources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| initResources.requests.memory | string | `"64Mi"` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0] | object | `{}` |  |
+| nginx.image.pullPolicy | string | `"Always"` |  |
+| nginx.image.repository | string | `"nginx"` |  |
+| nginx.image.tag | string | `"1.27-alpine"` |  |
 | nginx.replicas | int | `1` |  |
 | nodeSelector | object | `{}` |  |
 | persistence.accessMode | string | `"ReadWriteOnce"` |  |
 | persistence.enabled | bool | `true` |  |
 | persistence.size | string | `"10Gi"` |  |
 | persistence.storageClass | string | `""` |  |
-| rabbitmq.image | string | `"rabbitmq:alpine"` |  |
-| redis.image | string | `"redis:alpine"` |  |
-| resources | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
+| rabbitmq.image.pullPolicy | string | `"Always"` |  |
+| rabbitmq.image.repository | string | `"rabbitmq"` |  |
+| rabbitmq.image.tag | string | `"3.13-alpine"` |  |
+| redis.image.pullPolicy | string | `"Always"` |  |
+| redis.image.repository | string | `"redis"` |  |
+| redis.image.tag | string | `"7-alpine"` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"2Gi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"512Mi"` |  |
 | services.cfgWeb.port | int | `8001` |  |
 | services.cfgWeb.type | string | `"ClusterIP"` |  |
 | services.cgwWeb.port | int | `3000` |  |
@@ -125,6 +152,15 @@ A Helm chart for Safe Infrastructure services
 | services.txsWeb.type | string | `"ClusterIP"` |  |
 | services.ui.port | int | `8080` |  |
 | services.ui.type | string | `"ClusterIP"` |  |
+| staticNginx.image.pullPolicy | string | `"Always"` |  |
+| staticNginx.image.repository | string | `"nginx"` |  |
+| staticNginx.image.tag | string | `"1.27-alpine"` |  |
+| staticNginxResources.limits.cpu | string | `"200m"` |  |
+| staticNginxResources.limits.ephemeral-storage | string | `"256Mi"` |  |
+| staticNginxResources.limits.memory | string | `"128Mi"` |  |
+| staticNginxResources.requests.cpu | string | `"50m"` |  |
+| staticNginxResources.requests.ephemeral-storage | string | `"64Mi"` |  |
+| staticNginxResources.requests.memory | string | `"64Mi"` |  |
 | tolerations | list | `[]` |  |
 | txs.env.csrfTrustedOrigins | string | `"http://localhost:8000"` |  |
 | txs.env.debug | string | `"0"` |  |
@@ -136,6 +172,7 @@ A Helm chart for Safe Infrastructure services
 | txs.env.forceScriptName | string | `"/txs/"` |  |
 | txs.env.pythonPath | string | `"/app/"` |  |
 | txs.image | string | `"safeglobal/safe-transaction-service"` |  |
+| txs.pullPolicy | string | `"Always"` |  |
 | txs.replicas | int | `1` |  |
 | ui.env.nextPublicBeamerId | string | `""` |  |
 | ui.env.nextPublicCypressMnemonic | string | `""` |  |
@@ -152,6 +189,7 @@ A Helm chart for Safe Infrastructure services
 | ui.env.nextPublicTenderlySimulateEndpointUrl | string | `""` |  |
 | ui.env.nextPublicWcBridge | string | `""` |  |
 | ui.image | string | `"safeglobal/safe-wallet-web"` |  |
+| ui.pullPolicy | string | `"Always"` |  |
 | ui.replicas | int | `1` |  |
 
 ----------------------------------------------

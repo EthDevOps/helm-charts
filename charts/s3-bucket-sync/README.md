@@ -1,6 +1,6 @@
 # s3-bucket-sync
 
-![Version: 0.0.23](https://img.shields.io/badge/Version-0.0.23-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.11.0](https://img.shields.io/badge/AppVersion-v0.11.0-informational?style=flat-square)
+![Version: 0.0.24](https://img.shields.io/badge/Version-0.0.24-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.11.0](https://img.shields.io/badge/AppVersion-v0.11.0-informational?style=flat-square)
 
 Keeps 2 s3 buckets in sync
 
@@ -20,6 +20,12 @@ Keeps 2 s3 buckets in sync
 |-----|------|---------|-------------|
 | backupSchedule | string | `"30 * * * *"` |  |
 | bandwidthLimit | string | `"100M"` |  |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
+| cronjob.failedJobsHistoryLimit | int | `1` |  |
+| cronjob.startingDeadlineSeconds | int | `300` |  |
+| cronjob.successfulJobsHistoryLimit | int | `3` |  |
 | customConfig | string | `"test.config"` |  |
 | destinationAccessKey | string | `"my-access-key"` |  |
 | destinationBucket | string | `"my-bucket"` |  |
@@ -35,8 +41,19 @@ Keeps 2 s3 buckets in sync
 | filters.enabled | bool | `false` |  |
 | filters.rules | string | `""` |  |
 | healthcheckUrl | string | `"http://localhost"` |  |
+| imagePullPolicy | string | `"Always"` |  |
 | imageTag | string | `"v0.12.0"` |  |
 | minioExtraArgs | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress | list | `[]` |  |
+| podSecurityContext | object | `{}` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"2Gi"` |  |
+| resources.limits.memory | string | `"1Gi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"256Mi"` |  |
 | sourceAccessKey | string | `"my-access-key"` |  |
 | sourceBucket | string | `"my-bucket"` |  |
 | sourceEndpoint | string | `"http://localhost:9000"` |  |

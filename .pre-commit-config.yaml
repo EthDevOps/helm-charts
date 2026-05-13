@@ -11,3 +11,24 @@ repos:
         files: (README\.md\.gotmpl|(Chart|requirements|values)\.yaml)$
         language: docker_image
         require_serial: true
+
+      - id: helm-lint
+        name: Helm Lint
+        description: Runs `helm lint` against every chart whose files changed.
+        entry: scripts/helm-lint-charts.sh --from-files
+        language: system
+        files: ^charts/[^/]+/.*\.(ya?ml|tpl)$
+        pass_filenames: true
+        require_serial: true
+
+      - id: kube-score
+        name: kube-score (PSS / best practices)
+        description: >
+          Renders changed charts with `helm template` and pipes the output to
+          `kube-score score` to catch Pod Security Standards and best-practice
+          violations before commit.
+        entry: scripts/kube-score-charts.sh --from-files
+        language: system
+        files: ^charts/[^/]+/.*\.(ya?ml|tpl)$
+        pass_filenames: true
+        require_serial: true

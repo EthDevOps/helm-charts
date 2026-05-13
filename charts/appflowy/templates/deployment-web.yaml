@@ -2,6 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-web
+  annotations:
+    # AppFlowy web frontend ships only :latest today and runs as an nginx
+    # user baked into the image; silence kube-score checks we can't
+    # satisfy without rebuilding the upstream image.
+    # TODO: pin a specific version once upstream publishes tagged releases.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.web.replicaCount }}
   selector:
@@ -17,7 +23,8 @@ spec:
           image: {{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}
           imagePullPolicy: {{ .Values.web.image.pullPolicy }}
           ports:
-            - containerPort: 80
+            - name: http
+              containerPort: 80
           env:
             - name: APPFLOWY_BASE_URL
               value: {{ include "appflowy.baseUrl" . | quote }}
@@ -25,6 +32,21 @@ spec:
               value: "{{ include "appflowy.baseUrl" . }}/gotrue"
             - name: APPFLOWY_WS_BASE_URL
               value: {{ include "appflowy.wsUrl" . | quote }}
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           {{- with .Values.web.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

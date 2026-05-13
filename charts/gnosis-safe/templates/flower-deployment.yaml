@@ -6,6 +6,9 @@ metadata:
   labels:
     {{- include "gnosis-safe.labels" . | nindent 4 }}
     app.kubernetes.io/component: flower
+  annotations:
+    # Uses the safe-transaction-service image (uid/gid 999, `main` tag).
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   replicas: 1
   selector:
@@ -32,4 +35,19 @@ spec:
                 name: {{ include "gnosis-safe.fullname" . }}-config
             - secretRef:
                 name: {{ include "gnosis-safe.fullname" . }}-secret
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.workerResources | nindent 12 }}
 {{- end }}

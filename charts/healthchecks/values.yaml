@@ -2,14 +2,39 @@ db:
   name: mydatabase
   user: dbuser
   password: mypassword
-  resources: {}
+  image:
+    repository: docker.ethquokkaops.io/dh/postgres
+    tag: "16"
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
+  persistence:
+    size: 8Gi
 web:
-  resources: {}
+  image:
+    repository: docker.ethquokkaops.io/dh/healthchecks/healthchecks
+    pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
 imageTag: v3.0
 useExistingSecret: false
 baseDomain: localhost
-secretKey: 1234567890abc 
-registrationEnabled: "True" 
+secretKey: 1234567890abc
+registrationEnabled: "True"
 discord:
   clientId: 123
   clientSecret: 123
@@ -20,7 +45,30 @@ email:
   sender: bob@example.com
 siteName: EthChecks
 debugEnabled: "False"
+service:
+  type: ClusterIP
+  annotations: {}
 ingress:
+  enabled: true
   ingressClassName: nginx
   host: healthchecks.example.com
   exposeToTeleport: true
+  annotations: {}
+  labels: {}
+
+# NetworkPolicy guarding ingress/egress for healthchecks web and db pods.
+# Defaults are permissive: anyone in the cluster can hit the web pod on 8000
+# and db on 5432. Egress unrestricted so the app can reach SMTP, Discord, etc.
+# Tighten per environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+# PodDisruptionBudget. maxUnavailable: 1 keeps single-replica workloads
+# drainable while still signalling voluntary disruption tolerance.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1

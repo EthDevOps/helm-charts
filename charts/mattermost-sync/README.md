@@ -1,6 +1,6 @@
 # mattermost-sync
 
-![Version: 1.0.8](https://img.shields.io/badge/Version-1.0.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0](https://img.shields.io/badge/AppVersion-v1.0.0-informational?style=flat-square)
+![Version: 1.0.9](https://img.shields.io/badge/Version-1.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0](https://img.shields.io/badge/AppVersion-v1.0.0-informational?style=flat-square)
 
 Sync groups and users from Google Workspace to Mattermost
 
@@ -34,7 +34,7 @@ Sync groups and users from Google Workspace to Mattermost
 | google.existingSecretKey | string | `"service-account-key.json"` |  |
 | google.parentGroup | string | `"mattermost-teams@your-domain.com"` |  |
 | google.serviceAccountKey | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"mattermost-sync"` |  |
 | image.tag | string | `"v0.1.0"` |  |
 | imagePullSecrets | list | `[]` |  |
@@ -44,6 +44,9 @@ Sync groups and users from Google Workspace to Mattermost
 | mattermost.token | string | `""` |  |
 | mattermost.url | string | `""` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress | list | `[]` |  |
 | nodeSelector | object | `{}` |  |
 | persistence.accessMode | string | `"ReadWriteOnce"` |  |
 | persistence.annotations | object | `{}` |  |
@@ -53,20 +56,23 @@ Sync groups and users from Google Workspace to Mattermost
 | persistence.storageClassName | string | `""` |  |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
-| podSecurityContext.fsGroup | int | `1000` |  |
-| podSecurityContext.runAsGroup | int | `1000` |  |
+| podSecurityContext.fsGroup | int | `10001` |  |
+| podSecurityContext.runAsGroup | int | `10001` |  |
 | podSecurityContext.runAsNonRoot | bool | `true` |  |
-| podSecurityContext.runAsUser | int | `1000` |  |
+| podSecurityContext.runAsUser | int | `10001` |  |
 | resources.limits.cpu | string | `"500m"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | resources.limits.memory | string | `"512Mi"` |  |
 | resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | resources.requests.memory | string | `"128Mi"` |  |
 | restartPolicy | string | `"OnFailure"` |  |
 | securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | securityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| securityContext.runAsGroup | int | `10001` |  |
 | securityContext.runAsNonRoot | bool | `true` |  |
-| securityContext.runAsUser | int | `1000` |  |
+| securityContext.runAsUser | int | `10001` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.automount | bool | `true` |  |
 | serviceAccount.create | bool | `true` |  |

@@ -1,6 +1,6 @@
 # quokka-service-registry
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for QuokkaServiceRegistry - A comprehensive service catalog management application
 
@@ -30,18 +30,23 @@ A Helm chart for QuokkaServiceRegistry - A comprehensive service catalog managem
 | config.logging.logLevel.default | string | `"Information"` |  |
 | config.logging.logLevel.microsoftAspNetCore | string | `"Warning"` |  |
 | fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/service-registry"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.enabled | bool | `false` |  |
-| livenessProbe.httpGet.path | string | `"/"` |  |
-| livenessProbe.httpGet.port | string | `"http"` |  |
 | livenessProbe.initialDelaySeconds | int | `30` |  |
 | livenessProbe.periodSeconds | int | `30` |  |
+| livenessProbe.tcpSocket.port | string | `"http"` |  |
 | nameOverride | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `8080` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext.fsGroup | int | `2000` |  |
 | postgresql.auth.database | string | `"quokka_service_registry"` |  |
@@ -50,15 +55,40 @@ A Helm chart for QuokkaServiceRegistry - A comprehensive service catalog managem
 | postgresql.auth.secretKeys.userPasswordKey | string | `"password"` |  |
 | postgresql.auth.username | string | `"quokka"` |  |
 | postgresql.enabled | bool | `true` |  |
+| postgresql.image.pullPolicy | string | `"Always"` |  |
 | postgresql.image.tag | string | `"16-alpine"` |  |
+| postgresql.networkPolicy.allowedPods[0]."app.kubernetes.io/name" | string | `"quokka-service-registry"` |  |
+| postgresql.networkPolicy.enabled | bool | `true` |  |
+| postgresql.podSecurityContext.fsGroup | int | `10001` |  |
 | postgresql.primary.persistence.enabled | bool | `true` |  |
 | postgresql.primary.persistence.size | string | `"8Gi"` |  |
+| postgresql.resources.limits.cpu | string | `"1"` |  |
+| postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| postgresql.resources.limits.memory | string | `"1Gi"` |  |
+| postgresql.resources.requests.cpu | string | `"100m"` |  |
+| postgresql.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| postgresql.resources.requests.memory | string | `"256Mi"` |  |
+| postgresql.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| postgresql.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| postgresql.securityContext.capabilities.drop[1] | string | `"SYS_ADMIN"` |  |
+| postgresql.securityContext.capabilities.drop[2] | string | `"NET_ADMIN"` |  |
+| postgresql.securityContext.capabilities.drop[3] | string | `"SYS_PTRACE"` |  |
+| postgresql.securityContext.readOnlyRootFilesystem | bool | `false` |  |
+| postgresql.securityContext.runAsGroup | int | `10001` |  |
+| postgresql.securityContext.runAsNonRoot | bool | `true` |  |
+| postgresql.securityContext.runAsUser | int | `10001` |  |
+| postgresql.service.clusterIP | string | `"None"` |  |
 | readinessProbe.httpGet.path | string | `"/"` |  |
 | readinessProbe.httpGet.port | string | `"http"` |  |
 | readinessProbe.initialDelaySeconds | int | `5` |  |
 | readinessProbe.periodSeconds | int | `10` |  |
 | replicaCount | int | `1` |  |
-| resources | object | `{}` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"1Gi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"256Mi"` |  |
 | secrets.auth.existingSecret | string | `""` |  |
 | secrets.auth.secretKeys.authorizedUsers | string | `"authorized-users"` |  |
 | secrets.auth.secretKeys.googleClientId | string | `"google-client-id"` |  |

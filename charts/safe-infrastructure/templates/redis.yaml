@@ -7,6 +7,10 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" $ | nindent 4 }}
     app.kubernetes.io/component: {{ $redis }}-redis
+  annotations:
+    # The official redis image runs as uid/gid 999 and cannot be raised above
+    # 10000 without rebuilding the image.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: 1
   selector:
@@ -21,10 +25,12 @@ spec:
     spec:
       containers:
       - name: redis
-        image: {{ $.Values.redis.image }}
+        image: "{{ $.Values.redis.image.repository }}:{{ $.Values.redis.image.tag }}"
+        imagePullPolicy: {{ $.Values.redis.image.pullPolicy }}
         ports:
-        - containerPort: 6379
-        livenessProbe:
+        - name: redis
+          containerPort: 6379
+        readinessProbe:
           exec:
             command:
             - redis-cli
@@ -32,11 +38,9 @@ spec:
           initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
           periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
           timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
-        readinessProbe:
-          exec:
-            command:
-            - redis-cli
-            - ping
+        livenessProbe:
+          tcpSocket:
+            port: redis
           initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
           periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
           timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}

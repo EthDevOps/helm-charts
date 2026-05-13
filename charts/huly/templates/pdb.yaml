@@ -1,0 +1,38 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+{{- /*
+PodDisruptionBudget per Huly Deployment. Generated for every component
+that's actually rendered (matching the conditional gates on each
+deployment.yaml) so the budgets exactly match the live workloads.
+
+maxUnavailable: 1 keeps single-replica deployments drainable while still
+honouring a voluntary disruption budget at higher replica counts.
+*/ -}}
+{{- $components := list "account" "collaborator" "front" "fulltext" "rekoni" "stats" "transactor" "workspace" -}}
+{{- if .Values.kvs.enabled }}{{- $components = append $components "kvs" }}{{- end -}}
+{{- if .Values.cockroach.enabled }}{{- $components = append $components "cockroach" }}{{- end -}}
+{{- if .Values.redpanda.enabled }}{{- $components = append $components "redpanda" }}{{- end -}}
+{{- if .Values.elastic.enabled }}{{- $components = append $components "elastic" }}{{- end -}}
+{{- if eq (include "huly.minioEnabled" .) "true" }}{{- $components = append $components "minio" }}{{- end -}}
+{{- if and .Values.aibot.enabled .Values.mongodb.enabled }}{{- $components = append $components "mongodb" }}{{- end -}}
+{{- if .Values.aibot.enabled }}{{- $components = append $components "aibot" }}{{- end -}}
+{{- if .Values.githubIntegration.enabled }}{{- $components = append $components "github" }}{{- end -}}
+{{- range $component := $components }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $component }}
+  labels:
+    {{- include "huly.labels" $ | nindent 4 }}
+    app: {{ $component }}
+spec:
+  {{- if $.Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ $.Values.podDisruptionBudget.minAvailable }}
+  {{- else }}
+  maxUnavailable: {{ $.Values.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ $component }}
+{{- end }}
+{{- end }}

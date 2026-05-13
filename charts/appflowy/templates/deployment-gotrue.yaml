@@ -2,6 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-gotrue
+  annotations:
+    # AppFlowy's fork of GoTrue ships only :latest and bakes in a low uid;
+    # silence kube-score checks we can't satisfy without rebuilding the
+    # upstream image.
+    # TODO: pin a specific version once upstream publishes tagged releases.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.gotrue.replicaCount }}
   selector:
@@ -17,7 +23,8 @@ spec:
           image: {{ .Values.gotrue.image.repository }}:{{ .Values.gotrue.image.tag }}
           imagePullPolicy: {{ .Values.gotrue.image.pullPolicy }}
           ports:
-            - containerPort: 9999
+            - name: http
+              containerPort: 9999
           env:
             - name: GOTRUE_DB_DRIVER
               value: "postgres"
@@ -137,15 +144,21 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          # Probes split by handler: liveness uses a TCP socket check so a
+          # slow /health response doesn't kill the pod; readiness uses
+          # HTTP GET on the same path to gate traffic.
           livenessProbe:
-            httpGet:
-              path: /health
-              port: 9999
+            tcpSocket:
+              port: http
             initialDelaySeconds: 40
-            periodSeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           readinessProbe:
             httpGet:
               path: /health
-              port: 9999
+              port: http
             initialDelaySeconds: 10
             periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 3

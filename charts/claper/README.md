@@ -1,6 +1,6 @@
 # claper
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 OpenSource interactive presentation tool
 
@@ -14,7 +14,7 @@ OpenSource interactive presentation tool
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://ethdevops.github.io/helm-charts | postgresql | 1.1.3 |
+| https://ethdevops.github.io/helm-charts | postgresql | 1.1.6 |
 
 ## Values
 
@@ -23,12 +23,21 @@ OpenSource interactive presentation tool
 | accountCreation.emailConfirmation | bool | `false` |  |
 | accountCreation.enabled | bool | `true` |  |
 | appDomain | string | `"claper.example.com"` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"ghcr.io/claperco/claper"` |  |
 | image.tag | string | `"latest"` |  |
 | ingress.annotations | object | `{}` |  |
+| ingress.className | string | `""` |  |
 | ingress.enabled | bool | `true` |  |
 | ingress.tls.secretName | string | `"claper-tls"` |  |
+| livenessProbe.failureThreshold | int | `6` |  |
+| livenessProbe.initialDelaySeconds | int | `30` |  |
+| livenessProbe.periodSeconds | int | `20` |  |
+| livenessProbe.tcpSocket.port | int | `4000` |  |
+| livenessProbe.timeoutSeconds | int | `5` |  |
 | mail.enabled | bool | `false` |  |
 | mail.existingSecret.name | string | `""` |  |
 | mail.existingSecret.passwordKey | string | `"SMTP_PASSWORD"` |  |
@@ -38,6 +47,10 @@ OpenSource interactive presentation tool
 | mail.smtpRelay | string | `""` |  |
 | mail.transport | string | `"smtp"` |  |
 | maxFileSizeMb | string | `""` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `4000` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
 | oidc.allowUnlinkExternalProvider | bool | `false` |  |
 | oidc.autoRedirectLogin | bool | `false` |  |
 | oidc.clientId | string | `""` |  |
@@ -52,14 +65,38 @@ OpenSource interactive presentation tool
 | oidc.providerName | string | `""` |  |
 | oidc.scopes | string | `"openid email profile"` |  |
 | persistence.size | string | `"1Gi"` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
+| podSecurityContext | object | `{}` |  |
 | postgresql.auth.database | string | `"claper"` |  |
 | postgresql.auth.password | string | `"claper"` |  |
 | postgresql.auth.username | string | `"claper"` |  |
 | postgresql.enabled | bool | `true` |  |
+| postgresql.image.pullPolicy | string | `"Always"` |  |
 | postgresql.image.tag | string | `"15-alpine"` |  |
+| postgresql.networkPolicy.enabled | bool | `true` |  |
+| postgresql.resources.limits.cpu | string | `"1"` |  |
+| postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| postgresql.resources.limits.memory | string | `"1Gi"` |  |
+| postgresql.resources.requests.cpu | string | `"100m"` |  |
+| postgresql.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| postgresql.resources.requests.memory | string | `"256Mi"` |  |
+| postgresql.workloadAnnotations.kube-score/ignore | string | `"container-security-context-user-group-id"` |  |
 | presentationStorage.dir | string | `"/app/uploads"` |  |
 | presentationStorage.type | string | `"local"` |  |
+| readinessProbe.failureThreshold | int | `6` |  |
+| readinessProbe.httpGet.path | string | `"/"` |  |
+| readinessProbe.httpGet.port | int | `4000` |  |
+| readinessProbe.initialDelaySeconds | int | `15` |  |
+| readinessProbe.periodSeconds | int | `10` |  |
+| readinessProbe.timeoutSeconds | int | `5` |  |
 | replicaCount | int | `1` |  |
+| resources.limits.cpu | string | `"1"` |  |
+| resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| resources.limits.memory | string | `"2Gi"` |  |
+| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.ephemeral-storage | string | `"256Mi"` |  |
+| resources.requests.memory | string | `"512Mi"` |  |
 | secretKeyBase | string | `""` |  |
 | service.annotations | object | `{}` |  |
 | service.nodePort | string | `""` |  |

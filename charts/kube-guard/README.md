@@ -1,6 +1,6 @@
 # kube-guard
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Kubernetes admission controller that monitors shell access, port forwarding, PVC mounts, privileged pods, host access, RBAC changes, and namespace deletions
 
@@ -46,16 +46,25 @@ A Kubernetes admission controller that monitors shell access, port forwarding, P
 | deployment.readinessProbe.periodSeconds | int | `5` |  |
 | deployment.replicaCount | int | `2` |  |
 | deployment.resources.limits.cpu | string | `"500m"` |  |
+| deployment.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | deployment.resources.limits.memory | string | `"256Mi"` |  |
 | deployment.resources.requests.cpu | string | `"100m"` |  |
+| deployment.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | deployment.resources.requests.memory | string | `"128Mi"` |  |
 | deployment.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | deployment.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| deployment.securityContext.runAsGroup | int | `10001` |  |
 | deployment.securityContext.runAsNonRoot | bool | `true` |  |
-| deployment.securityContext.runAsUser | int | `1000` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| deployment.securityContext.runAsUser | int | `10001` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/kube-guard"` |  |
 | image.tag | string | `"latest"` |  |
+| networkPolicy.egress[0] | object | `{}` |  |
+| networkPolicy.enabled | bool | `true` |  |
+| networkPolicy.ingress[0].ports[0].port | int | `8443` |  |
+| networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| podDisruptionBudget.enabled | bool | `true` |  |
+| podDisruptionBudget.maxUnavailable | int | `1` |  |
 | rbac.create | bool | `true` |  |
 | service.name | string | `"kube-guard-webhook"` |  |
 | service.port | int | `443` |  |

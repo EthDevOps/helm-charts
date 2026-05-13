@@ -5,6 +5,11 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" . | nindent 4 }}
     app.kubernetes.io/component: txs-web
+  annotations:
+    # TODO: The Safe transaction-service image is pulled as `:latest` by
+    # default. Operators should pin `images.txsVersion` in their overrides.
+    # The check is suppressed until the chart can default to a fixed tag.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.txs.replicas }}
   selector:
@@ -20,15 +25,20 @@ spec:
       initContainers:
       - name: copy-staticfiles
         image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
+        imagePullPolicy: {{ .Values.txs.pullPolicy }}
         command: ["sh", "-c", "cp -r /app/staticfiles/* /shared-static/"]
         volumeMounts:
         - name: staticfiles-volume
           mountPath: /shared-static
+        resources:
+          {{- toYaml .Values.initResources | nindent 10 }}
       containers:
       - name: txs-web
         image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
+        imagePullPolicy: {{ .Values.txs.pullPolicy }}
         ports:
-        - containerPort: 8888
+        - name: http
+          containerPort: 8888
         env:
         - name: DISABLE_CREATION_MULTISIG_TRANSACTIONS_WITH_DELEGATE_CALL_OPERATION
           value: "false"
@@ -86,12 +96,27 @@ spec:
         volumeMounts:
         - name: nginx-shared-txs
           mountPath: /nginx
+        readinessProbe:
+          httpGet:
+            path: /txs/check/
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       - name: nginx-staticfiles
-        image: nginx:alpine
+        image: "{{ .Values.staticNginx.image.repository }}:{{ .Values.staticNginx.image.tag }}"
+        imagePullPolicy: {{ .Values.staticNginx.image.pullPolicy }}
         ports:
-        - containerPort: 80
+        - name: static
+          containerPort: 80
         volumeMounts:
         - name: staticfiles-volume
           mountPath: /usr/share/nginx/html
@@ -99,6 +124,8 @@ spec:
         - name: nginx-static-config
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
+        resources:
+          {{- toYaml .Values.staticNginxResources | nindent 10 }}
       volumes:
       - name: nginx-shared-txs
         emptyDir: {}
@@ -117,6 +144,11 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" $ | nindent 4 }}
     app.kubernetes.io/component: txs-worker-{{ $worker }}
+  annotations:
+    # TODO: pin `images.txsVersion` and raise the worker image uid above
+    # 10000 (currently runs as root). Suppressed until the upstream image
+    # supports it.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: 1
   selector:
@@ -132,6 +164,7 @@ spec:
       containers:
       - name: txs-worker-{{ $worker }}
         image: {{ $.Values.txs.image }}:{{ $.Values.images.txsVersion }}
+        imagePullPolicy: {{ $.Values.txs.pullPolicy }}
         env:
         - name: PYTHONPATH
           value: {{ $.Values.txs.env.pythonPath | quote }}
@@ -176,12 +209,21 @@ spec:
           value: "notifications,webhooks"
         {{- end }}
         command: ["docker/web/celery/worker/run.sh"]
-        livenessProbe:
+        readinessProbe:
           exec:
             command:
             - celery
             - inspect
             - ping
+          initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "pgrep -f celery || exit 1"
           initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
           periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
           timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
@@ -196,6 +238,10 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" . | nindent 4 }}
     app.kubernetes.io/component: txs-scheduler
+  annotations:
+    # TODO: pin `images.txsVersion` and raise the scheduler image uid above
+    # 10000. Suppressed until upstream image supports it.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: 1
   selector:
@@ -211,6 +257,7 @@ spec:
       containers:
       - name: txs-scheduler
         image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
+        imagePullPolicy: {{ .Values.txs.pullPolicy }}
         env:
         - name: PYTHONPATH
           value: {{ .Values.txs.env.pythonPath | quote }}
@@ -261,6 +308,24 @@ spec:
         - name: ETHEREUM_NODE_URL
           value: {{ .Values.global.rpcNodeUrl | quote }}
         command: ["docker/web/celery/scheduler/run.sh"]
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "pgrep -f 'celery.*beat' || exit 1"
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - -f
+            - celery
+          initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthCheck.periodSeconds | mul 2 }}
+          timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
 ---
@@ -278,11 +343,11 @@ data:
       default_type application/octet-stream;
       sendfile on;
       keepalive_timeout 65;
-      
+
       server {
         listen 80;
         root /usr/share/nginx/html;
-        
+
         location / {
           try_files $uri $uri/ =404;
         }

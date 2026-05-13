@@ -5,6 +5,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: transactor
+  annotations:
+    # Upstream hardcoreeng/transactor image bakes in a low uid.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: {{ .Values.transactor.replicas }}
   selector:
@@ -25,6 +28,7 @@ spec:
       containers:
         - name: transactor
           image: {{ .Values.hulyRegistry }}/transactor:{{ .Values.hulyVersion }}
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3333
@@ -45,16 +49,13 @@ spec:
             {{- end }}
             - name: SERVER_CURSOR_MAXTIMEMS
               value: "30000"
+          # Single readinessProbe; identical TCP livenessProbe omitted to keep
+          # kube-score pod-probes-identical clean and avoid spurious restarts.
           readinessProbe:
             tcpSocket:
               port: 3333
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 3333
-            initialDelaySeconds: 30
-            periodSeconds: 30
           {{- with .Values.transactor.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

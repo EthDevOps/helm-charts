@@ -5,7 +5,14 @@ metadata:
   labels:
     app: {{ include "wazuh.fullname" . }}-indexer
   annotations:
-    {{- toYaml .Values.indexer.annotations | nindent 4 }}
+    # The wazuh-indexer image (OpenSearch) runs as uid 1000 (baked in); the
+    # init container `increase-the-vm-max-map-count` must be privileged to call
+    # sysctl on vm.max_map_count. These cannot be changed without rebuilding
+    # the upstream image.
+    kube-score/ignore: container-security-context-user-group-id,container-security-context-privileged
+    {{- with .Values.indexer.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   serviceName: {{ include "wazuh.fullname" . }}-indexer-nodes
   replicas: {{ .Values.indexer.replicas }}
@@ -33,7 +40,8 @@ spec:
         name: indexer-conf
       initContainers:
         - name: volume-mount-hack
-          image: busybox
+          image: {{ .Values.utilityImage.busybox | quote }}
+          imagePullPolicy: {{ .Values.utilityImage.pullPolicy }}
           command:
           - sh
           - -c
@@ -44,7 +52,8 @@ spec:
             - mountPath: /var/lib/wazuh-indexer
               name: wazuh-indexer
         - name: increase-the-vm-max-map-count
-          image: busybox
+          image: {{ .Values.utilityImage.busybox | quote }}
+          imagePullPolicy: {{ .Values.utilityImage.pullPolicy }}
           command:
             - sysctl
             - -w
@@ -56,6 +65,21 @@ spec:
       containers:
         - name: wazuh-indexer
           image: "{{ .Values.indexer.images.repository }}:{{ .Values.indexer.images.tag }}"
+          imagePullPolicy: {{ .Values.indexer.images.pullPolicy }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.indexer.service.httpPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.indexer.service.nodes }}
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
           env:
             - name: OPENSEARCH_JAVA_OPTS
               value: {{ .Values.indexer.env.OPENSEARCH_JAVA_OPTS | quote }}

@@ -2,29 +2,62 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-deployment
+  labels:
+    {{- include "cubebackup.labels" . | nindent 4 }}
+  annotations:
+    # CubeBackup's official image runs as root (uid 0) and writes to
+    # /opt/cubebackup at startup; we can't drop privileges without rebuilding.
+    # Upstream only publishes `:latest` today — pin once a versioned tag exists.
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      {{- include "cubebackup.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        {{- include "cubebackup.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
         - name: init-config
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c", "cp -Rnv /opt/cubebackup/etc/* /tmp/"]
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.initContainer.resources | nindent 12 }}
           volumeMounts:
-          - name: vol-config
-            mountPath: /tmp
+            - name: vol-config
+              mountPath: /tmp
       containers:
         - name: cubebackup
-          image: docker.ethquokkaops.io/dh/cubebackup/cubebackup
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: 80
               name: http
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: vol-config
               mountPath: /opt/cubebackup/etc
@@ -41,13 +74,13 @@ spec:
         kubernetes.io/os: linux
       volumes:
         - name: vol-config
-          persistentVolumeClaim: 
+          persistentVolumeClaim:
             claimName: {{ .Release.Name }}-config-pvc
         - name: vol-index
-          persistentVolumeClaim: 
+          persistentVolumeClaim:
             claimName: {{ .Release.Name }}-index-pvc
         - name: vol-logs
-          persistentVolumeClaim: 
+          persistentVolumeClaim:
             claimName: {{ .Release.Name }}-logs-pvc
         - name: vol-db
           persistentVolumeClaim:
@@ -57,69 +90,78 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-db-pvc
+  labels:
+    {{- include "cubebackup.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: local-path
+  storageClassName: {{ .Values.persistence.storageClass }}
   resources:
     requests:
-      storage: 2Gi
+      storage: {{ .Values.persistence.db.size }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-config-pvc
+  labels:
+    {{- include "cubebackup.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: local-path
+  storageClassName: {{ .Values.persistence.storageClass }}
   resources:
     requests:
-      storage: 1Gi
+      storage: {{ .Values.persistence.config.size }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-index-pvc
+  labels:
+    {{- include "cubebackup.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: local-path
+  storageClassName: {{ .Values.persistence.storageClass }}
   resources:
     requests:
-      storage: 100Gi
+      storage: {{ .Values.persistence.index.size }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-logs-pvc
+  labels:
+    {{- include "cubebackup.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: local-path
+  storageClassName: {{ .Values.persistence.storageClass }}
   resources:
     requests:
-      storage: 1Gi
+      storage: {{ .Values.persistence.logs.size }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-service
-  annotations:
-    {{- with .Values.service.annotations }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
   labels:
+    {{- include "cubebackup.labels" . | nindent 4 }}
     {{- with .Values.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  type: NodePort
+  type: {{ .Values.service.type }}
   selector:
-    app: {{ .Release.Name }}
+    {{- include "cubebackup.selectorLabels" . | nindent 4 }}
   ports:
-    - port: 80
+    - port: {{ .Values.service.port }}
       targetPort: http
-      nodePort: 30080
-
+      {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}

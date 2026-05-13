@@ -5,6 +5,9 @@ metadata:
   labels:
     {{- include "huly.labels" . | nindent 4 }}
     app: collaborator
+  annotations:
+    # Upstream hardcoreeng/collaborator image bakes in a low uid.
+    kube-score/ignore: {{ include "huly.kubeScoreIgnore" . }}
 spec:
   replicas: {{ .Values.collaborator.replicas }}
   selector:
@@ -22,6 +25,7 @@ spec:
       containers:
         - name: collaborator
           image: {{ .Values.hulyRegistry }}/collaborator:{{ .Values.hulyVersion }}
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3078
@@ -32,16 +36,12 @@ spec:
             {{- include "huly.envSecret" (dict "name" "STORAGE_CONFIG" "key" "STORAGE_CONFIG" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "ACCOUNTS_URL" "key" "ACCOUNTS_URL_INTERNAL" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "STATS_URL" "key" "STATS_URL_INTERNAL" "root" .) | nindent 12 }}
+          # Single readinessProbe; identical TCP livenessProbe omitted.
           readinessProbe:
             tcpSocket:
               port: 3078
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 3078
-            initialDelaySeconds: 30
-            periodSeconds: 30
           {{- with .Values.collaborator.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

@@ -7,6 +7,10 @@ metadata:
   labels:
     {{- include "safe-infrastructure.labels" $ | nindent 4 }}
     app.kubernetes.io/component: {{ $db }}-db
+  annotations:
+    # The official postgres image initialises /var/lib/postgresql/data as
+    # uid/gid 999 and cannot be relocated above 10000 without rebuilding.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: 1
   selector:
@@ -21,7 +25,8 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: {{ $.Values.databases.postgres.image }}
+        image: "{{ $.Values.databases.postgres.image.repository }}:{{ $.Values.databases.postgres.image.tag }}"
+        imagePullPolicy: {{ $.Values.databases.postgres.image.pullPolicy }}
         env:
         - name: POSTGRES_PASSWORD
           valueFrom:
@@ -39,19 +44,11 @@ spec:
               name: {{ include "safe-infrastructure.fullname" $ }}-credentials
               key: postgres-database
         ports:
-        - containerPort: 5432
+        - name: postgres
+          containerPort: 5432
         volumeMounts:
         - name: postgres-data
           mountPath: /var/lib/postgresql
-        livenessProbe:
-          exec:
-            command:
-            - pg_isready
-            - -U
-            - postgres
-          initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
-          periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
-          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
         readinessProbe:
           exec:
             command:
@@ -61,6 +58,14 @@ spec:
           initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
           periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
           timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+        livenessProbe:
+          tcpSocket:
+            port: postgres
+          initialDelaySeconds: {{ $.Values.healthCheck.initialDelaySeconds }}
+          periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
+          timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
+        resources:
+          {{- toYaml $.Values.resources | nindent 10 }}
       volumes:
       - name: postgres-data
         {{- if $.Values.persistence.enabled }}
