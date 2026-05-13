@@ -2,6 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-admin
+  annotations:
+    # AppFlowy admin_frontend ships only :latest today; the image runs as a
+    # node/nginx user baked into the container. Silence kube-score checks
+    # that we can't satisfy without rebuilding the upstream image.
+    # TODO: pin a specific version once upstream publishes tagged releases.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.admin.replicaCount }}
   selector:
@@ -17,12 +23,28 @@ spec:
           image: {{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag }}
           imagePullPolicy: {{ .Values.admin.image.pullPolicy }}
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
           env:
             - name: APPFLOWY_BASE_URL
               value: {{ include "appflowy.baseUrl" . | quote }}
             - name: APPFLOWY_GOTRUE_BASE_URL
               value: "{{ include "appflowy.baseUrl" . }}/gotrue"
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           {{- with .Values.admin.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
