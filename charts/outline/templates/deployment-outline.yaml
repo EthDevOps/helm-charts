@@ -2,8 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-outline
+  labels:
+    app: {{ .Release.Name }}-outline
+  annotations:
+    # outline upstream image is currently unpinned (defaults to :latest).
+    # Operators should override image.tag with a specific version in their
+    # values. See TODO in values.yaml.
+    # The init container needs root to chmod the PVC mount; the app container
+    # runs as uid/gid 1000 (baked into the image). Both are below kube-score's
+    # 10000 threshold and cannot be raised without rebuilding the image.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ .Release.Name }}-outline
@@ -12,32 +24,69 @@ spec:
       labels:
         app: {{ .Release.Name }}-outline
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-config
-          image: docker.ethquokkaops.io/dh/alpine:latest
-          command: ["/bin/sh", "-c", "chmod 0777 -R /data"]
+          image: {{ .Values.initContainer.image }}
+          imagePullPolicy: {{ .Values.initContainer.imagePullPolicy }}
+          command: ["/bin/sh", "-c", "chown -R 1000:1000 /data && chmod 0775 -R /data"]
           volumeMounts:
-          - name: outline-storage
-            mountPath: /data
+            - name: outline-storage
+              mountPath: /data
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - FOWNER
+                - DAC_OVERRIDE
+          resources:
+            {{- toYaml .Values.initContainer.resources | nindent 12 }}
       containers:
         - name: outline
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           env:
             - name: PGSSLMODE
               value: disable
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config
-
+          {{- if .Values.existingSecret }}
             - secretRef:
                 name: {{ .Values.existingSecret }}
+          {{- end }}
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: outline-storage
               mountPath: /var/lib/outline/data
       volumes:
         - name: outline-storage
           persistentVolumeClaim:
-            claimName: {{.Release.Name}}-outline-pvc
-
+            claimName: {{ .Release.Name }}-outline-pvc
