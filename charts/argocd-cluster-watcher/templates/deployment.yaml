@@ -2,6 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-deploy
+  annotations:
+    # Image runs `apt-get` at startup (no fixed user/group baked in); we leave
+    # it as root rather than pre-baking a custom image just for kube-score.
+    # The image tag is not pinned because the runtime base version is still
+    # being decided — see TODO in values.yaml.
+    kube-score/ignore: container-security-context-user-group-id,container-image-tag
 spec:
   selector:
     matchLabels:
@@ -21,7 +27,8 @@ spec:
       - command:
         - /bin/sh
         - /script/run.sh
-        image: ubuntu
+        image: "{{ .Values.image.repository }}{{ if .Values.image.tag }}:{{ .Values.image.tag }}{{ end }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: RANCHER_API_TOKEN
           valueFrom:
@@ -29,6 +36,8 @@ spec:
               name: {{ .Release.Name }}-api-token
               key: RANCHER_API_TOKEN
         name: script
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - mountPath: /script
             name: script
