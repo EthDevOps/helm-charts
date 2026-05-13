@@ -64,7 +64,7 @@ resources:
     cpu: 100m
     memory: 512Mi
   limits:
-    cpu: "2"
+    cpu: "1"
     memory: 2Gi
 ```
 For sidecar/init containers, add a separate resources block under a dedicated
