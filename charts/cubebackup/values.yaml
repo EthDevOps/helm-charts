@@ -1,5 +1,92 @@
 image:
+  # CubeBackup's official image only publishes :latest. Pin to a digest or
+  # specific tag once upstream publishes them. The workload metadata sets
+  # `kube-score/ignore: container-image-tag` to keep CI green meanwhile.
   tag: latest
   repository: docker.ethquokkaops.io/dh/cubebackup/cubebackup
+  pullPolicy: Always
 
 maintenance: false
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Init container reuses the cubebackup image to seed the config volume.
+# Resources kept modest because the init only runs a `cp`.
+initContainer:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+
+# Resources for the cubebackup container.
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 2Gi
+    ephemeral-storage: 1Gi
+
+# Probes hit the HTTP listener that serves the management UI.
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+livenessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 20
+  timeoutSeconds: 3
+  failureThreshold: 5
+
+# CubeBackup's official image runs as root and writes to /opt/cubebackup at
+# startup; we can't drop privileges without rebuilding the image. The
+# workload metadata silences kube-score's uid/gid check.
+podSecurityContext: {}
+containerSecurityContext: {}
+
+persistence:
+  storageClass: local-path
+  config:
+    size: 1Gi
+  db:
+    size: 2Gi
+  index:
+    size: 100Gi
+  logs:
+    size: 1Gi
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30080
+  annotations: {}
+  labels: {}
+
+networkPolicy:
+  enabled: true
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 80
+  # Permissive egress — operators tighten per-environment.
+  egress:
+    - {}
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
