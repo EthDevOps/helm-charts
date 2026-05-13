@@ -2,15 +2,33 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-job
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: sync
+  annotations:
+    # The upstream s3-sync-docker image (ethdevops/s3-sync-docker) runs as
+    # root because rclone/mc need to write config files in the runtime path.
+    # Container-level uid/gid cannot be forced > 10000 without rebuilding
+    # the image, so this check is suppressed.
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   schedule: "{{ .Values.backupSchedule }}"
   timeZone: 'Etc/UTC'
   concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.cronjob.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit }}
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app: {{ .Release.Name }}
+            app.kubernetes.io/component: sync
         spec:
           restartPolicy: OnFailure
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
           {{- if or .Values.useCustomConfig .Values.filters.enabled }}
           volumes:
             {{- if .Values.useCustomConfig }}
@@ -27,6 +45,11 @@ spec:
           containers:
           - name: {{ .Release.Name }}-minio-mirror
             image: docker.ethquokkaops.io/ethquokkaops/ethdevops/s3-sync-docker:{{ .Values.imageTag }}
+            imagePullPolicy: {{ .Values.imagePullPolicy }}
+            securityContext:
+              {{- toYaml .Values.containerSecurityContext | nindent 14 }}
+            resources:
+              {{- toYaml .Values.resources | nindent 14 }}
             {{- if or .Values.useCustomConfig .Values.filters.enabled }}
             volumeMounts:
             {{- if .Values.useCustomConfig }}
@@ -87,4 +110,3 @@ spec:
               - name: DESTINATION_SECRET_KEY
                 value: "{{ .Values.destinationSecretKey }}"
             {{- end }}
-
