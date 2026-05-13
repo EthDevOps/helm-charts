@@ -1,4 +1,4 @@
-hcommonAnnotations: {}
+commonAnnotations: {}
 podAnnotations: {}
 podLabels: {}
 extraInitContainers: {}
@@ -18,6 +18,25 @@ ingress:
 service:
   type: ClusterIP
   annotations: {}
+
+# -- NetworkPolicy for both the listmonk Deployment and postgres StatefulSet pods
+networkPolicy:
+  # -- enable a permissive default NetworkPolicy so kube-score is satisfied
+  enabled: true
+  # -- ingress rules (default: allow all). Tighten per-environment.
+  ingress:
+    - {}
+  # -- egress rules (default: allow all). Tighten per-environment.
+  egress:
+    - {}
+
+# -- PodDisruptionBudget for the listmonk Deployment
+podDisruptionBudget:
+  enabled: true
+  # -- prefer maxUnavailable so single-replica deployments aren't trapped
+  maxUnavailable: 1
+  minAvailable: ""
+
 listmonk:
   # -- The listmonk image configuration
   image:
@@ -25,12 +44,33 @@ listmonk:
     repository: listmonk/listmonk
     # -- the listmonk image tag
     tag: v5.1.0
+    # -- the listmonk image pull policy
+    pullPolicy: Always
 
   # -- the number of listmonk deployment replicas
   replicas: 1
 
   # -- resources for the listmonk deployment
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
+
+  # -- resources for the init containers (wait-for-postgres, check-db-tables, db-init)
+  initResources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
 
   # -- Storage configuration for listmonk
   storage:
@@ -58,8 +98,18 @@ postgres:
     repository: postgres
     # -- the postgres image tag
     tag: 16-alpine
+    # -- the postgres image pull policy
+    pullPolicy: Always
   # -- resources configuration for the postgres statefulset
-  resources: {} # @schema $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.31.6/resourcerequirements.json ; skipProperties: true
+  resources: # @schema $ref: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.31.6/resourcerequirements.json ; skipProperties: true
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
   # -- storage configuration for postgres
   storage:
     size: "10Gi"

@@ -1,6 +1,6 @@
 # listmonk
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.1.0](https://img.shields.io/badge/AppVersion-5.1.0-informational?style=flat-square)
+![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.1.0](https://img.shields.io/badge/AppVersion-5.1.0-informational?style=flat-square)
 
 High performance, self-hosted, newsletter and mailing list manager with a modern dashboard.
 
@@ -8,30 +8,39 @@ High performance, self-hosted, newsletter and mailing list manager with a modern
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| commonAnnotations | object | `{}` |  |
 | extraInitContainers | object | `{}` |  |
-| hcommonAnnotations | object | `{}` |  |
 | ingress.annotations | object | `{}` | annotations for the ingress |
 | ingress.className | string | `""` | ingress class name |
 | ingress.enabled | bool | `false` | enable the ingress |
 | ingress.host | string | `"listmonk.local"` | host for the ingress |
 | ingress.tls | list | `[]` | tls configuration for the ingress |
-| listmonk.image | object | `{"repository":"listmonk/listmonk","tag":"v5.1.0"}` | The listmonk image configuration |
+| listmonk.image | object | `{"pullPolicy":"Always","repository":"listmonk/listmonk","tag":"v5.1.0"}` | The listmonk image configuration |
+| listmonk.image.pullPolicy | string | `"Always"` | the listmonk image pull policy |
 | listmonk.image.repository | string | `"listmonk/listmonk"` | the listmonk image repository |
 | listmonk.image.tag | string | `"v5.1.0"` | the listmonk image tag |
+| listmonk.initResources | object | `{"limits":{"cpu":"500m","ephemeral-storage":"256Mi","memory":"256Mi"},"requests":{"cpu":"50m","ephemeral-storage":"64Mi","memory":"64Mi"}}` | resources for the init containers (wait-for-postgres, check-db-tables, db-init) |
 | listmonk.replicas | int | `1` | the number of listmonk deployment replicas |
-| listmonk.resources | object | `{}` | resources for the listmonk deployment |
+| listmonk.resources | object | `{"limits":{"cpu":"1","ephemeral-storage":"1Gi","memory":"1Gi"},"requests":{"cpu":"100m","ephemeral-storage":"256Mi","memory":"256Mi"}}` | resources for the listmonk deployment |
 | listmonk.storage | object | `{"staticSize":"1Gi","uploadsSize":"5Gi"}` | Storage configuration for listmonk |
+| networkPolicy | object | `{"egress":[{}],"enabled":true,"ingress":[{}]}` | NetworkPolicy for both the listmonk Deployment and postgres StatefulSet pods |
+| networkPolicy.egress | list | `[{}]` | egress rules (default: allow all). Tighten per-environment. |
+| networkPolicy.enabled | bool | `true` | enable a permissive default NetworkPolicy so kube-score is satisfied |
+| networkPolicy.ingress | list | `[{}]` | ingress rules (default: allow all). Tighten per-environment. |
 | podAnnotations | object | `{}` |  |
+| podDisruptionBudget | object | `{"enabled":true,"maxUnavailable":1,"minAvailable":""}` | PodDisruptionBudget for the listmonk Deployment |
+| podDisruptionBudget.maxUnavailable | int | `1` | prefer maxUnavailable so single-replica deployments aren't trapped |
 | podLabels | object | `{}` |  |
 | postgres.database | string | `"listmonk"` | the postgres database name |
 | postgres.enabled | bool | `true` | enable postgres |
 | postgres.existingSecret | string | `""` | existing secret name containing postgres password (if set, password field is ignored and no secret is created) |
 | postgres.hostname | string | `""` | when not enabled, the external postgres service hostname is required |
-| postgres.image | object | `{"repository":"postgres","tag":"16-alpine"}` | the postgres image configuration |
+| postgres.image | object | `{"pullPolicy":"Always","repository":"postgres","tag":"16-alpine"}` | the postgres image configuration |
+| postgres.image.pullPolicy | string | `"Always"` | the postgres image pull policy |
 | postgres.image.repository | string | `"postgres"` | the postgres image repository |
 | postgres.image.tag | string | `"16-alpine"` | the postgres image tag |
 | postgres.password | string | `"listmonk"` | the postgres password (ignored if existingSecret is set) |
-| postgres.resources | object | `{}` | resources configuration for the postgres statefulset |
+| postgres.resources | object | `{"limits":{"cpu":"1","ephemeral-storage":"1Gi","memory":"1Gi"},"requests":{"cpu":"100m","ephemeral-storage":"256Mi","memory":"256Mi"}}` | resources configuration for the postgres statefulset |
 | postgres.secretKey | string | `""` | key in existing secret containing the password (defaults to postgres-password) |
 | postgres.storage | object | `{"size":"10Gi"}` | storage configuration for postgres |
 | postgres.user | string | `"listmonk"` | the postgres username |
