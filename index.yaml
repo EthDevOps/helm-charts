@@ -1430,6 +1430,28 @@ entries:
   docmost:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-05-13T10:48:04.048698474Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.6
+    description: OpenSource alternative for Notion
+    digest: 7f8bd3a81e71a414da24deecaba99a649fcd23088fe44559a7d1d9f2f77f83e7
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: docmost
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/docmost-0.2.4/docmost-0.2.4.tgz
+    version: 0.2.4
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-04-11T08:43:22.920741123Z"
     dependencies:
     - condition: postgresql.enabled
@@ -1690,6 +1712,36 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/domainmod-0.1.0/domainmod-0.1.0.tgz
     version: 0.1.0
   frag-jetzt:
+  - apiVersion: v2
+    appVersion: master
+    created: "2026-05-13T10:48:04.252443534Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.6
+    - alias: ai-postgresql
+      condition: aiProvider.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    description: Frag.jetzt - Anonymous Q&A platform for lectures and events
+    digest: 1587c98519aca3be1f96da10fd3f1c2c0222410463596a562ae50e1bc1ae8690
+    home: https://frag.jetzt
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: frag-jetzt
+    sources:
+    - https://github.com/thm-projects/frag.jetzt
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/frag-jetzt-0.1.17/frag-jetzt-0.1.17.tgz
+    version: 0.1.17
   - apiVersion: v2
     appVersion: master
     created: "2026-04-09T17:21:38.458149045Z"
@@ -2141,6 +2193,26 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/frag-jetzt-0.1.0/frag-jetzt-0.1.0.tgz
     version: 0.1.0
   github-runner-manager:
+  - apiVersion: v2
+    appVersion: v0.0.1
+    created: "2026-05-13T10:48:04.413646954Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    description: Managed self-hosted runners for GitHub
+    digest: 2ada2c0f403e98184c96a3f0536f6d3f08ecb0cde052a7e3dc657b83d36ad381
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: github-runner-manager
+    sources:
+    - https://github.com/EthDevOps/github-actions-autoscaler
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-1.3.3/github-runner-manager-1.3.3.tgz
+    version: 1.3.3
   - apiVersion: v2
     appVersion: v0.0.1
     created: "2026-02-23T13:49:49.865804447Z"
@@ -2692,6 +2764,22 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-0.0.1/github-runner-manager-0.0.1.tgz
     version: 0.0.1
   glitchtip:
+  - apiVersion: v2
+    appVersion: 6.0.10
+    created: "2026-05-13T10:48:04.689160955Z"
+    dependencies:
+    - condition: valkey.enabled
+      name: valkey
+      repository: https://valkey.io/valkey-helm/
+      version: ~0.9.2
+    description: Open source error tracking that is compatible with Sentry
+    digest: ec72e5dd77094357aedb4b2879aa70edb3fe303b31b69a7dbaa5c8a34177054f
+    icon: https://glitchtip.gitlab.io/glitchtip-helm-chart/icon.svg
+    name: glitchtip
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/glitchtip-8.1.2/glitchtip-8.1.2.tgz
+    version: 8.1.2
   - apiVersion: v2
     appVersion: 6.0.10
     created: "2026-03-18T11:38:03.009473519Z"
@@ -4348,6 +4436,42 @@ entries:
   keycloak:
   - apiVersion: v2
     appVersion: "26.1"
+    created: "2026-05-13T10:48:04.85817487Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    description: Open Source Identity and Access Management For Modern Applications
+      and Services
+    digest: 570fdcd865531ab4e7d3f869fc9964836099cb5916f934486adc5cd6e373f9f2
+    home: https://www.keycloak.org/
+    icon: https://www.keycloak.org/resources/images/keycloak_icon_512px.svg
+    keywords:
+    - sso
+    - idm
+    - openid connect
+    - saml
+    - kerberos
+    - ldap
+    maintainers:
+    - email: unguiculus@gmail.com
+      name: unguiculus
+    - email: thomas.darimont+github@gmail.com
+      name: thomasdarimont
+    - email: markus@ethereum.org
+      name: elasticroentgen
+    name: keycloak
+    sources:
+    - https://github.com/codecentric/helm-charts
+    - https://github.com/jboss-dockerfiles/keycloak
+    - https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+    - https://github.com/ethdevops/helm-charts
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/keycloak-18.10.10/keycloak-18.10.10.tgz
+    version: 18.10.10
+  - apiVersion: v2
+    appVersion: "26.1"
     created: "2025-08-13T14:24:48.445730077Z"
     dependencies:
     - condition: postgresql.enabled
@@ -5435,6 +5559,32 @@ entries:
   netbox:
   - apiVersion: v2
     appVersion: v3.6.4
+    created: "2026-05-13T10:48:05.032816051Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.6
+    description: IP address management (IPAM) and data center infrastructure management
+      (DCIM) tool
+    digest: 861d91ba5563f88e7a1b7ce2a9321622661986418ad8a6d0b0ae6553eea2039d
+    home: https://github.com/bootc/netbox-chart
+    icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/docs/netbox_logo.png
+    kubeVersion: '>=1.25.0'
+    maintainers:
+    - email: bootc@boo.tc
+      name: Chris Boot
+      url: https://github.com/bootc
+    name: netbox
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/netbox-5.1.13/netbox-5.1.13.tgz
+    version: 5.1.13
+  - apiVersion: v2
+    appVersion: v3.6.4
     created: "2025-09-18T13:59:58.296420104Z"
     dependencies:
     - condition: postgresql.enabled
@@ -6144,6 +6294,28 @@ entries:
   outline:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-05-13T10:48:05.192623244Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.6
+    description: OpenSource alternative for Notion
+    digest: 5d9fb2bae4dbc19b954a92ec0b0f721c6eb816b9d004b379a20fe19cff414feb
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: outline
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/outline-0.1.1/outline-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-08-08T13:20:10.78062989Z"
     dependencies:
     - condition: postgresql.enabled
@@ -6522,6 +6694,37 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/postgresql-1.0.0/postgresql-1.0.0.tgz
     version: 1.0.0
   postiz-app:
+  - apiVersion: v2
+    appVersion: 1.3.0
+    created: "2026-05-13T10:48:05.346283204Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.6
+    description: A Social Media Scheduling App
+    digest: e3bfeea3cb86ef1deea4340627865578ddb96f134b56c3bc379e2162cd319c6e
+    keywords:
+    - social media
+    - marketing
+    - scheduling
+    - queue
+    maintainers:
+    - email: offendingcommit@gmail.com
+      name: jonathan-irvin
+      url: https://linktr.ee/offendingcommit
+    - email: contact@jread.com
+      name: jamesread
+      url: http://jread.com
+    name: postiz-app
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/postiz-app-1.2.0/postiz-app-1.2.0.tgz
+    version: 1.2.0
   - apiVersion: v2
     appVersion: 1.3.0
     created: "2025-08-11T08:44:55.873349808Z"
@@ -9483,4 +9686,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-05-13T10:36:24.346673301Z"
+generated: "2026-05-13T10:48:05.347215673Z"
