@@ -1,6 +1,9 @@
 # Backup once per day at midnight
 backupSchedule: "0 0 * * *"
 
+# Cancel scheduled jobs that miss their start window by this many seconds
+startingDeadlineSeconds: 600
+
 imageTag: "latest"
 heartbeatUrl: "http://localhost"
 
@@ -30,3 +33,20 @@ pgpKeys:
     <PGP PUB KEY>
     -----END PGP PUBLIC KEY BLOCK-----
 
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral-storage: 2Gi
+
+networkPolicy:
+  enabled: true
+  # CronJob makes outbound calls only (Discord API, S3, optional git remotes,
+  # heartbeat URL). It doesn't expose any listening ports, so ingress is empty.
+  ingress: []
+  egress:
+    - {}

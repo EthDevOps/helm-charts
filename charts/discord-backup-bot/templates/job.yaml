@@ -2,16 +2,32 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-job
+  labels:
+    app: {{ .Release.Name }}
+  annotations:
+    # TODO: pin a specific image version instead of `:latest` in values.yaml
+    #       and remove `container-image-tag` from this ignore list.
+    # The upstream image runs as root and does not expose a configurable
+    # uid/gid; we'd need to rebuild it to satisfy
+    # `container-security-context-user-group-id`.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
 spec:
   schedule: "{{ .Values.backupSchedule }}"
   concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.startingDeadlineSeconds }}
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app: {{ .Release.Name }}
         spec:
           containers:
             - name: {{ .Release.Name }}-bot
               image: docker.ethquokkaops.io/ethquokkaops/ethdevops/efdiscordbackupbot:{{ .Values.imageTag }}
+              imagePullPolicy: Always
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
               volumeMounts:
                 - name: {{ .Release.Name }}-sign-secret-vol
                   mountPath: /var/sign-secret
@@ -24,7 +40,7 @@ spec:
                   mountPath: /var/git-clones
                 - name: {{ .Release.Name }}-archive-config
                   mountPath: /etc/archive_config.json
-                  subPath: config.json 
+                  subPath: config.json
                 {{- end }}
               envFrom:
                 - configMapRef:
@@ -44,5 +60,5 @@ spec:
               emptydir: {}
             - name: {{ .Release.Name }}-archive-config
               configMap:
-                name: {{ .Release.Name }}-archive-config 
+                name: {{ .Release.Name }}-archive-config
             {{- end }}
