@@ -14,6 +14,28 @@ existingSecret:
 # versioned releases per service.
 # TODO: pin specific image tags once upstream publishes them.
 
+# Pod- and container-level securityContext applied to every AppFlowy
+# deployment (admin, ai, cloud, gotrue, search, web, worker). Defaults
+# satisfy the Pod Security Standards "restricted" profile:
+# https://kubernetes.io/docs/concepts/security/pod-security-standards/
+#
+# Upstream AppFlowy images bake in their own low UID/GID and do not
+# accept arbitrary uids, so `runAsUser`/`runAsGroup` are deliberately
+# omitted — the container starts as the image's USER, which is non-root.
+# `runAsNonRoot: true` enforces that at admission time.
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
 # -- GoTrue authentication service
 gotrue:
   image:
@@ -270,9 +292,13 @@ postgresql:
         - SYS_ADMIN
         - NET_ADMIN
         - SYS_PTRACE
+    seccompProfile:
+      type: RuntimeDefault
   podSecurityContext:
     fsGroup: 10001
     runAsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
   # Enable the subchart's NetworkPolicy so kube-score finds a matching
   # policy for the postgres pods. Defaults allow egress and DNS resolution.
   networkPolicy:
@@ -309,13 +335,18 @@ redis:
   # the remaining unfixable findings.
   podSecurityContext:
     fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
   securityContext:
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
       - ALL
     readOnlyRootFilesystem: false
     runAsNonRoot: true
     runAsUser: 10001
+    seccompProfile:
+      type: RuntimeDefault
   podAnnotations:
     kube-score/ignore: container-security-context-user-group-id
 

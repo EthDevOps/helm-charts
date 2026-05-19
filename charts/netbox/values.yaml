@@ -472,6 +472,22 @@ postgresql:
       memory: 1Gi
       ephemeral-storage: 1Gi
 
+  # PSS restricted defaults for the bundled PostgreSQL pod.
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 10001
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  podSecurityContext:
+    fsGroup: 10001
+    runAsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+
 ## External database settings
 # These are used if postgresql.enabled is false, and are ignored otherwise
 externalDatabase:
@@ -515,6 +531,23 @@ redis:
   # overrides — it remains a subchart-only issue.
   podAnnotations:
     kube-score/ignore: container-security-context-user-group-id
+
+  # PSS restricted defaults for the bundled Redis pod. UID stays at 999
+  # (baked into the image); PSS restricted only requires runAsNonRoot, not a
+  # specific UID range.
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 999
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  podSecurityContext:
+    fsGroup: 999
+    seccompProfile:
+      type: RuntimeDefault
 
 tasksRedis:
   database: 0
@@ -631,13 +664,19 @@ podAnnotations: {}
 
 podLabels: {}
 
+# Pod- and container-level securityContext for the NetBox web Deployment.
+# Defaults satisfy the Pod Security Standards "restricted" profile:
+# https://kubernetes.io/docs/concepts/security/pod-security-standards/
 podSecurityContext:
   fsGroup: 1000
   runAsNonRoot: true
   # runAsUser: 1000
   # runAsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
 securityContext:
+  allowPrivilegeEscalation: false
   capabilities:
     drop:
       - ALL
@@ -645,6 +684,8 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
   runAsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
 
 service:
   annotations: {}
@@ -737,6 +778,7 @@ init:
       ephemeral-storage: 128Mi
 
   securityContext:
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - ALL
@@ -744,6 +786,8 @@ init:
     runAsNonRoot: true
     runAsUser: 1000
     runAsGroup: 1000  # Keep the same as securityContext.runAsGroup
+    seccompProfile:
+      type: RuntimeDefault
 
 test:
   image:
@@ -836,8 +880,11 @@ housekeeping:
     runAsNonRoot: true
     # runAsUser: 1000
     # runAsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
 
   securityContext:
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - ALL
@@ -845,6 +892,8 @@ housekeeping:
     runAsNonRoot: true
     runAsUser: 1000
     runAsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
 
   # Set this to true to automatically mount the service account token in the housekeeping container
   automountServiceAccountToken: false
@@ -915,8 +964,11 @@ worker:
     runAsNonRoot: true
     # runAsUser: 1000
     # runAsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
 
   securityContext:
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - ALL
@@ -924,6 +976,8 @@ worker:
     runAsNonRoot: true
     runAsUser: 1000
     runAsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
 
   # Set this to true to automatically mount the service account token in the worker container
   automountServiceAccountToken: false

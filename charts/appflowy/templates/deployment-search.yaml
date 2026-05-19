@@ -19,10 +19,14 @@ spec:
       labels:
         app: {{ .Release.Name }}-search
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: appflowy-search
           image: {{ .Values.search.image.repository }}:{{ .Values.search.image.tag }}
           imagePullPolicy: {{ .Values.search.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           ports:
             - name: http
               containerPort: 4002

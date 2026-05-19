@@ -2,8 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joining meeting...</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        color: #4f566b;
+      }
+      a {
+        color: #667bbc;
+        margin-top: 16px;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
     <script>
-      async function getToken(code, path, search, hash) {
+      async function getToken(code, path, search, hash, requireAuth) {
         try {
           const _path = encodeURIComponent(path);
           const _search = encodeURIComponent(search);
@@ -13,7 +36,8 @@
             `?code=${code}` +
             `&path=${_path}` +
             `&search=${_search}` +
-            `&hash=${_hash}`;
+            `&hash=${_hash}` +
+            (requireAuth ? `&requireAuth=1` : "");
           const res = await fetch(req, {
             headers: {
               "Accept": "application/json",
@@ -26,6 +50,61 @@
         }
       }
 
+      function loginRequiredUrl(path, search, hash) {
+        return `/static/oidc-login-required.html` +
+          `?path=${encodeURIComponent(path)}` +
+          `&search=${encodeURIComponent(search)}` +
+          `&hash=${encodeURIComponent(hash)}`;
+      }
+
+      function buildWebUrl(path, search, hash, token) {
+        return `${path}?` +
+          `${search}${search ? "&" : ""}` +
+          `oidc=authorized&jwt=${token}` +
+          `${hash ? "#" : ""}${hash}`;
+      }
+
+      function isAndroid(ua) {
+        return /android/.test(ua);
+      }
+
+      function isIOS(ua) {
+        if (/iphone|ipad|ipod/.test(ua)) return true;
+        // iPadOS 13+ Safari reports a macOS UA; distinguish via touch points.
+        if (/macintosh/.test(ua) && navigator.maxTouchPoints > 1) return true;
+        return false;
+      }
+
+      function navigateToRoom(path, search, hash, token) {
+        const host = window.location.host;
+        const ua = navigator.userAgent.toLowerCase();
+        const webUrl = buildWebUrl(path, search, hash, token);
+        // Mobile deep-link URL: room path + JWT + any original search params.
+        // Hash is dropped for Android (would collide with the #Intent fragment)
+        // and kept for iOS, where the app may honor config overrides.
+        const mobileQuery = `?jwt=${token}` + (search ? `&${search}` : "");
+
+        // Manual fallback link, useful if the iOS scheme dispatch is dismissed.
+        document.getElementById("fallback").href = webUrl;
+
+        if (isAndroid(ua)) {
+          const fallback = encodeURIComponent(`https://${host}${webUrl}`);
+          window.location =
+            `intent://${host}${path}${mobileQuery}` +
+            `#Intent;scheme=org.jitsi.meet;package=org.jitsi.meet;` +
+            `S.browser_fallback_url=${fallback};end`;
+        } else if (isIOS(ua)) {
+          const hashSuffix = hash ? `#${hash}` : "";
+          window.location =
+            `org.jitsi.meet://${host}${path}${mobileQuery}${hashSuffix}`;
+          // If the app isn't installed (scheme fails silently) or the user
+          // dismisses the "Open in Jitsi Meet?" sheet, fall through to web.
+          setTimeout(function () { window.location = webUrl; }, 1500);
+        } else {
+          window.location = webUrl;
+        }
+      }
+
       async function adapter() {
         const qs = new URLSearchParams(window.location.search);
         const err = qs.get("error");
@@ -34,40 +113,50 @@
         const path = qs.get("path");
         const search = qs.get("search") || "";
         const hash = qs.get("hash") || "";
-
-        let target = `${path}?` + 
-          `${search}${search?"&":""}` +
-          `oidc=unauthorized` +
-          `${hash?"#":""}${hash}`;
+        const requireAuth = qs.get("requireAuth") === "1";
 
         if (!err) {
           console.info("[AUTH] Keycloak was happy. Requesting JWT...")
-          const token = await getToken(code, path, search, hash);
+          const token = await getToken(code, path, search, hash, requireAuth);
 
           if (token) {
-            target = `${path}?` + 
-              `${search}${search?"&":""}` +
-              `oidc=authorized` +
-              `&jwt=${token}` +
-              `${hash?"#":""}${hash}`;
+            navigateToRoom(path, search, hash, token);
+            return;
+          } else if (requireAuth) {
+            console.info("[AUTH] Restricted room and no token. Showing sign-in page.")
+            window.location = loginRequiredUrl(path, search, hash);
+            return;
           } else {
-            target = `${path}?` + 
-              `${search}${search?"&":""}` +
+            window.location = `${path}?` +
+              `${search}${search ? "&" : ""}` +
               `oidc=failed` +
-              `${hash?"#":""}${hash}`;
+              `${hash ? "#" : ""}${hash}`;
+            return;
           }
-        } else if(err === 'login_required') {
-          console.info("[AUTH] Pushing to Keycloak Login page...")
-          target = '/oidc/auth' +
-              `?path=${path}&search=${search}&hash=${hash}`;
-
         }
 
-        window.location = target;
+        if (requireAuth) {
+          console.info("[AUTH] Restricted room and Keycloak returned error. Showing sign-in page.")
+          window.location = loginRequiredUrl(path, search, hash);
+          return;
+        }
+
+        if (err === 'login_required') {
+          console.info("[AUTH] Pushing to Keycloak Login page...")
+          window.location = '/oidc/auth' +
+            `?path=${path}&search=${search}&hash=${hash}`;
+          return;
+        }
+
+        window.location = `${path}?` +
+          `${search}${search ? "&" : ""}` +
+          `oidc=unauthorized` +
+          `${hash ? "#" : ""}${hash}`;
       }
     </script>
   </head>
   <body onload="adapter()">
-  adapting...
+    <p id="status">Joining meeting...</p>
+    <a id="fallback" href="#">Click here if not redirected</a>
   </body>
 </html>
