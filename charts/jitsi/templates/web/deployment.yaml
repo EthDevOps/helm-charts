@@ -132,6 +132,9 @@ spec:
             mountPath: /usr/share/jitsi-meet/static/oidc-redirect.html
             subPath: oidc-redirect.html
           - name: adapter-additions
+            mountPath: /usr/share/jitsi-meet/static/oidc-login-required.html
+            subPath: oidc-login-required.html
+          - name: adapter-additions
             mountPath: /usr/share/jitsi-meet/static/oidc-redirect-bg.jpg
             subPath: oidc-redirect-bg.jpg
           {{- with .Values.web.extraVolumeMounts }}
