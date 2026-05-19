@@ -3,6 +3,28 @@ entries:
   appflowy:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-05-19T07:06:42.912656253Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.6
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.5
+    description: AppFlowy Cloud - Collaborative workspace platform
+    digest: 1ba0e1d05a098fb79660a1499bd22431576d07eca9b709df4f82fe24c296979d
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: appflowy
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/appflowy-0.3.0/appflowy-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-05-13T10:36:18.299505946Z"
     dependencies:
     - condition: postgresql.enabled
@@ -3426,6 +3448,21 @@ entries:
   jitsi-meet:
   - apiVersion: v2
     appVersion: stable-10741
+    created: "2026-05-19T07:06:43.458367808Z"
+    dependencies:
+    - condition: prosody.enabled
+      name: prosody
+      repository: file://../prosody
+      version: '>=1.5.0'
+    description: Jitsi Meet packaged for Kubernetes
+    digest: fee28c9674352307bc038dfedd15b74affb06881aa73ea3e0f4916c38715d5f7
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-meet-1.9.1/jitsi-meet-1.9.1.tgz
+    version: 1.9.1
+  - apiVersion: v2
+    appVersion: stable-10741
     created: "2026-05-13T10:36:20.991340635Z"
     dependencies:
     - condition: prosody.enabled
@@ -4343,6 +4380,16 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/k8s-ceph-backup-0.0.1/k8s-ceph-backup-0.0.1.tgz
     version: 0.0.1
   k8s-service-trigger:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2026-05-19T07:06:43.821535676Z"
+    description: Triggers webhooks on service changes
+    digest: 6349aa73a7db523dddddc27b3d9ab9fa4362dd772437fa152ad15a592841d6dc
+    name: k8s-service-trigger
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/k8s-service-trigger-0.0.10/k8s-service-trigger-0.0.10.tgz
+    version: 0.0.10
   - apiVersion: v2
     appVersion: 0.0.1
     created: "2026-05-13T10:36:21.714460271Z"
@@ -5557,6 +5604,32 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/mattermost-sync-1.0.0/mattermost-sync-1.0.0.tgz
     version: 1.0.0
   netbox:
+  - apiVersion: v2
+    appVersion: v3.6.4
+    created: "2026-05-19T07:06:44.115205721Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.6
+    description: IP address management (IPAM) and data center infrastructure management
+      (DCIM) tool
+    digest: 519b46e235e1c92bd7832eb0657d8a18462a22c89a534ceae07b11c276bd19f5
+    home: https://github.com/bootc/netbox-chart
+    icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/docs/netbox_logo.png
+    kubeVersion: '>=1.25.0'
+    maintainers:
+    - email: bootc@boo.tc
+      name: Chris Boot
+      url: https://github.com/bootc
+    name: netbox
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/netbox-5.1.14/netbox-5.1.14.tgz
+    version: 5.1.14
   - apiVersion: v2
     appVersion: v3.6.4
     created: "2026-05-13T10:48:05.032816051Z"
@@ -9686,4 +9759,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-05-13T10:48:05.347215673Z"
+generated: "2026-05-19T07:06:44.116878823Z"
