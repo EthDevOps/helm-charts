@@ -286,11 +286,11 @@
 
       function guest() {
         document.getElementById("heading").textContent = "Redirecting...";
-        window.location = addQueryParam(
-          window.location,
-          "oidc",
-          "unauthorized"
-        );
+        const path = encodeURIComponent(window.location.pathname);
+        const search = encodeURIComponent(window.location.search.substring(1));
+        const hash = encodeURIComponent(window.location.hash.substring(1));
+        window.location =
+          `/oidc/guest?path=${path}&search=${search}&hash=${hash}`;
       }
 
     </script>
