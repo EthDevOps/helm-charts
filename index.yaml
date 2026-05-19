@@ -3448,6 +3448,21 @@ entries:
   jitsi-meet:
   - apiVersion: v2
     appVersion: stable-10741
+    created: "2026-05-19T09:12:07.183069489Z"
+    dependencies:
+    - condition: prosody.enabled
+      name: prosody
+      repository: file://../prosody
+      version: '>=1.5.0'
+    description: Jitsi Meet packaged for Kubernetes
+    digest: d6ca25f46e6d0186c834d1f7784d1546a2e2405a591a7f3e9a20b19788fe83ce
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-meet-1.9.3/jitsi-meet-1.9.3.tgz
+    version: 1.9.3
+  - apiVersion: v2
+    appVersion: stable-10741
     created: "2026-05-19T08:47:08.406615586Z"
     dependencies:
     - condition: prosody.enabled
@@ -9784,4 +9799,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-05-19T08:47:08.626879442Z"
+generated: "2026-05-19T09:12:07.183811169Z"
