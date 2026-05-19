@@ -1,6 +1,6 @@
 # prosody
 
-![Version: 1.5.0](https://img.shields.io/badge/Version-1.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
+![Version: 1.5.1](https://img.shields.io/badge/Version-1.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
 
 Prosody XMPP server for Jitsi Meet on Kubernetes
 

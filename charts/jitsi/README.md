@@ -1,6 +1,6 @@
 # jitsi-meet
 
-![Version: 1.9.1](https://img.shields.io/badge/Version-1.9.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
+![Version: 1.9.2](https://img.shields.io/badge/Version-1.9.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
 
 Jitsi Meet packaged for Kubernetes
 
@@ -232,6 +232,19 @@ Jitsi Meet packaged for Kubernetes
 | prosody.extraEnvFrom[4].secretRef.name | string | `"{{ include \"prosody.fullname\" . }}-auth"` |  |
 | prosody.extraEnvFrom[4].secretRef.optional | bool | `true` |  |
 | prosody.extraEnvFrom[5].configMapRef.name | string | `"{{ include \"prosody.fullname\" . }}-common"` |  |
+| prosody.extraVolumeMounts[0].mountPath | string | `"/etc/jitsi/room-policy"` |  |
+| prosody.extraVolumeMounts[0].name | string | `"room-policy-permissions"` |  |
+| prosody.extraVolumeMounts[0].readOnly | bool | `true` |  |
+| prosody.extraVolumeMounts[1].mountPath | string | `"/prosody-plugins-custom/mod_room_policy.lua"` |  |
+| prosody.extraVolumeMounts[1].name | string | `"room-policy-module"` |  |
+| prosody.extraVolumeMounts[1].readOnly | bool | `true` |  |
+| prosody.extraVolumeMounts[1].subPath | string | `"mod_room_policy.lua"` |  |
+| prosody.extraVolumes[0].configMap.name | string | `"{{ .Release.Name }}-keycloak-adapter-permissions"` |  |
+| prosody.extraVolumes[0].configMap.optional | bool | `true` |  |
+| prosody.extraVolumes[0].name | string | `"room-policy-permissions"` |  |
+| prosody.extraVolumes[1].configMap.name | string | `"{{ .Release.Name }}-prosody-room-policy"` |  |
+| prosody.extraVolumes[1].configMap.optional | bool | `true` |  |
+| prosody.extraVolumes[1].name | string | `"room-policy-module"` |  |
 | prosody.image.repository | string | `"jitsi/prosody"` |  |
 | prosody.server | string | `nil` |  |
 | prosody.useExternalProsody | bool | `false` |  |

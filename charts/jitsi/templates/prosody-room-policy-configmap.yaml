@@ -1,0 +1,11 @@
+{{- if .Values.keycloak_adapter.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-prosody-room-policy
+  labels:
+    {{- include "jitsi-meet.labels" . | nindent 4 }}
+data:
+  mod_room_policy.lua: |
+{{ .Files.Get "files/mod_room_policy.lua" | indent 4 }}
+{{- end }}

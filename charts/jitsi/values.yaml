@@ -632,6 +632,30 @@ prosody:
     - https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/main/token_lobby_bypass/mod_token_lobby_bypass.lua
     - https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/main/token_affiliation/mod_token_affiliation.lua
 
+  ## Server-side room policy module (paired with keycloak_adapter.roomPermissions).
+  ## Mounts the existing keycloak-adapter permissions configmap and the chart-shipped
+  ## mod_room_policy.lua into the prosody pod. The module is enabled via
+  ## XMPP_MUC_MODULES and ROOM_POLICY_FILE is sourced from the common configmap
+  ## (templates/common-configmap.yaml) via envFrom — set there so it survives
+  ## any user-side override of prosody.extraEnvs.
+  extraVolumes:
+    - name: room-policy-permissions
+      configMap:
+        name: '{{ .Release.Name }}-keycloak-adapter-permissions'
+        optional: true
+    - name: room-policy-module
+      configMap:
+        name: '{{ .Release.Name }}-prosody-room-policy'
+        optional: true
+  extraVolumeMounts:
+    - name: room-policy-permissions
+      mountPath: /etc/jitsi/room-policy
+      readOnly: true
+    - name: room-policy-module
+      mountPath: /prosody-plugins-custom/mod_room_policy.lua
+      subPath: mod_room_policy.lua
+      readOnly: true
+
   image:
     repository: jitsi/prosody
   # service:

@@ -14,6 +14,10 @@ data:
   JICOFO_AUTH_LIFETIME: "100 milliseconds"
   PROSODY_AUTH_TYPE: "jwt"
   ENABLE_AUTO_LOGIN: "0"
+  {{- if .Values.keycloak_adapter.enabled }}
+  XMPP_MUC_MODULES: "room_policy"
+  ROOM_POLICY_FILE: "/etc/jitsi/room-policy/permissions.json"
+  {{- end }}
   {{- end }}
   ENABLE_GUESTS: {{ ternary "1" "0" .Values.enableGuests | quote }}
   PUBLIC_URL: {{ include "jitsi-meet.publicURL" . }}

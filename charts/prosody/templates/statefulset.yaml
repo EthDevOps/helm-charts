@@ -133,8 +133,8 @@ spec:
             mountPath: /defaults/conf.d/jitsi-meet.cfg.lua
             subPath: jitsi-meet.cfg.lua
           {{- end }}
-          {{- with .Values.extraVolumeMounts }}
-          {{- toYaml . | nindent 10 }}
+          {{- range .Values.extraVolumeMounts }}
+          - {{ tpl (toYaml . ) $ | indent 12 | trim }}
           {{- end }}
       volumes:
       - name: config
@@ -168,8 +168,8 @@ spec:
         {{- else }}
         emptyDir: {}
         {{- end }}
-      {{- with .Values.extraVolumes }}
-      {{- toYaml . | nindent 6 }}
+      {{- range .Values.extraVolumes }}
+      - {{ tpl (toYaml . ) $ | indent 8 | trim }}
       {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
