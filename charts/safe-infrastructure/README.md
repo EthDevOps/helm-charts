@@ -119,7 +119,7 @@ A Helm chart for Safe Infrastructure services
 | networkPolicy.ingress[0] | object | `{}` |  |
 | nginx.image.pullPolicy | string | `"Always"` |  |
 | nginx.image.repository | string | `"nginx"` |  |
-| nginx.image.tag | string | `"1.27-alpine"` |  |
+| nginx.image | string | `"nginx:1.30.1-alpine"` |  |
 | nginx.replicas | int | `1` |  |
 | nodeSelector | object | `{}` |  |
 | persistence.accessMode | string | `"ReadWriteOnce"` |  |
