@@ -11,7 +11,6 @@ spec:
       {{- include "redis.selectorLabels" . | nindent 6 }}
   policyTypes:
   - Ingress
-  - Egress
   ingress:
   {{- if or .Values.networkPolicy.allowedPods .Values.networkPolicy.allowedNamespaces }}
   {{- if .Values.networkPolicy.allowedPods }}
@@ -43,6 +42,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.service.port }}
   {{- end }}
-  egress:
-  - {} # Allow all outbound traffic for DNS resolution and other essential services
 {{- end }}
