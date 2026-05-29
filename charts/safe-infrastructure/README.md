@@ -119,7 +119,7 @@ A Helm chart for Safe Infrastructure services
 | networkPolicy.ingress[0] | object | `{}` |  |
 | nginx.image.pullPolicy | string | `"Always"` |  |
 | nginx.image.repository | string | `"nginx"` |  |
-| nginx.image | string | `"nginx:1.30.1-alpine"` |  |
+| nginx.image.tag | string | `"1.30.1-alpine"` |  |
 | nginx.replicas | int | `1` |  |
 | nodeSelector | object | `{}` |  |
 | persistence.accessMode | string | `"ReadWriteOnce"` |  |
@@ -154,7 +154,7 @@ A Helm chart for Safe Infrastructure services
 | services.ui.type | string | `"ClusterIP"` |  |
 | staticNginx.image.pullPolicy | string | `"Always"` |  |
 | staticNginx.image.repository | string | `"nginx"` |  |
-| staticNginx.image.tag | string | `"1.27-alpine"` |  |
+| staticNginx.image.tag | string | `"1.30.1-alpine"` |  |
 | staticNginxResources.limits.cpu | string | `"200m"` |  |
 | staticNginxResources.limits.ephemeral-storage | string | `"256Mi"` |  |
 | staticNginxResources.limits.memory | string | `"128Mi"` |  |
