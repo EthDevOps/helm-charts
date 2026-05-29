@@ -1452,6 +1452,28 @@ entries:
   docmost:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-05-29T09:10:32.120836553Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.9
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.7
+    description: OpenSource alternative for Notion
+    digest: ff6656d781994d7965e7e3c4d2b1807dcb05464c0b7613cbaab0bbcc8a07d92b
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: docmost
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/docmost-0.2.7/docmost-0.2.7.tgz
+    version: 0.2.7
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-05-29T09:04:41.497157607Z"
     dependencies:
     - condition: postgresql.enabled
@@ -9898,4 +9920,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-05-29T09:04:41.497749623Z"
+generated: "2026-05-29T09:10:32.121504038Z"
