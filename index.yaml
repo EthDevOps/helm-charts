@@ -6655,6 +6655,26 @@ entries:
   postgresql:
   - apiVersion: v2
     appVersion: "16.0"
+    created: "2026-05-29T08:58:37.01051298Z"
+    description: PostgreSQL object-relational database system
+    digest: 468dbf44336afa87325aee13104685233fd52f327974ff04f204f9c83232de9e
+    home: https://www.postgresql.org/
+    keywords:
+    - postgresql
+    - postgres
+    - database
+    - sql
+    maintainers:
+    - name: QuokkaOps
+    name: postgresql
+    sources:
+    - https://github.com/postgres/postgres
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/postgresql-1.1.9/postgresql-1.1.9.tgz
+    version: 1.1.9
+  - apiVersion: v2
+    appVersion: "16.0"
     created: "2026-05-13T10:36:22.952398994Z"
     description: PostgreSQL object-relational database system
     digest: 7ceb9fb0f3b871371b8c2685c9e7d31938d3efaca392518df76dca61068f4293
@@ -7265,6 +7285,26 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/quokka-service-registry-0.1.0/quokka-service-registry-0.1.0.tgz
     version: 0.1.0
   redis:
+  - apiVersion: v2
+    appVersion: "7.2"
+    created: "2026-05-29T08:58:37.158312625Z"
+    description: A Helm chart for Redis standalone deployment with persistent storage
+    digest: 8d195c6bd4459e2be1e91b72fd3e2c36f1cb0b3a2fa374ffc01f1c8ae06edec4
+    home: https://redis.io/
+    keywords:
+    - redis
+    - cache
+    - database
+    - keyvalue
+    maintainers:
+    - name: QuokkaOps
+    name: redis
+    sources:
+    - https://github.com/redis/redis
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/redis-1.0.7/redis-1.0.7.tgz
+    version: 1.0.7
   - apiVersion: v2
     appVersion: "7.2"
     created: "2026-05-13T10:36:23.456811653Z"
@@ -9836,4 +9876,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-05-29T07:28:56.458405907Z"
+generated: "2026-05-29T08:58:37.159079956Z"
