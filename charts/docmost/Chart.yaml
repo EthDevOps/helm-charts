@@ -3,7 +3,7 @@ name: docmost
 description: OpenSource alternative for Notion
 type: application
 
-version: 0.2.6
+version: 0.2.7
 
 # App metadata
 appVersion: "1.0.0"

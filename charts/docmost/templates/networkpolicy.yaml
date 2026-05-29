@@ -11,13 +11,8 @@ spec:
       app: {{ .Release.Name }}-docmost
   policyTypes:
     - Ingress
-    - Egress
   {{- with .Values.networkPolicy.ingress }}
   ingress:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-  {{- with .Values.networkPolicy.egress }}
-  egress:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
