@@ -419,6 +419,19 @@ entries:
   cryptpad:
   - apiVersion: v2
     appVersion: 2024.12.0
+    created: "2026-06-01T10:56:02.290861535Z"
+    description: A Helm chart for cryptpad
+    digest: 72a1e6f28be801fc6f3435b645f1f211ea56c0f1fef561d9fa535c0be54e526c
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cryptpad
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cryptpad-0.0.32/cryptpad-0.0.32.tgz
+    version: 0.0.32
+  - apiVersion: v2
+    appVersion: 2024.12.0
     created: "2026-06-01T10:46:26.197294579Z"
     description: A Helm chart for cryptpad
     digest: 6a92fb232e405a27f2b90a351c6dd344e29020f76690588e46bb7e1ba8ef8e56
@@ -9946,4 +9959,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-06-01T10:46:26.198081971Z"
+generated: "2026-06-01T10:56:02.291727588Z"
