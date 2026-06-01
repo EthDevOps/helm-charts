@@ -4,6 +4,9 @@ metadata:
   name: {{ .Release.Name }}-svc
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}-listmonk
+  {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
