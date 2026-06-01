@@ -99,6 +99,8 @@ spec:
           mountPath: /cryptpad/data
         - name: files
           mountPath: /cryptpad/datastore
+        - name: openoffice
+          mountPath: /cryptpad/openoffice
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       volumes:
@@ -122,3 +124,6 @@ spec:
       - name: files
         persistentVolumeClaim: 
           claimName: {{ .Release.Name }}-files
+      - name: openoffice
+        persistentVolumeClaim: 
+          claimName: {{ .Release.Name }}-openoffice
