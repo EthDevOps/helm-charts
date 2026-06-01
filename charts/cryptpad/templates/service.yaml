@@ -8,6 +8,9 @@ metadata:
   {{- end }}
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}-cryptpad
+  {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   selector:
