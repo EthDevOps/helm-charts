@@ -32,9 +32,29 @@ spec:
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- with .Values.extraInitContainers }}
       initContainers:
-        {{- toYaml . | nindent 8 }}
+      - name: install-onlyoffice
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          {{- toYaml .Values.containerSecurityContext | nindent 10 }}
+        # Runs the cryptpad-bundled installer so the main container can start
+        # serving traffic immediately (probes are no longer delayed by the
+        # multi-hundred-MB onlyoffice download/build).
+        command: ["/bin/bash", "-c"]
+        args:
+        - cd /cryptpad && ./install-onlyoffice.sh --accept-license --trust-repository
+        volumeMounts:
+        - name: openoffice
+          mountPath: /cryptpad/onlyoffice-conf
+          subPath: conf
+        - name: openoffice
+          mountPath: /cryptpad/www/common/onlyoffice/dist
+          subPath: dist
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      {{- with .Values.extraInitContainers }}
+        {{- toYaml . | nindent 6 }}
       {{- end }}
       containers:
       - name: {{ .Release.Name }}-cryptpad
@@ -49,8 +69,6 @@ spec:
           value: {{ .Values.sandboxDomain | quote }}
         - name: CPAD_CONF
           value: "/cryptpad/config/config.js"
-        - name: CPAD_INSTALL_ONLYOFFICE
-          value: "yes"
         {{- if .Values.sso.existingSecret }}
         - name: SSO_CLIENT_ID
           valueFrom:
@@ -100,7 +118,11 @@ spec:
         - name: files
           mountPath: /cryptpad/datastore
         - name: openoffice
-          mountPath: /cryptpad/openoffice
+          mountPath: /cryptpad/onlyoffice-conf
+          subPath: conf
+        - name: openoffice
+          mountPath: /cryptpad/www/common/onlyoffice/dist
+          subPath: dist
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       volumes:
