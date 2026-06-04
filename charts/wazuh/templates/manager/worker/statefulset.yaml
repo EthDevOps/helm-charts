@@ -128,7 +128,7 @@ spec:
             failureThreshold: 6
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.wazuh.service.port }}
+              port: {{ .Values.wazuh.master.service.ports.registration }}
             initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 5
