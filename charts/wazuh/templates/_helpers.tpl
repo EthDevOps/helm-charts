@@ -739,7 +739,9 @@ node.name: ${NODE_NAME}
 network.host: ${NETWORK_HOST}
 discovery.seed_hosts: {{ include "wazuh.fullname" . }}-indexer-nodes
 cluster.initial_master_nodes:
-  - {{ include "wazuh.fullname" . }}-indexer-0
+{{- range $i, $_ := until (int .Values.indexer.replicas) }}
+  - {{ include "wazuh.fullname" $ }}-indexer-{{ $i }}
+{{- end }}
 
 node.max_local_storage_nodes: "3"
 path.data: /var/lib/wazuh-indexer
