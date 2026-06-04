@@ -154,7 +154,7 @@ uiSettings.overrides.defaultRoute: /app/wz-home
   <indexer>
     <enabled>yes</enabled>
     <hosts>
-      <host>"https://indexer:{{ .Values.indexer.service.httpPort }}"</host>
+      <host>https://indexer:{{ .Values.indexer.service.httpPort }}</host>
     </hosts>
     <ssl>
       <certificate_authorities>
@@ -500,7 +500,7 @@ uiSettings.overrides.defaultRoute: /app/wz-home
   <indexer>
     <enabled>yes</enabled>
     <hosts>
-      <host>"https://indexer:{{ .Values.indexer.service.httpPort }}"</host>
+      <host>https://indexer:{{ .Values.indexer.service.httpPort }}</host>
     </hosts>
     <ssl>
       <certificate_authorities>
