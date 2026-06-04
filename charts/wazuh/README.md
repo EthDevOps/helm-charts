@@ -1,6 +1,6 @@
 # wazuh
 
-![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.4](https://img.shields.io/badge/AppVersion-4.14.4-informational?style=flat-square)
+![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
 
 Wazuh is a free and open source security platform that unifies XDR and SIEM protection for endpoints and cloud workloads.
 
@@ -37,7 +37,7 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | dashboard.enable_ssl | bool | `false` |  |
 | dashboard.images.pullPolicy | string | `"Always"` |  |
 | dashboard.images.repository | string | `"wazuh/wazuh-dashboard"` |  |
-| dashboard.images.tag | string | `"4.14.4"` |  |
+| dashboard.images.tag | string | `"4.14.5"` |  |
 | dashboard.images.updateStrategy | string | `"OnDelete"` |  |
 | dashboard.ingress.annotations | object | `{}` |  |
 | dashboard.ingress.enabled | bool | `false` |  |
@@ -68,7 +68,7 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | indexer.images.imagePullSecrets.secret | object | `{}` |  |
 | indexer.images.pullPolicy | string | `"Always"` |  |
 | indexer.images.repository | string | `"wazuh/wazuh-indexer"` |  |
-| indexer.images.tag | string | `"4.14.4"` |  |
+| indexer.images.tag | string | `"4.14.5"` |  |
 | indexer.initContainers.increaseTheVmMaxMapCount.resources.limits.cpu | string | `"200m"` |  |
 | indexer.initContainers.increaseTheVmMaxMapCount.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
 | indexer.initContainers.increaseTheVmMaxMapCount.resources.limits.memory | string | `"256Mi"` |  |
@@ -117,7 +117,7 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | wazuh.images.pullPolicy | string | `"Always"` |  |
 | wazuh.images.pullSecret | string | `"regcred"` |  |
 | wazuh.images.repository | string | `"wazuh/wazuh-manager"` |  |
-| wazuh.images.tag | string | `"4.14.4"` |  |
+| wazuh.images.tag | string | `"4.14.5"` |  |
 | wazuh.initContainer.resources.limits.cpu | string | `"200m"` |  |
 | wazuh.initContainer.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
 | wazuh.initContainer.resources.limits.memory | string | `"256Mi"` |  |
