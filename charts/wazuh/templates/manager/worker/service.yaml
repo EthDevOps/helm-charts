@@ -1,18 +1,33 @@
+{{- $replicas := int .Values.wazuh.worker.replicas }}
+{{- range $i := until $replicas }}
+{{- if $i }}
+---
+{{- end }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "wazuh.fullname" . }}-manager-worker
+  name: {{ include "wazuh.fullname" $ }}-manager-worker-{{ $i }}
   labels:
-    app: {{ include "wazuh.fullname" . }}-manager
+    app: {{ include "wazuh.fullname" $ }}-manager
     node-type: worker
+    pod-index: "{{ $i }}"
   annotations:
-    {{- toYaml .Values.wazuh.worker.service.annotations | nindent 4 }}
+    # Wazuh workers hold per-agent state locally and don't share it across
+    # the cluster, so agents must be sticky to a single worker pod. This
+    # Service intentionally selects exactly one StatefulSet pod via the
+    # statefulset.kubernetes.io/pod-name label that the StatefulSet
+    # controller adds to each pod. kube-score's "service-targets-pod" rule
+    # would flag this as a misconfiguration; it isn't here.
+    kube-score/ignore: service-targets-pod
+    {{- with $.Values.wazuh.worker.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   ports:
     - name: agents-events
-      port: {{ .Values.wazuh.worker.service.ports.agentEvents }}
-      targetPort: {{ .Values.wazuh.worker.service.ports.agentEvents }}
+      port: {{ $.Values.wazuh.worker.service.ports.agentEvents }}
+      targetPort: {{ $.Values.wazuh.worker.service.ports.agentEvents }}
   selector:
-    app: {{ include "wazuh.fullname" . }}-manager
-    node-type: worker
-  type: {{ .Values.wazuh.worker.service.type }}
+    statefulset.kubernetes.io/pod-name: {{ include "wazuh.fullname" $ }}-manager-worker-{{ $i }}
+  type: {{ $.Values.wazuh.worker.service.type }}
+{{- end }}
