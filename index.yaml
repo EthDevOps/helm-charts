@@ -8477,6 +8477,67 @@ entries:
   - annotations:
       artifacthub.io/category: security
       artifacthub.io/changes: |
+        - kind: changed
+          description: "BREAKING: worker LB Service is now templated per-pod. The chart now emits N LoadBalancer Services (one per worker replica, pinned via statefulset.kubernetes.io/pod-name) instead of a single multi-pod Service. Consume the new ethquokkaops.io/balance-group + ethquokkaops.io/balance annotations (or their LB-controller equivalents) so an upstream LB sees a single backend with multiple sticky-hashed server lines. Required to keep agent-to-worker routing deterministic; Wazuh worker nodes do not share per-agent state across the cluster."
+        - kind: added
+          description: "Add support for cert-manager"
+        - kind: changed
+          description: "Refactor whole chart"
+        - kind: changed
+          description: "Bump wazuh-manager to 4.10.1"
+      artifacthub.io/links: |
+        - name: application source
+          url: https://github.com/wazuh/wazuh
+        - name: kustomize source
+          url: https://github.com/wazuh/wazuh-kubernetes
+      artifacthub.io/prerelease: "true"
+      artifacthub.io/screenshots: |
+        - title: Home Page
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/dashboard.png
+        - title: Agent Deployment
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/agent-deploy.png
+        - title: Threat Hunting
+          url: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/threat-hunting.png
+    apiVersion: v2
+    appVersion: 4.14.5
+    created: "2026-06-05T07:26:12.737913716Z"
+    dependencies:
+    - condition: reloader.enabled
+      name: reloader
+      repository: https://stakater.github.io/stakater-charts
+      version: 1.2.1
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.16.3
+    description: Wazuh is a free and open source security platform that unifies XDR
+      and SIEM protection for endpoints and cloud workloads.
+    digest: 931e33759d137e6526659ead4d7536127f43b3dacb9d64b1c07c4198616a906d
+    home: https://wazuh.com/
+    icon: https://github.com/morgoved/wazuh-helm/blob/main/charts/wazuh/images/icon.png
+    keywords:
+    - security
+    - information
+    - threat
+    - management
+    - kubernetes
+    - wazuh
+    - opendistro
+    - elasticsearch
+    maintainers:
+    - name: EthDevOps
+      url: https://github.com/EthDevOps
+    name: wazuh
+    sources:
+    - https://github.com/EthDevOps/helm-charts
+    - https://github.com/morgoved/wazuh-helm
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.2.0/wazuh-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/changes: |
         - kind: added
           description: "Add support for cert-manager"
         - kind: changed
@@ -10219,4 +10280,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-06-04T11:03:31.961054435Z"
+generated: "2026-06-05T07:26:12.738776524Z"
