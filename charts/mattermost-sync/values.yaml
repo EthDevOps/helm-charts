@@ -29,6 +29,11 @@ cronjob:
   enabled: true
   # Schedule in cron format (default: every 4 hours)
   schedule: "0 */4 * * *"
+  # Container entrypoint (command). Default matches the historical behavior.
+  command: ["python"]
+  # Container args. Default matches the historical behavior.
+  # Note: "--dry-run" is appended automatically when sync.dryRun is true.
+  args: ["sync_groups_to_mattermost.py"]
   # Successful job history limit
   successfulJobsHistoryLimit: 3
   # Failed job history limit
