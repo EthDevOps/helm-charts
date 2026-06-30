@@ -51,12 +51,13 @@ spec:
               {{- toYaml .Values.securityContext | nindent 14 }}
             image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
             imagePullPolicy: {{ .Values.image.pullPolicy }}
+            command:
+              {{- toYaml .Values.cronjob.command | nindent 12 }}
             args:
-            - "sync_groups_to_mattermost.py"
+              {{- toYaml .Values.cronjob.args | nindent 12 }}
             {{- if .Values.sync.dryRun }}
             - "--dry-run"
             {{- end }}
-            command: ["python"]
             env:
             - name: MATTERMOST_URL
               value: {{ .Values.mattermost.url | quote }}
