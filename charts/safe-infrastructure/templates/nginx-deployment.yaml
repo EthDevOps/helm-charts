@@ -51,7 +51,7 @@ spec:
           periodSeconds: 30
           timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml (default .Values.resources .Values.nginx.resources) | nindent 10 }}
       volumes:
       - name: nginx-config
         configMap:

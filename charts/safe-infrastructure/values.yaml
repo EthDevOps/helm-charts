@@ -77,6 +77,10 @@ cfg:
   replicas: 1
   image: safeglobal/safe-config-service
   pullPolicy: Always
+  # Number of gunicorn workers for cfg-web. The image defaults to
+  # cpu_count() * 2, which on a large node spawns dozens of workers
+  # (~144Mi each) and can exhaust the pod memory limit.
+  webConcurrency: 4
   env:
     pythonDontWriteBytecode: "true"
     debug: "true"
@@ -189,6 +193,9 @@ persistence:
   size: 10Gi
 
 # Default resources applied to every workload container.
+# Each component can override these with its own `resources` block:
+# nginx, databases, redis, rabbitmq, txs, cfg, cgw, events, ui
+# (e.g. `redis: { resources: { requests: ..., limits: ... } }`).
 resources:
   requests:
     cpu: 100m

@@ -42,6 +42,10 @@ spec:
         env:
         - name: CSRF_COOKIE_NAME
           value: "csrf_cfg"
+        # Without this the config-service gunicorn defaults to
+        # cpu_count() * 2 workers, sized by the node, not the pod.
+        - name: WEB_CONCURRENCY
+          value: {{ .Values.cfg.webConcurrency | quote }}
         - name: PYTHONDONTWRITEBYTECODE
           value: {{ .Values.cfg.env.pythonDontWriteBytecode | quote }}
         - name: SECRET_KEY
@@ -135,7 +139,7 @@ spec:
           periodSeconds: {{ .Values.healthCheck.periodSeconds }}
           timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml (default .Values.resources .Values.cfg.resources) | nindent 10 }}
       - name: nginx-staticfiles
         image: "{{ .Values.staticNginx.image.repository }}:{{ .Values.staticNginx.image.tag }}"
         imagePullPolicy: {{ .Values.staticNginx.image.pullPolicy }}

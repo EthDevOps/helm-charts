@@ -1,6 +1,6 @@
 # safe-infrastructure
 
-![Version: 0.1.20](https://img.shields.io/badge/Version-0.1.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.1.21](https://img.shields.io/badge/Version-0.1.21-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for Safe Infrastructure services
 
@@ -40,6 +40,7 @@ A Helm chart for Safe Infrastructure services
 | cfg.image | string | `"safeglobal/safe-config-service"` |  |
 | cfg.pullPolicy | string | `"Always"` |  |
 | cfg.replicas | int | `1` |  |
+| cfg.webConcurrency | int | `4` |  |
 | cgw.env.emailApiApplicationCode | string | `""` |  |
 | cgw.env.emailApiFromEmail | string | `"changeme@example.com"` |  |
 | cgw.env.emailApiKey | string | `""` |  |

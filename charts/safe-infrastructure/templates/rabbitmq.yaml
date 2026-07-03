@@ -49,5 +49,5 @@ spec:
           timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
           failureThreshold: {{ $.Values.healthCheck.failureThreshold }}
         resources:
-          {{- toYaml $.Values.resources | nindent 10 }}
+          {{- toYaml (default $.Values.resources $.Values.rabbitmq.resources) | nindent 10 }}
 {{- end }}

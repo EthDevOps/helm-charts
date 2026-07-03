@@ -110,7 +110,7 @@ spec:
           periodSeconds: {{ .Values.healthCheck.periodSeconds }}
           timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml (default .Values.resources .Values.txs.resources) | nindent 10 }}
       - name: nginx-staticfiles
         image: "{{ .Values.staticNginx.image.repository }}:{{ .Values.staticNginx.image.tag }}"
         imagePullPolicy: {{ .Values.staticNginx.image.pullPolicy }}
@@ -228,7 +228,7 @@ spec:
           periodSeconds: {{ $.Values.healthCheck.periodSeconds }}
           timeoutSeconds: {{ $.Values.healthCheck.timeoutSeconds }}
         resources:
-          {{- toYaml $.Values.resources | nindent 10 }}
+          {{- toYaml (default $.Values.resources $.Values.txs.resources) | nindent 10 }}
 ---
 {{- end }}
 apiVersion: apps/v1
@@ -327,7 +327,7 @@ spec:
           periodSeconds: {{ .Values.healthCheck.periodSeconds | mul 2 }}
           timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml (default .Values.resources .Values.txs.resources) | nindent 10 }}
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -1,6 +1,6 @@
 # mattermost-sync
 
-![Version: 1.0.9](https://img.shields.io/badge/Version-1.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0](https://img.shields.io/badge/AppVersion-v1.0.0-informational?style=flat-square)
+![Version: 1.0.10](https://img.shields.io/badge/Version-1.0.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0](https://img.shields.io/badge/AppVersion-v1.0.0-informational?style=flat-square)
 
 Sync groups and users from Google Workspace to Mattermost
 
@@ -19,6 +19,8 @@ Sync groups and users from Google Workspace to Mattermost
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
+| cronjob.args[0] | string | `"sync_groups_to_mattermost.py"` |  |
+| cronjob.command[0] | string | `"python"` |  |
 | cronjob.concurrencyPolicy | string | `"Forbid"` |  |
 | cronjob.enabled | bool | `true` |  |
 | cronjob.failedJobsHistoryLimit | int | `1` |  |

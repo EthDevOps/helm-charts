@@ -131,4 +131,4 @@ spec:
           periodSeconds: {{ .Values.healthCheck.periodSeconds }}
           timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml (default .Values.resources .Values.cgw.resources) | nindent 10 }}
