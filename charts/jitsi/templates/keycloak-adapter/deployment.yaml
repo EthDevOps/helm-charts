@@ -28,6 +28,15 @@ spec:
         env:
         - name: PERMISSIONS_FILE
           value: "/config-permissions/permissions.json"
+        {{- if .Values.jibri.enabled }}
+        # Recorder gate: jibri proves itself to /oidc/recorder with its
+        # recorder XMPP password, so the adapter needs the same secret.
+        - name: RECORDER_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "jitsi-meet.jibri.secretName" . }}
+              key: JIBRI_RECORDER_PASSWORD
+        {{- end }}
         volumeMounts:
         - name: permissions
           mountPath: /config-permissions

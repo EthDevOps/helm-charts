@@ -249,13 +249,51 @@
     </div>
 
     <script>
+      // Jibri lands here because its room URL carries no jwt/oidc marker.
+      // Its URL hash natively contains the recorder XMPP password
+      // (appData.localStorageContent -> xmpp_password_override); present it
+      // to /oidc/recorder to pass the login gate even for rooms with
+      // requireAuthentication. Jibri then authenticates to prosody via the
+      // hidden recorder domain. Anyone spoofing iAmRecorder without the
+      // secret falls back to the normal guest flow (login page).
       function checkForRecorder() {
         const hash = window.location.hash;
-        if (hash.includes("config.iAmRecorder=true")) {
-          console.log("The Recorder tries to connect");
-          guest();
+        if (!hash.includes("config.iAmRecorder=true")) {
+          return;
+        }
+        console.log("The Recorder tries to connect");
+
+        let secret = "";
+        try {
+          const params = new URLSearchParams(hash.substring(1));
+          // jibri double-encodes: the param is a JSON string wrapping
+          // escaped inner JSON
+          const outer = params.get("appData.localStorageContent");
+          const content = JSON.parse(JSON.parse(outer));
+          secret = content.xmpp_password_override || "";
+        } catch (e) {
+          console.log("Could not extract recorder credentials", e);
         }
 
+        if (!secret) {
+          guest();
+          return;
+        }
+
+        const path = encodeURIComponent(window.location.pathname);
+        const search = encodeURIComponent(window.location.search.substring(1));
+        const hashParam = encodeURIComponent(hash.substring(1));
+        fetch(`/oidc/recorder?path=${path}&search=${search}&hash=${hashParam}`, {
+          headers: { "X-Recorder-Token": secret },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("recorder gate rejected");
+            return res.json();
+          })
+          .then((body) => {
+            window.location = body.target;
+          })
+          .catch(() => guest());
       }
 
       function addQueryParam(url, key, value) {
