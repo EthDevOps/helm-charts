@@ -94,3 +94,15 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            # The Alpine nginx package owns /run/nginx as nginx:nginx (755);
+            # the root master process cannot write its pid file there with
+            # CAP_DAC_OVERRIDE dropped. A root-owned emptyDir makes it
+            # writable without widening the capability set. (The startup
+            # alert about /var/lib/nginx/logs/error.log is benign: the
+            # config sends error_log to stderr once loaded.)
+            - name: nginx-run
+              mountPath: /run/nginx
+      volumes:
+        - name: nginx-run
+          emptyDir: {}
