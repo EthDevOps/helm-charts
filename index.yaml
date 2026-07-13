@@ -1851,6 +1851,25 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/domainmod-0.1.0/domainmod-0.1.0.tgz
     version: 0.1.0
+  engelsystem:
+  - apiVersion: v2
+    appVersion: main
+    created: "2026-07-13T14:14:21.825729572Z"
+    dependencies:
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://groundhog2k.github.io/helm-charts
+      version: 4.5.1
+    description: Online tool for coordinating volunteers and shifts on large events
+    digest: 640d0c4701d980d5498c376db3dd47134f03e23ee778162ac98a1df234dea14b
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: engelsystem
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/engelsystem-0.1.0/engelsystem-0.1.0.tgz
+    version: 0.1.0
   frag-jetzt:
   - apiVersion: v2
     appVersion: master
@@ -10350,4 +10369,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-07-08T06:36:53.53572004Z"
+generated: "2026-07-13T14:14:21.826567504Z"
