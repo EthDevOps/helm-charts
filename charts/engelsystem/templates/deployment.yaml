@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-engelsystem
+  labels:
+    app: {{ .Release.Name }}-engelsystem
+  annotations:
+    # The upstream image starts nginx and php-fpm as root (workers drop to
+    # www-data), so uid/gid > 10000 cannot be satisfied without rebuilding it.
+    kube-score/ignore: container-security-context-user-group-id
+spec:
+  replicas: {{ .Values.replicaCount }}
+  # Stateless: sessions live in the database (session.driver=pdo) and
+  # storage/ only holds regenerable caches, so no PVC and rolling updates.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-engelsystem
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-engelsystem
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        # Creates the schema on a fresh install and applies pending
+        # migrations on upgrades; retries until the database is reachable.
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - while ! bin/migrate up; do echo "Waiting for database..."; sleep 5; done
+          env:
+            {{- include "engelsystem.databaseEnv" . | nindent 12 }}
+            {{- if .Values.app.setupAdminPasswordExistingSecret.name }}
+            - name: SETUP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.app.setupAdminPasswordExistingSecret.name }}
+                  key: {{ .Values.app.setupAdminPasswordExistingSecret.key }}
+            {{- else if .Values.app.setupAdminPassword }}
+            - name: SETUP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-engelsystem
+                  key: SETUP_ADMIN_PASSWORD
+            {{- end }}
+          {{- with .Values.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.migrateInitContainer.resources | nindent 12 }}
+      containers:
+        - name: engelsystem
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          env:
+            {{- include "engelsystem.databaseEnv" . | nindent 12 }}
+            - name: APP_URL
+              value: {{ .Values.app.url | quote }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

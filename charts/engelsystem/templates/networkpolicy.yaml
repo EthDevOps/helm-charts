@@ -1,0 +1,40 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-engelsystem
+  labels:
+    app: {{ .Release.Name }}-engelsystem
+spec:
+  endpointSelector:
+    matchLabels:
+      app: {{ .Release.Name }}-engelsystem
+  {{- with .Values.networkPolicy.ingress }}
+  ingress:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- if .Values.mariadb.enabled }}
+---
+# Restrict the bundled MariaDB to traffic from the engelsystem pods,
+# mirroring the internal-only database network of the upstream compose file.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-engelsystem-mariadb
+  labels:
+    app: {{ .Release.Name }}-engelsystem
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: mariadb
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: {{ .Release.Name }}-engelsystem
+      toPorts:
+        - ports:
+            - port: "3306"
+              protocol: TCP
+{{- end }}
+{{- end }}

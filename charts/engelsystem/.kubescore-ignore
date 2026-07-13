@@ -1,0 +1,3 @@
+# Network isolation is provided by CiliumNetworkPolicies (CRDs), which
+# kube-score does not recognize as matching NetworkPolicies.
+pod-networkpolicy

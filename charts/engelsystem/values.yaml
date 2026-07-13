@@ -1,0 +1,198 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/ethdevops/engelsystem
+  tag: main
+  pullPolicy: Always
+
+app:
+  # Public base URL of the installation (APP_URL). Used for redirects and
+  # generated links; also drives the nginx path prefix in the container.
+  url: https://engelsystem.example.com
+  # Password set for the initial `admin` user on a fresh install
+  # (SETUP_ADMIN_PASSWORD, only consumed by the set-admin-password migration).
+  # Leave empty to keep the upstream default (admin:asdfasdf - change it!).
+  setupAdminPassword: ""
+  # Read SETUP_ADMIN_PASSWORD from an existing secret instead; takes
+  # precedence over setupAdminPassword.
+  setupAdminPasswordExistingSecret:
+    name: ""
+    key: SETUP_ADMIN_PASSWORD
+
+# Existing secret providing the database password (MYSQL_PASSWORD) for the
+# app; takes precedence over mariadb.userDatabase.password.value and
+# externalDatabase.password. When using the bundled MariaDB, point
+# mariadb.userDatabase.existingSecret at the same secret so both sides agree.
+databaseExistingSecret:
+  name: ""
+  passwordKey: MYSQL_PASSWORD
+  # Optionally also read the database name and user from the same secret
+  # (required when mariadb.userDatabase.existingSecret is used, because the
+  # subchart then ignores the plain name/user values). Leave empty to use the
+  # plain values from mariadb.userDatabase / externalDatabase.
+  databaseKey: ""
+  userKey: ""
+
+# Additional environment variables for the engelsystem container, e.g. mail
+# settings (MAIL_HOST, MAIL_FROM_ADDRESS, ...) or any config key as upper-case
+# env var. Plain k8s EnvVar list, so valueFrom/secretKeyRef works too.
+extraEnv: []
+
+# Existing secrets/configMaps whose keys are mapped verbatim into the app
+# environment (e.g. SMTP credentials as MAIL_USERNAME/MAIL_PASSWORD).
+# Plain k8s envFrom list; applied to the app and migrate containers.
+extraEnvFrom: []
+#  - secretRef:
+#      name: my-smtp-secret
+
+service:
+  type: ClusterIP
+  port: 80
+  labels: {}
+  annotations: {}
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: "2"
+    memory: 2Gi
+    ephemeral-storage: 1Gi
+
+# The migrate init container runs the same image with `bin/migrate`.
+migrateInitContainer:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+      ephemeral-storage: 128Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+      ephemeral-storage: 256Mi
+
+# The container entrypoint starts nginx and php-fpm as root; the fpm workers
+# drop to www-data. runAsNonRoot therefore cannot be enabled with the
+# upstream image.
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+    add:
+      # nginx binds :80, php-fpm/nginx switch their workers to www-data
+      - NET_BIND_SERVICE
+      - SETUID
+      - SETGID
+      - CHOWN
+      - FOWNER
+      - KILL
+
+livenessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+# Rendered as CiliumNetworkPolicies (requires the Cilium CNI).
+networkPolicy:
+  enabled: true
+  # Cilium ingress rules for the engelsystem pods; default allows HTTP from
+  # anywhere in the cluster (restrict to your ingress controller if desired).
+  ingress:
+    - fromEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
+
+podLabels: {}
+podAnnotations: {}
+
+# Bundled MariaDB (groundhog2k/mariadb subchart).
+mariadb:
+  enabled: true
+  image:
+    pullPolicy: Always
+  # mariadb runs as uid/gid 999 (baked into the image) and the subchart's
+  # StatefulSet serviceName points at a non-headless service; neither can be
+  # changed from values.
+  customAnnotations:
+    kube-score/ignore: container-security-context-user-group-id,statefulset-has-servicename
+  # The subchart defaults to identical liveness/readiness probes; use a plain
+  # TCP check for liveness instead.
+  customLivenessProbe:
+    tcpSocket:
+      port: 3306
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
+  initResources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+      ephemeral-storage: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+      ephemeral-storage: 128Mi
+  settings:
+    # Alternatively set settings.existingSecret to read the root password
+    # from an existing secret (subchart option).
+    rootPassword:
+      # TODO: override with a strong password (or use settings.existingSecret)
+      value: engelsystem-root
+  # userDatabase also supports existingSecret + secretKey per field
+  # (subchart options) - pair it with databaseExistingSecret above.
+  userDatabase:
+    name:
+      value: engelsystem
+    user:
+      value: engelsystem
+    password:
+      # TODO: override with a strong password
+      value: engelsystem
+  storage:
+    requestedSize: 2Gi
+
+# Used when mariadb.enabled is false. The server must listen on port 3306
+# (engelsystem only takes a MYSQL_HOST, not a port). For the password prefer
+# databaseExistingSecret above.
+externalDatabase:
+  host: ""
+  database: engelsystem
+  user: engelsystem
+  password: ""

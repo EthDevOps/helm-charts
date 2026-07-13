@@ -1,0 +1,17 @@
+apiVersion: v2
+name: engelsystem
+description: Online tool for coordinating volunteers and shifts on large events
+type: application
+
+version: 0.1.0
+
+# App metadata
+appVersion: "main"
+maintainers:
+  - name: elasticroentgen
+    email: markus.keil@ethereum.org
+dependencies:
+  - name: mariadb
+    version: 4.5.1
+    repository: https://groundhog2k.github.io/helm-charts
+    condition: mariadb.enabled
