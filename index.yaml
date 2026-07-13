@@ -1854,6 +1854,24 @@ entries:
   engelsystem:
   - apiVersion: v2
     appVersion: main
+    created: "2026-07-13T14:52:56.626356054Z"
+    dependencies:
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://groundhog2k.github.io/helm-charts
+      version: 4.5.1
+    description: Online tool for coordinating volunteers and shifts on large events
+    digest: 769fe2ae2bfdef142237838ccb63f25264b2bcb6946cbb8e7915234c77c5a5c5
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: engelsystem
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/engelsystem-0.1.1/engelsystem-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: main
     created: "2026-07-13T14:14:21.825729572Z"
     dependencies:
     - condition: mariadb.enabled
@@ -10369,4 +10387,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-07-13T14:14:21.826567504Z"
+generated: "2026-07-13T14:52:56.627053Z"
