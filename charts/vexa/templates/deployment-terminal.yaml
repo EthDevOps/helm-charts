@@ -78,6 +78,29 @@ spec:
             - name: TERMINAL_URL
               value: {{ .Values.terminal.publicUrl | quote }}
             {{- end }}
+            {{- with .Values.terminal.oauth.google }}
+            {{- if or .existingSecretName .clientId }}
+            # Google OAuth login (NextAuth self-gates: the button shows only when BOTH id+secret
+            # resolve). Redirect URI to register: {publicUrl}/api/auth/callback/google
+            {{- if .existingSecretName }}
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecretName | quote }}
+                  key: {{ .clientIdKey | quote }}
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecretName | quote }}
+                  key: {{ .clientSecretKey | quote }}
+            {{- else }}
+            - name: GOOGLE_CLIENT_ID
+              value: {{ .clientId | quote }}
+            - name: GOOGLE_CLIENT_SECRET
+              value: {{ .clientSecret | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
             {{- with .Values.terminal.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

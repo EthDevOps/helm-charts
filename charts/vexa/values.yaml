@@ -258,12 +258,24 @@ terminal:
   # External origin once an ingress/LB fronts the terminal (sets NEXTAUTH_URL/TERMINAL_URL for cookie
   # security + OAuth callbacks). Empty for cluster-internal / port-forward access.
   publicUrl: ""
+  # OAuth login providers (NextAuth in the terminal). Each provider self-gates in the app: the
+  # sign-in button appears only when BOTH client id + secret are present, so leaving this empty is
+  # safe (email debug login still works). Requires publicUrl (NEXTAUTH_URL) to be set; register the
+  # redirect URI in the Google console as: {publicUrl}/api/auth/callback/google
+  # Prefer existingSecretName over inline clientId/clientSecret (inline values persist in helm
+  # release manifests). Mirrors the s3Config existingSecret pattern.
+  oauth:
+    google:
+      clientId: ""               # inline (dev only) — prefer existingSecretName
+      clientSecret: ""
+      existingSecretName: ""     # Secret carrying the two keys below
+      clientIdKey: "GOOGLE_CLIENT_ID"
+      clientSecretKey: "GOOGLE_CLIENT_SECRET"
   resources:
     requests: { cpu: 100m, memory: 256Mi, ephemeral-storage: 256Mi }
     limits:   { cpu: 1000m, memory: 1Gi, ephemeral-storage: 1Gi }
-  # OAuth (Google/Microsoft) + other knobs: add here, e.g.
-  #   - name: GOOGLE_CLIENT_ID
-  #     value: "..."
+  # Other knobs (e.g. Microsoft OAuth: MICROSOFT_CLIENT_ID / MICROSOFT_CLIENT_SECRET /
+  # MICROSOFT_TENANT_ID) can be injected here.
   extraEnv: []
 
 # Optional idempotent schema-sync Job (meeting-api owns init_db). Off by default; the services

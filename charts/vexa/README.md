@@ -1,6 +1,6 @@
 # vexa
 
-![Version: 0.13.0](https://img.shields.io/badge/Version-0.13.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.12.4](https://img.shields.io/badge/AppVersion-0.12.4-informational?style=flat-square)
+![Version: 0.14.0](https://img.shields.io/badge/Version-0.14.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.12.4](https://img.shields.io/badge/AppVersion-0.12.4-informational?style=flat-square)
 
 Vexa v0.12 — self-hostable real-time meeting transcription + agent control plane
 
@@ -285,6 +285,11 @@ Vexa v0.12 — self-hostable real-time meeting transcription + agent control pla
 | terminal.extraEnv | list | `[]` |  |
 | terminal.image.repository | string | `"vexaai/v012-terminal"` |  |
 | terminal.image.tag | string | `"v012"` |  |
+| terminal.oauth.google.clientId | string | `""` |  |
+| terminal.oauth.google.clientIdKey | string | `"GOOGLE_CLIENT_ID"` |  |
+| terminal.oauth.google.clientSecret | string | `""` |  |
+| terminal.oauth.google.clientSecretKey | string | `"GOOGLE_CLIENT_SECRET"` |  |
+| terminal.oauth.google.existingSecretName | string | `""` |  |
 | terminal.publicUrl | string | `""` |  |
 | terminal.replicaCount | int | `2` |  |
 | terminal.resources.limits.cpu | string | `"1000m"` |  |
