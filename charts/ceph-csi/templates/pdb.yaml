@@ -13,4 +13,20 @@ spec:
   selector:
     matchLabels:
       app: csi-rbdplugin-provisioner
+{{- if .Values.cephfs.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: csi-cephfsplugin-provisioner
+spec:
+  {{- if .Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  {{- else }}
+  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: csi-cephfsplugin-provisioner
+{{- end }}
 {{- end }}

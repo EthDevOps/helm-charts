@@ -1,0 +1,16 @@
+{{- if .Values.cephfs.enabled }}
+---
+# Required because the cephfs provisioner ships no csi-attacher sidecar
+# (upstream dropped it): without this object attachRequired defaults to
+# true and every mount would hang waiting for a VolumeAttachment nobody
+# handles. The rbd driver keeps its attacher and needs no CSIDriver object.
+apiVersion: storage.k8s.io/v1
+kind: CSIDriver
+metadata:
+  name: cephfs.csi.ceph.com
+spec:
+  attachRequired: false
+  podInfoOnMount: false
+  fsGroupPolicy: File
+  seLinuxMount: true
+{{- end }}

@@ -6,7 +6,10 @@ data:
     [
       {
         "clusterID": "{{ .Values.clusterId }}",
-        "monitors": {{ .Values.monitors | toJson }}
+        "monitors": {{ .Values.monitors | toJson }}{{- if .Values.cephfs.enabled }},
+        "cephFS": {
+          "subvolumeGroup": "{{ .Values.cephfs.subvolumeGroup }}"
+        }{{- end }}
       }
     ]
 metadata:

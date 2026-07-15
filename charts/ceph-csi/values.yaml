@@ -8,6 +8,21 @@ auth:
   user: kubernetes
   key: some-key
 
+# CephFS driver (RWX/shared-filesystem volumes) alongside the always-on rbd
+# driver. Disabled by default — existing consumers see no change. Requires a
+# CephFS filesystem + MDS on the cluster and a user with mds/mgr/cephfs-osd
+# caps (keep it separate from the rbd user).
+cephfs:
+  enabled: false
+  # name of the CephFS filesystem (ceph fs ls)
+  fsName: cephfs
+  # subvolume group the CSI driver provisions into; auto-created by ceph-csi.
+  # Use one group per k8s cluster when several clusters share a filesystem.
+  subvolumeGroup: csi
+  auth:
+    user: cephfs-user
+    key: some-key
+
 # Default resource requests/limits applied to every container in the
 # DaemonSet and provisioner Deployment. Tune per-environment as needed.
 resources:
