@@ -1,0 +1,5 @@
+# Every image this chart deploys bakes its runtime user in below uid 10000
+# (vexaai/v012-* app images set USER in their Dockerfiles; postgres:17-alpine
+# runs as postgres/70, redis:7-alpine as redis/999, minio + mc start as root).
+# Raising the uid would require rebuilding upstream images, so skip chart-wide.
+container-security-context-user-group-id

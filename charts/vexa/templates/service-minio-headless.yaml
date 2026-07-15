@@ -1,0 +1,23 @@
+{{- if .Values.minio.enabled }}
+# Headless governor Service for the MinIO StatefulSet (its spec.serviceName).
+# Client traffic keeps using the regular Service in service-minio.yaml.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vexa.componentName" (list . "minio-headless") }}
+  labels:
+    {{- include "vexa.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: api
+      port: {{ .Values.minio.service.port }}
+      targetPort: api
+    - name: console
+      port: 9001
+      targetPort: console
+  selector:
+    {{- include "vexa.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: minio
+{{- end }}
