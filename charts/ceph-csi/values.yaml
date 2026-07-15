@@ -16,8 +16,10 @@ cephfs:
   enabled: false
   # name of the CephFS filesystem (ceph fs ls)
   fsName: cephfs
-  # subvolume group the CSI driver provisions into; auto-created by ceph-csi.
-  # Use one group per k8s cluster when several clusters share a filesystem.
+  # subvolume group the CSI driver provisions into. NOT auto-created —
+  # pre-create it (ceph fs subvolumegroup create <fsName> <group>) or PVCs
+  # stay Pending. Use one group per k8s cluster when several clusters share
+  # a filesystem.
   subvolumeGroup: csi
   auth:
     user: cephfs-user
