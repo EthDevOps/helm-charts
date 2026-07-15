@@ -8596,6 +8596,27 @@ entries:
   vexa:
   - apiVersion: v2
     appVersion: 0.12.4
+    created: "2026-07-15T14:01:07.114072785Z"
+    description: Vexa v0.12 — self-hostable real-time meeting transcription + agent
+      control plane
+    digest: a0148e45ca98fd986a8163eda2157ce9f0a344f0b2a27d869b6aacaa4608247c
+    home: https://github.com/Vexa-ai/vexa
+    keywords:
+    - vexa
+    - meeting-bot
+    - transcription
+    - agent
+    maintainers:
+    - name: Vexa community
+    name: vexa
+    sources:
+    - https://github.com/Vexa-ai/vexa
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/vexa-0.13.0/vexa-0.13.0.tgz
+    version: 0.13.0
+  - apiVersion: v2
+    appVersion: 0.12.4
     created: "2026-07-15T12:10:26.372801283Z"
     description: Vexa v0.12 — self-hostable real-time meeting transcription + agent
       control plane
@@ -10422,4 +10443,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-07-15T12:10:26.373537565Z"
+generated: "2026-07-15T14:01:07.11530013Z"
