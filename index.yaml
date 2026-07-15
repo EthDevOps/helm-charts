@@ -215,6 +215,19 @@ entries:
   ceph-csi:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-07-15T12:10:26.240061611Z"
+    description: A Helm chart for Ceph as CSI
+    digest: 23791586d445676ed90045de89365cb9f6e2eb2d867648e5072ea044f3de2415
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: ceph-csi
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/ceph-csi-0.0.12/ceph-csi-0.0.12.tgz
+    version: 0.0.12
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-06-01T11:45:02.295091605Z"
     description: A Helm chart for Ceph as CSI
     digest: 8049ac5d249b4501691dc3177ab39bac28112b6767afc0a57d558af404e552e3
@@ -8580,6 +8593,28 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
+  vexa:
+  - apiVersion: v2
+    appVersion: 0.12.4
+    created: "2026-07-15T12:10:26.372801283Z"
+    description: Vexa v0.12 — self-hostable real-time meeting transcription + agent
+      control plane
+    digest: a9d2c74b39c876cfa0f1e65f4d392351ce1989bc61aed5b912b3f561c5f77938
+    home: https://github.com/Vexa-ai/vexa
+    keywords:
+    - vexa
+    - meeting-bot
+    - transcription
+    - agent
+    maintainers:
+    - name: Vexa community
+    name: vexa
+    sources:
+    - https://github.com/Vexa-ai/vexa
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/vexa-0.12.2/vexa-0.12.2.tgz
+    version: 0.12.2
   wazuh:
   - annotations:
       artifacthub.io/category: security
@@ -10387,4 +10422,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-07-13T14:52:56.627053Z"
+generated: "2026-07-15T12:10:26.373537565Z"
