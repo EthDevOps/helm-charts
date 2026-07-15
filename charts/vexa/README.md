@@ -1,6 +1,6 @@
 # vexa
 
-![Version: 0.12.2](https://img.shields.io/badge/Version-0.12.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.12.4](https://img.shields.io/badge/AppVersion-0.12.4-informational?style=flat-square)
+![Version: 0.13.0](https://img.shields.io/badge/Version-0.13.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.12.4](https://img.shields.io/badge/AppVersion-0.12.4-informational?style=flat-square)
 
 Vexa v0.12 — self-hostable real-time meeting transcription + agent control plane
 
@@ -92,6 +92,9 @@ Vexa v0.12 — self-hostable real-time meeting transcription + agent control pla
 | gateway.resources.requests.cpu | string | `"100m"` |  |
 | gateway.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | gateway.resources.requests.memory | string | `"256Mi"` |  |
+| gateway.service.annotations | object | `{}` |  |
+| gateway.service.externalTrafficPolicy | string | `""` |  |
+| gateway.service.labels | object | `{}` |  |
 | gateway.service.nodePort | string | `""` |  |
 | gateway.service.port | int | `8000` |  |
 | gateway.service.type | string | `"ClusterIP"` |  |
@@ -260,6 +263,13 @@ Vexa v0.12 — self-hostable real-time meeting transcription + agent control pla
 | runtime.speakerStream.maxBufferSec | string | `""` |  |
 | runtime.speakerStream.minAudioSec | string | `""` |  |
 | runtime.speakerStream.submitIntervalSec | string | `""` |  |
+| s3Config.accessKey | string | `""` |  |
+| s3Config.accessKeyKey | string | `"S3_ACCESS_KEY"` |  |
+| s3Config.bucket | string | `"vexa"` |  |
+| s3Config.endpoint | string | `""` |  |
+| s3Config.existingSecretName | string | `""` |  |
+| s3Config.secretKey | string | `""` |  |
+| s3Config.secretKeyKey | string | `"S3_SECRET_KEY"` |  |
 | secrets.adminApiToken | string | `"CHANGE_ME"` |  |
 | secrets.anthropicApiKey | string | `""` |  |
 | secrets.anthropicAuthToken | string | `""` |  |
@@ -283,6 +293,9 @@ Vexa v0.12 — self-hostable real-time meeting transcription + agent control pla
 | terminal.resources.requests.cpu | string | `"100m"` |  |
 | terminal.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | terminal.resources.requests.memory | string | `"256Mi"` |  |
+| terminal.service.annotations | object | `{}` |  |
+| terminal.service.externalTrafficPolicy | string | `""` |  |
+| terminal.service.labels | object | `{}` |  |
 | terminal.service.nodePort | string | `""` |  |
 | terminal.service.port | int | `3000` |  |
 | terminal.service.type | string | `"ClusterIP"` |  |

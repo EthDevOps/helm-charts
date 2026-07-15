@@ -5,8 +5,18 @@ metadata:
   name: {{ include "vexa.componentName" (list . "terminal") }}
   labels:
     {{- include "vexa.labels" . | nindent 4 }}
+    {{- with .Values.terminal.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.terminal.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.terminal.service.type }}
+  {{- with .Values.terminal.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
   ports:
     - name: http
       port: {{ .Values.terminal.service.port }}

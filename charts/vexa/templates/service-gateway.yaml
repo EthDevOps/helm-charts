@@ -5,8 +5,18 @@ metadata:
   name: {{ include "vexa.componentName" (list . "gateway") }}
   labels:
     {{- include "vexa.labels" . | nindent 4 }}
+    {{- with .Values.gateway.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.gateway.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.gateway.service.type }}
+  {{- with .Values.gateway.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
   ports:
     - name: http
       port: {{ .Values.gateway.service.port }}

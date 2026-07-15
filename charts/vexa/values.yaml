@@ -75,6 +75,20 @@ redisConfig:
   host: ""
   port: 6379
 
+# External S3 (used when minio.enabled=false). endpoint is host[:port] WITHOUT scheme —
+# meeting-api's MinIO SDK combines it with MINIO_SECURE (meetingApi.minioSecure; set "true"
+# for https endpoints). The bucket must be pre-created: the mc init Job only runs for the
+# bundled MinIO. Prefer existingSecretName over inline accessKey/secretKey (inline values
+# persist in helm release manifests).
+s3Config:
+  endpoint: ""
+  bucket: "vexa"
+  accessKey: ""              # inline (dev only) — prefer existingSecretName
+  secretKey: ""
+  existingSecretName: ""     # Secret carrying the two keys below
+  accessKeyKey: "S3_ACCESS_KEY"
+  secretKeyKey: "S3_SECRET_KEY"
+
 # Model ids brokered into agents/bots (empty ⇒ provider default). Mirrors compose ANTHROPIC_*/VEXA_*.
 models:
   anthropicModel: ""
@@ -97,6 +111,11 @@ gateway:
     type: ClusterIP
     port: 8000
     nodePort: ""
+    # Extra Service metadata + traffic policy — e.g. type: LoadBalancer with
+    # cloud/on-prem exposure annotations and externalTrafficPolicy: Local.
+    annotations: {}
+    labels: {}
+    externalTrafficPolicy: ""
   logLevel: "info"
   # fastapi-guard edge layer: per-IP throttle + auto-ban at the gateway edge.
   # ON by default with generous limits (600 req/min per IP); set enabled: false to opt out.
@@ -231,6 +250,11 @@ terminal:
     type: ClusterIP
     port: 3000
     nodePort: ""
+    # Extra Service metadata + traffic policy — e.g. type: LoadBalancer with
+    # cloud/on-prem exposure annotations and externalTrafficPolicy: Local.
+    annotations: {}
+    labels: {}
+    externalTrafficPolicy: ""
   # External origin once an ingress/LB fronts the terminal (sets NEXTAUTH_URL/TERMINAL_URL for cookie
   # security + OAuth callbacks). Empty for cluster-internal / port-forward access.
   publicUrl: ""

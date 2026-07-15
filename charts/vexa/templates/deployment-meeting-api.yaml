@@ -86,6 +86,30 @@ spec:
               value: {{ .Values.minio.secretKey | quote }}
             - name: MINIO_BUCKET
               value: {{ .Values.minio.bucket | quote }}
+            {{- else if .Values.s3Config.endpoint }}
+            # External S3 (s3Config): same MINIO_* contract, endpoint host[:port] without
+            # scheme — MINIO_SECURE (below) selects http/https. Bucket must pre-exist.
+            - name: MINIO_ENDPOINT
+              value: {{ .Values.s3Config.endpoint | quote }}
+            - name: MINIO_BUCKET
+              value: {{ .Values.s3Config.bucket | quote }}
+            {{- if .Values.s3Config.existingSecretName }}
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3Config.existingSecretName | quote }}
+                  key: {{ .Values.s3Config.accessKeyKey | quote }}
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3Config.existingSecretName | quote }}
+                  key: {{ .Values.s3Config.secretKeyKey | quote }}
+            {{- else }}
+            - name: MINIO_ACCESS_KEY
+              value: {{ .Values.s3Config.accessKey | quote }}
+            - name: MINIO_SECRET_KEY
+              value: {{ .Values.s3Config.secretKey | quote }}
+            {{- end }}
             {{- end }}
             - name: MINIO_SECURE
               value: {{ .Values.meetingApi.minioSecure | default "false" | quote }}
