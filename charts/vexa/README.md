@@ -1,6 +1,6 @@
 # vexa
 
-![Version: 0.15.1](https://img.shields.io/badge/Version-0.15.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.12.4](https://img.shields.io/badge/AppVersion-0.12.4-informational?style=flat-square)
+![Version: 0.15.2](https://img.shields.io/badge/Version-0.15.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.12.4](https://img.shields.io/badge/AppVersion-0.12.4-informational?style=flat-square)
 
 Vexa v0.12 — self-hostable real-time meeting transcription + agent control plane
 
@@ -244,6 +244,7 @@ Vexa v0.12 — self-hostable real-time meeting transcription + agent control pla
 | runtime.agentImage | string | `"vexaai/v012-agent-api:v012"` |  |
 | runtime.agentWorkerImage | string | `"vexaai/v012-agent-worker:v012"` |  |
 | runtime.backend | string | `"k8s"` |  |
+| runtime.botCommand | string | `"/app/entrypoint.sh"` |  |
 | runtime.browserImage | string | `""` |  |
 | runtime.enabled | bool | `true` |  |
 | runtime.extraEnv | list | `[]` |  |

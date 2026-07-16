@@ -64,6 +64,14 @@ spec:
               value: {{ include "vexa.redisUrl" . | quote }}
             - name: BROWSER_IMAGE
               value: {{ include "vexa.botImage" . | quote }}
+            {{- if .Values.runtime.botCommand }}
+            # The published vexaai/vexa-bot image's entrypoint is /app/entrypoint.sh, but the
+            # runtime's meeting-bot profile default execs /app/vexa-bot/entrypoint.sh (upstream
+            # profiles.py mismatch) — BOT_COMMAND replaces the profile command (shlex-parsed).
+            # Set to "" if you run a bot image matching the profile default.
+            - name: BOT_COMMAND
+              value: {{ .Values.runtime.botCommand | quote }}
+            {{- end }}
             - name: AGENT_IMAGE
               value: {{ include "vexa.agentImage" . | quote }}
             - name: AGENT_WORKER_IMAGE

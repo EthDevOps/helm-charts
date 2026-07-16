@@ -211,6 +211,11 @@ runtime:
   # Images the runtime spawns. browserImage = the bot (published ~3.6GB, a reference, never built by
   # this chart). agentImage/agentWorkerImage default to the v012 agent repos at global.imageTag.
   browserImage: ""            # empty → follows global.imageTag (fallback vexaai/vexa-bot:v012)
+  # Bot container command (BOT_COMMAND override). The published vexaai/vexa-bot image's entrypoint
+  # is /app/entrypoint.sh while the runtime's profile default execs /app/vexa-bot/entrypoint.sh —
+  # without this override every spawned bot Pod fails with StartError (no such file or directory).
+  # Set to "" to use the runtime's built-in default (custom bot images matching that layout).
+  botCommand: "/app/entrypoint.sh"
   agentImage: "vexaai/v012-agent-api:v012"
   agentWorkerImage: "vexaai/v012-agent-worker:v012"
   logLevel: "info"
