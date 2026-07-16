@@ -3,7 +3,7 @@ name: vexa
 description: Vexa v0.12 — self-hostable real-time meeting transcription + agent control plane
 type: application
 # Chart version (SemVer). appVersion tracks the v0.12 control-plane image tag the chart deploys.
-version: 0.15.0
+version: 0.15.1
 appVersion: "0.12.4"
 home: https://github.com/Vexa-ai/vexa
 sources:

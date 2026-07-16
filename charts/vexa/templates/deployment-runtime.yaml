@@ -55,8 +55,10 @@ spec:
             {{- if eq .Values.runtime.backend "docker" }}
             # The spawned bot/worker join the runtime's namespace network. On k8s the kernel resolves
             # services by DNS; DOCKER_NETWORK only matters for the docker backend (single-node fallback).
+            {{- if .Values.runtime.dockerNetwork }}
             - name: DOCKER_NETWORK
-              value: {{ .Values.runtime.dockerNetwork | default "" | quote }}
+              value: {{ .Values.runtime.dockerNetwork | quote }}
+            {{- end }}
             {{- end }}
             - name: REDIS_URL
               value: {{ include "vexa.redisUrl" . | quote }}
@@ -66,16 +68,26 @@ spec:
               value: {{ include "vexa.agentImage" . | quote }}
             - name: AGENT_WORKER_IMAGE
               value: {{ include "vexa.agentWorkerImage" . | quote }}
+            {{- if .Values.runtime.speakerStream.minAudioSec }}
             - name: BOT_SPEAKER_MIN_AUDIO_SEC
-              value: {{ .Values.runtime.speakerStream.minAudioSec | default "" | quote }}
+              value: {{ .Values.runtime.speakerStream.minAudioSec | quote }}
+            {{- end }}
+            {{- if .Values.runtime.speakerStream.submitIntervalSec }}
             - name: BOT_SPEAKER_SUBMIT_INTERVAL_SEC
-              value: {{ .Values.runtime.speakerStream.submitIntervalSec | default "" | quote }}
+              value: {{ .Values.runtime.speakerStream.submitIntervalSec | quote }}
+            {{- end }}
+            {{- if .Values.runtime.speakerStream.confirmThreshold }}
             - name: BOT_SPEAKER_CONFIRM_THRESHOLD
-              value: {{ .Values.runtime.speakerStream.confirmThreshold | default "" | quote }}
+              value: {{ .Values.runtime.speakerStream.confirmThreshold | quote }}
+            {{- end }}
+            {{- if .Values.runtime.speakerStream.maxBufferSec }}
             - name: BOT_SPEAKER_MAX_BUFFER_SEC
-              value: {{ .Values.runtime.speakerStream.maxBufferSec | default "" | quote }}
+              value: {{ .Values.runtime.speakerStream.maxBufferSec | quote }}
+            {{- end }}
+            {{- if .Values.runtime.speakerStream.idleTimeoutSec }}
             - name: BOT_SPEAKER_IDLE_TIMEOUT_SEC
-              value: {{ .Values.runtime.speakerStream.idleTimeoutSec | default "" | quote }}
+              value: {{ .Values.runtime.speakerStream.idleTimeoutSec | quote }}
+            {{- end }}
             - name: INTERNAL_API_SECRET
               valueFrom:
                 secretKeyRef:
@@ -99,14 +111,22 @@ spec:
                   name: {{ include "vexa.adminTokenSecretName" . }}
                   key: ANTHROPIC_BASE_URL
                   optional: true
+            {{- if .Values.models.anthropicModel }}
             - name: ANTHROPIC_MODEL
-              value: {{ .Values.models.anthropicModel | default "" | quote }}
+              value: {{ .Values.models.anthropicModel | quote }}
+            {{- end }}
+            {{- if .Values.models.anthropicOpusModel }}
             - name: ANTHROPIC_DEFAULT_OPUS_MODEL
-              value: {{ .Values.models.anthropicOpusModel | default "" | quote }}
+              value: {{ .Values.models.anthropicOpusModel | quote }}
+            {{- end }}
+            {{- if .Values.models.anthropicSonnetModel }}
             - name: ANTHROPIC_DEFAULT_SONNET_MODEL
-              value: {{ .Values.models.anthropicSonnetModel | default "" | quote }}
+              value: {{ .Values.models.anthropicSonnetModel | quote }}
+            {{- end }}
+            {{- if .Values.models.anthropicHaikuModel }}
             - name: ANTHROPIC_DEFAULT_HAIKU_MODEL
-              value: {{ .Values.models.anthropicHaikuModel | default "" | quote }}
+              value: {{ .Values.models.anthropicHaikuModel | quote }}
+            {{- end }}
             - name: LOG_LEVEL
               value: {{ .Values.runtime.logLevel | default "info" | quote }}
             {{- with .Values.runtime.extraEnv }}

@@ -74,13 +74,18 @@ spec:
                 secretKeyRef:
                   name: {{ include "vexa.adminTokenSecretName" . }}
                   key: ADMIN_API_TOKEN
+            {{- if .Values.meetingApi.transcriptionServiceUrl }}
             - name: TRANSCRIPTION_SERVICE_URL
-              value: {{ .Values.meetingApi.transcriptionServiceUrl | default "" | quote }}
+              value: {{ .Values.meetingApi.transcriptionServiceUrl | quote }}
+            {{- end }}
+            # optional + key-gated in the chart secret: an empty explicit env entry would MASK a
+            # TRANSCRIPTION_SERVICE_* value delivered via global.envFrom (env wins over envFrom).
             - name: TRANSCRIPTION_SERVICE_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: {{ include "vexa.adminTokenSecretName" . }}
                   key: TRANSCRIPTION_SERVICE_TOKEN
+                  optional: true
             {{- if .Values.minio.enabled }}
             - name: MINIO_ENDPOINT
               value: "{{ include "vexa.componentName" (list . "minio") }}:{{ .Values.minio.service.port }}"
