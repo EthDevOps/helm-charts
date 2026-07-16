@@ -35,6 +35,10 @@ spec:
           ports:
             - name: http
               containerPort: 8000
+          {{- with .Values.global.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: ADMIN_API_URL
               value: "http://{{ include "vexa.componentName" (list . "admin-api") }}:{{ .Values.adminApi.service.port }}"

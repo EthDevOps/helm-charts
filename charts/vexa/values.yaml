@@ -14,6 +14,15 @@ global:
   imagePullPolicy: Always
   imagePullSecrets: []
   clusterDomain: cluster.local
+  # envFrom sources merged into every APP container (gateway, admin-api, meeting-api, runtime,
+  # agent-api, terminal + the migrations Job) — e.g. one ExternalSecret carrying ANTHROPIC_*,
+  # TRANSCRIPTION_SERVICE_TOKEN, GOOGLE_CLIENT_*. Bundled infra (postgres/redis/minio/pgbouncer)
+  # is excluded on purpose: those images react to env keys of their own (POSTGRES_*, MINIO_*),
+  # so a broad app secret could reconfigure them. Explicit env entries win over envFrom keys,
+  # BUT chart-managed env vars whose Secret key is absent (optional: true) don't mask envFrom.
+  envFrom: []
+  #  - secretRef:
+  #      name: vexa-app-env
 
   podAnnotations: {}
   nodeSelector: {}

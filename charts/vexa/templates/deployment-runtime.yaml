@@ -39,6 +39,10 @@ spec:
           ports:
             - name: http
               containerPort: 8090
+          {{- with .Values.global.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: RUNTIME_BACKEND
               value: {{ .Values.runtime.backend | quote }}
