@@ -1,0 +1,89 @@
+{{- if .Values.mariadb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-hotcrp-mariadb
+  annotations:
+    # The official MariaDB image steps down to the mysql user (UID 999) after
+    # its root entrypoint prepares /var/lib/mysql — below kube-score's 10000
+    # threshold, so the check is not meaningful here.
+    kube-score/ignore: container-security-context-user-group-id
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-hotcrp-mariadb
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-hotcrp-mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: {{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}
+          imagePullPolicy: {{ .Values.mariadb.image.pullPolicy }}
+          {{- with .Values.mariadb.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: MARIADB_DATABASE
+              value: {{ .Values.mariadb.database | quote }}
+            - name: MARIADB_USER
+              value: {{ .Values.mariadb.username | quote }}
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mariadb.existingSecret.name }}
+                  name: {{ .Values.mariadb.existingSecret.name }}
+                  key: {{ .Values.mariadb.existingSecret.passwordKey }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-hotcrp-db
+                  key: DB_PASSWORD
+                  {{- end }}
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mariadb.existingSecret.name }}
+                  name: {{ .Values.mariadb.existingSecret.name }}
+                  key: {{ .Values.mariadb.existingSecret.rootPasswordKey }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-hotcrp-db
+                  key: MYSQL_ROOT_PASSWORD
+                  {{- end }}
+          ports:
+            - name: mysql
+              containerPort: 3306
+          readinessProbe:
+            exec:
+              command:
+                - healthcheck.sh
+                - --connect
+                - --innodb_initialized
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  mariadb-admin ping -h 127.0.0.1 -uroot -p"$MARIADB_ROOT_PASSWORD"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.mariadb.resources | nindent 12 }}
+          volumeMounts:
+            - name: mariadb-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mariadb-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-hotcrp-mariadb-pvc
+{{- end }}

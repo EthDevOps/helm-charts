@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-hotcrp
+  annotations:
+    # The HotCRP image runs Apache, which must start as root to bind port 80
+    # before dropping worker privileges to www-data (it cannot run as a high
+    # UID without rebuilding upstream), and tracks the `latest` tag published
+    # by CI. TODO: pin a released tag in values.yaml to drop container-image-tag.
+    kube-score/ignore: container-image-tag,container-security-context-user-group-id
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-hotcrp
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-hotcrp
+    spec:
+      containers:
+        - name: hotcrp
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: HOTCRP_CONF_SHORTNAME
+              value: {{ .Values.hotcrp.shortName | quote }}
+            {{- with .Values.hotcrp.longName }}
+            - name: HOTCRP_CONF_LONGNAME
+              value: {{ . | quote }}
+            {{- end }}
+            - name: HOTCRP_PAPER_SITE
+              value: "https://{{ .Values.appDomain }}"
+            - name: HOTCRP_CONTACT_NAME
+              value: {{ .Values.hotcrp.contactName | quote }}
+            - name: HOTCRP_CONTACT_EMAIL
+              value: {{ .Values.hotcrp.contactEmail | quote }}
+            {{- with .Values.hotcrp.emailFrom }}
+            - name: HOTCRP_EMAIL_FROM
+              value: {{ . | quote }}
+            {{- end }}
+            - name: HOTCRP_SEND_EMAIL
+              value: {{ .Values.hotcrp.sendEmail | quote }}
+            - name: HOTCRP_DOCSTORE
+              value: {{ .Values.hotcrp.docstore | quote }}
+            - name: HOTCRP_REDIRECT_HTTPS
+              value: {{ .Values.hotcrp.redirectToHttps | quote }}
+            - name: HOTCRP_SESSION_SECURE
+              value: {{ .Values.hotcrp.sessionSecure | quote }}
+            {{- if .Values.mariadb.enabled }}
+            - name: HOTCRP_DB_HOST
+              value: {{ .Release.Name }}-hotcrp-mariadb
+            - name: HOTCRP_DB_PORT
+              value: "3306"
+            - name: HOTCRP_DB_NAME
+              value: {{ .Values.mariadb.database | quote }}
+            - name: HOTCRP_DB_USER
+              value: {{ .Values.mariadb.username | quote }}
+            - name: HOTCRP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.mariadb.existingSecret.name }}
+                  name: {{ .Values.mariadb.existingSecret.name }}
+                  key: {{ .Values.mariadb.existingSecret.passwordKey }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-hotcrp-db
+                  key: DB_PASSWORD
+                  {{- end }}
+            {{- else }}
+            - name: HOTCRP_DB_HOST
+              value: {{ .Values.externalDatabase.host | quote }}
+            - name: HOTCRP_DB_PORT
+              value: {{ .Values.externalDatabase.port | quote }}
+            - name: HOTCRP_DB_NAME
+              value: {{ .Values.externalDatabase.database | quote }}
+            - name: HOTCRP_DB_USER
+              value: {{ .Values.externalDatabase.username | quote }}
+            - name: HOTCRP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret.name }}
+                  key: {{ .Values.externalDatabase.existingSecret.passwordKey }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.hotcrp.resources | nindent 12 }}
+          volumeMounts:
+            - name: hotcrp-docs
+              mountPath: /var/www/html/docs
+      volumes:
+        - name: hotcrp-docs
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-hotcrp-pvc

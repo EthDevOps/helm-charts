@@ -1,0 +1,126 @@
+replicaCount: 1
+appDomain: hotcrp.example.com
+
+image:
+  # Image built from the dockerized HotCRP repo (EthDevOps/hotcrp).
+  repository: ghcr.io/ethdevops/hotcrp
+  tag: latest
+  pullPolicy: Always
+
+hotcrp:
+  # Conference identity (shown in the UI and emails).
+  shortName: HotCRP
+  longName: ""
+  # Site contact / outgoing email.
+  contactName: HotCRP Administrator
+  contactEmail: admin@example.com
+  emailFrom: ""
+  # HotCRP sends mail via PHP mail(); leave false unless an MTA is reachable.
+  sendEmail: false
+  # Store uploaded papers on a persistent volume (recommended). Set false to
+  # keep documents in the database instead.
+  docstore: true
+  # Redirect HTTP to HTTPS. Enable when TLS is terminated upstream (ingress).
+  redirectToHttps: false
+  # Mark session cookies secure. Enable when served over HTTPS.
+  sessionSecure: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
+
+mariadb:
+  enabled: true
+  image:
+    # Official MariaDB image (not Bitnami).
+    repository: mariadb
+    tag: "10.11"
+    pullPolicy: Always
+  database: hotcrp
+  username: hotcrp
+  # HotCRP needs a large max_allowed_packet to accept paper-sized uploads.
+  args:
+    - --max-allowed-packet=64M
+    - --character-set-server=utf8mb4
+  # Passwords - set these or use existingSecret.
+  password: ""
+  rootPassword: ""
+  existingSecret:
+    # Name of an existing secret containing DB credentials. When set, the chart
+    # does not create its own secret and reads the keys below instead.
+    name: ""
+    passwordKey: DB_PASSWORD
+    rootPasswordKey: MYSQL_ROOT_PASSWORD
+  persistence:
+    size: 8Gi
+    # storageClassName: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 1Gi
+
+# External database configuration (used when mariadb.enabled is false).
+externalDatabase:
+  host: ""
+  port: 3306
+  database: hotcrp
+  username: hotcrp
+  existingSecret:
+    name: ""
+    passwordKey: DB_PASSWORD
+
+# Persistent volume for the HotCRP document store (uploaded papers) and logs.
+persistence:
+  size: 10Gi
+  # storageClassName: ""
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  tls:
+    secretName: hotcrp-tls
+
+# HotCRP application service. Supports custom annotations, service type, and
+# external/internal traffic policies.
+service:
+  type: ClusterIP
+  annotations: {}
+  port: 80
+  # For type LoadBalancer/NodePort. Leave empty to use the cluster default.
+  externalTrafficPolicy: ""
+  # "Cluster" or "Local". Leave empty to use the cluster default.
+  internalTrafficPolicy: ""
+  # For type LoadBalancer.
+  loadBalancerClass: ""
+
+# MariaDB service (internal). Type stays ClusterIP; annotations configurable.
+mariadbService:
+  annotations: {}
+
+# NetworkPolicy guarding ingress and egress for both hotcrp and mariadb pods.
+# Defaults are permissive: anyone in the cluster can hit hotcrp on port 80 and
+# hotcrp can reach mariadb on 3306. Egress is unrestricted so the app can call
+# DNS, SMTP, S3, etc. Tighten per environment.
+networkPolicy:
+  enabled: true
+  ingress:
+    - {}
+  egress:
+    - {}
+
+# PodDisruptionBudget. maxUnavailable: 1 keeps a single-replica chart drainable
+# while still letting the cluster signal voluntary disruptions.
+podDisruptionBudget:
+  enabled: true
+  maxUnavailable: 1
