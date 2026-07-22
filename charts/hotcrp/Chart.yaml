@@ -3,7 +3,7 @@ name: hotcrp
 description: HotCRP - Conference review software (paper submission and reviewing)
 type: application
 
-version: 0.1.0
+version: 0.1.1
 
 # App metadata
 appVersion: "3.3.1"

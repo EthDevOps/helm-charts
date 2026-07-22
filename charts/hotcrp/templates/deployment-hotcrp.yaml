@@ -37,18 +37,42 @@ spec:
               value: {{ .Values.hotcrp.contactName | quote }}
             - name: HOTCRP_CONTACT_EMAIL
               value: {{ .Values.hotcrp.contactEmail | quote }}
-            {{- with .Values.hotcrp.emailFrom }}
+            {{- with (.Values.hotcrp.emailFrom | default .Values.smtp.from) }}
             - name: HOTCRP_EMAIL_FROM
               value: {{ . | quote }}
             {{- end }}
             - name: HOTCRP_SEND_EMAIL
-              value: {{ .Values.hotcrp.sendEmail | quote }}
+              value: {{ or .Values.smtp.enabled .Values.hotcrp.sendEmail | quote }}
+            {{- if .Values.smtp.enabled }}
+            - name: HOTCRP_SMTP_HOST
+              value: {{ .Values.smtp.host | quote }}
+            - name: HOTCRP_SMTP_PORT
+              value: {{ .Values.smtp.port | quote }}
+            - name: HOTCRP_SMTP_TLS
+              value: {{ .Values.smtp.tls | quote }}
+            {{- if .Values.smtp.username }}
+            - name: HOTCRP_SMTP_USER
+              value: {{ .Values.smtp.username | quote }}
+            - name: HOTCRP_SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.smtp.existingSecret.name }}
+                  name: {{ .Values.smtp.existingSecret.name }}
+                  key: {{ .Values.smtp.existingSecret.passwordKey }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-hotcrp-smtp
+                  key: SMTP_PASSWORD
+                  {{- end }}
+            {{- end }}
+            {{- end }}
             - name: HOTCRP_DOCSTORE
               value: {{ .Values.hotcrp.docstore | quote }}
             - name: HOTCRP_REDIRECT_HTTPS
               value: {{ .Values.hotcrp.redirectToHttps | quote }}
             - name: HOTCRP_SESSION_SECURE
               value: {{ .Values.hotcrp.sessionSecure | quote }}
+            - name: HOTCRP_TRUST_PROXY
+              value: {{ .Values.hotcrp.trustProxy | quote }}
             {{- if .Values.mariadb.enabled }}
             - name: HOTCRP_DB_HOST
               value: {{ .Release.Name }}-hotcrp-mariadb

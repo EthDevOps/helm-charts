@@ -15,7 +15,7 @@ hotcrp:
   contactName: HotCRP Administrator
   contactEmail: admin@example.com
   emailFrom: ""
-  # HotCRP sends mail via PHP mail(); leave false unless an MTA is reachable.
+  # Whether HotCRP sends mail. Turns on automatically when smtp.enabled is true.
   sendEmail: false
   # Store uploaded papers on a persistent volume (recommended). Set false to
   # keep documents in the database instead.
@@ -24,6 +24,9 @@ hotcrp:
   redirectToHttps: false
   # Mark session cookies secure. Enable when served over HTTPS.
   sessionSecure: true
+  # Trust X-Forwarded-Proto/Port/Host from the ingress so HotCRP builds correct
+  # absolute URLs (redirects, email links). Keep true behind an ingress.
+  trustProxy: true
   resources:
     requests:
       cpu: 100m
@@ -68,6 +71,25 @@ mariadb:
       cpu: "1"
       memory: 1Gi
       ephemeral-storage: 1Gi
+
+# Outgoing mail. HotCRP has no native SMTP: the image relays through msmtp to
+# the SMTP server configured here. When enabled, hotcrp.sendEmail is forced on.
+smtp:
+  enabled: false
+  host: ""
+  port: 587
+  # starttls | smtps | off
+  tls: starttls
+  # Envelope/From address for outgoing mail.
+  from: ""
+  # SMTP auth username. Leave empty for an unauthenticated relay.
+  username: ""
+  # SMTP auth password. Provide inline, or reference an existing secret below.
+  password: ""
+  existingSecret:
+    # Name of an existing secret containing the SMTP password.
+    name: ""
+    passwordKey: SMTP_PASSWORD
 
 # External database configuration (used when mariadb.enabled is false).
 externalDatabase:
