@@ -3577,6 +3577,20 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/healthchecks-0.0.1/healthchecks-0.0.1.tgz
     version: 0.0.1
+  hotcrp:
+  - apiVersion: v2
+    appVersion: 3.3.1
+    created: "2026-07-22T10:16:39.359864903Z"
+    description: HotCRP - Conference review software (paper submission and reviewing)
+    digest: 0a0fb55dfd02ae0b4016be52d46a9d517bbad9af50b1084ba4229cab7584cc1f
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: hotcrp
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/hotcrp-0.1.0/hotcrp-0.1.0.tgz
+    version: 0.1.0
   huly:
   - apiVersion: v2
     appVersion: 0.7.382
@@ -10540,4 +10554,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-07-16T11:53:05.681987128Z"
+generated: "2026-07-22T10:16:39.360621785Z"
