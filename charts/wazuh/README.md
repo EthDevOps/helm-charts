@@ -1,6 +1,6 @@
 # wazuh
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
 
 Wazuh is a free and open source security platform that unifies XDR and SIEM protection for endpoints and cloud workloads.
 
@@ -128,6 +128,12 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | wazuh.master.annotations | object | `{}` |  |
 | wazuh.master.conf | string | `"{{- include \"wazuh.master.conf\" . | indent 2 -}}\n"` |  |
 | wazuh.master.extraConf | string | `""` |  |
+| wazuh.master.livenessProbe.daemonCheck.daemons[0] | string | `"wazuh-analysisd"` |  |
+| wazuh.master.livenessProbe.daemonCheck.daemons[1] | string | `"wazuh-remoted"` |  |
+| wazuh.master.livenessProbe.daemonCheck.daemons[2] | string | `"wazuh-db"` |  |
+| wazuh.master.livenessProbe.daemonCheck.daemons[3] | string | `"wazuh-clusterd"` |  |
+| wazuh.master.livenessProbe.daemonCheck.enabled | bool | `false` |  |
+| wazuh.master.livenessProbe.timeoutSeconds | int | `5` |  |
 | wazuh.master.resources.limits.cpu | string | `"2"` |  |
 | wazuh.master.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | wazuh.master.resources.limits.memory | string | `"1Gi"` |  |
@@ -146,6 +152,12 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | wazuh.worker.annotations | object | `{}` |  |
 | wazuh.worker.conf | string | `"{{- include \"wazuh.worker.conf\" . | indent 2 -}}\n"` |  |
 | wazuh.worker.extraConf | string | `""` |  |
+| wazuh.worker.livenessProbe.daemonCheck.daemons[0] | string | `"wazuh-analysisd"` |  |
+| wazuh.worker.livenessProbe.daemonCheck.daemons[1] | string | `"wazuh-remoted"` |  |
+| wazuh.worker.livenessProbe.daemonCheck.daemons[2] | string | `"wazuh-db"` |  |
+| wazuh.worker.livenessProbe.daemonCheck.daemons[3] | string | `"wazuh-clusterd"` |  |
+| wazuh.worker.livenessProbe.daemonCheck.enabled | bool | `false` |  |
+| wazuh.worker.livenessProbe.timeoutSeconds | int | `5` |  |
 | wazuh.worker.replicas | int | `2` |  |
 | wazuh.worker.resources.limits.cpu | string | `"2"` |  |
 | wazuh.worker.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
