@@ -160,11 +160,10 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 6
           livenessProbe:
-            tcpSocket:
-              port: {{ .Values.wazuh.master.service.ports.registration }}
+            {{- include "wazuh.manager.livenessProbe" (dict "cfg" .Values.wazuh.master "port" .Values.wazuh.master.service.ports.registration) | nindent 12 }}
             initialDelaySeconds: 60
             periodSeconds: 20
-            timeoutSeconds: 5
+            timeoutSeconds: {{ dig "livenessProbe" "timeoutSeconds" 5 .Values.wazuh.master }}
             failureThreshold: 6
           resources:
             {{- toYaml .Values.wazuh.master.resources | nindent 12 }}

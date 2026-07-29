@@ -7,6 +7,38 @@ Expand the name of the chart.
 {{- end -}}
 
 {{/*
+Liveness probe for a manager container.
+
+A tcpSocket probe only proves that a listener is bound. wazuh-remoted holds
+port 1514/1515 open even when wazuh-analysisd has died, so the container keeps
+reporting healthy while agents silently stop being processed. When
+livenessProbe.daemonCheck is enabled, assert the listed daemons are actually
+running instead.
+
+Call with a dict: {"cfg": <master|worker values>, "port": <tcpSocket fallback>}
+*/}}
+{{- define "wazuh.manager.livenessProbe" -}}
+{{- $check := dig "livenessProbe" "daemonCheck" dict .cfg -}}
+{{- if $check.enabled -}}
+exec:
+  command:
+    - /bin/sh
+    - -c
+    - |
+      status=$(/var/ossec/bin/wazuh-control status) || exit 1
+      for daemon in {{ join " " $check.daemons }}; do
+        echo "$status" | grep -q "^$daemon is running" || {
+          echo "$daemon is not running" >&2
+          exit 1
+        }
+      done
+{{- else -}}
+tcpSocket:
+  port: {{ .port }}
+{{- end }}
+{{- end -}}
+
+{{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
