@@ -1,0 +1,20 @@
+{{- if .Values.service.public.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-public
+  labels:
+    app: {{ .Release.Name }}
+  annotations:
+    ethquokkaops.io/expose-public: "true"
+    ethquokkaops.io/domain: {{ required "service.public.domain is required when service.public.enabled" .Values.service.public.domain | quote }}
+spec:
+  type: LoadBalancer
+  selector:
+    app: {{ .Release.Name }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: http
+{{- end }}
