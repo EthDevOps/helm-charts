@@ -1,0 +1,4 @@
+# Network isolation is provided by CiliumNetworkPolicies in the deployment
+# wrapper (internal-stack-iac) plus the cluster-hardening baseline, which
+# kube-score does not recognize as matching NetworkPolicies.
+pod-networkpolicy

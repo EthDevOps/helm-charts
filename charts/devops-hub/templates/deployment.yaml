@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: hub
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ .Release.Name }}
+        app.kubernetes.io/component: hub
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ .Release.Name }}
+      {{- else if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: hub
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: HUB_LISTEN_ADDR
+              value: ":8080"
+            - name: HUB_AUTH_MODE
+              value: {{ .Values.hub.authMode | quote }}
+            - name: HUB_SAML_ROOT_URL
+              value: {{ required "hub.rootUrl is required" .Values.hub.rootUrl | quote }}
+            - name: HUB_SAML_IDP_METADATA_URL
+              value: {{ .Values.hub.saml.idpMetadataUrl | quote }}
+            - name: HUB_SAML_GROUPS_ATTRIBUTE
+              value: {{ .Values.hub.saml.groupsAttribute | quote }}
+            {{- if .Values.hub.saml.emailAttribute }}
+            - name: HUB_SAML_EMAIL_ATTRIBUTE
+              value: {{ .Values.hub.saml.emailAttribute | quote }}
+            {{- end }}
+            - name: HUB_SAML_CERT_FILE
+              value: /etc/hub/saml/tls.crt
+            - name: HUB_SAML_KEY_FILE
+              value: /etc/hub/saml/tls.key
+            - name: HUB_DIRECTORY_PROVIDER
+              value: google
+            - name: HUB_GOOGLE_CREDENTIALS_FILE
+              value: /etc/hub/google/credentials.json
+            - name: HUB_GOOGLE_IMPERSONATE_ADMIN
+              value: {{ .Values.hub.google.impersonateAdmin | quote }}
+            - name: HUB_TRACKER_PROVIDER
+              value: linear
+            - name: HUB_LINEAR_TEAM_KEY
+              value: {{ .Values.hub.linear.teamKey | quote }}
+            - name: HUB_LINEAR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "hub.linear.existingSecret is required" .Values.hub.linear.existingSecret }}
+                  key: {{ .Values.hub.linear.existingSecretKey }}
+            - name: HUB_DB_DRIVER
+              value: {{ .Values.hub.database.driver | quote }}
+            - name: HUB_DB_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "hub.database.existingSecret is required" .Values.hub.database.existingSecret }}
+                  key: {{ .Values.hub.database.existingSecretKey }}
+            {{- if .Values.hub.mattermost.url }}
+            - name: HUB_MESSENGER_PROVIDER
+              value: mattermost
+            - name: HUB_MATTERMOST_URL
+              value: {{ .Values.hub.mattermost.url | quote }}
+            - name: HUB_MATTERMOST_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "hub.mattermost.existingSecret is required with hub.mattermost.url" .Values.hub.mattermost.existingSecret }}
+                  key: {{ .Values.hub.mattermost.existingSecretKey }}
+            {{- end }}
+            {{- with .Values.hub.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: saml
+              mountPath: /etc/hub/saml
+              readOnly: true
+            - name: google
+              mountPath: /etc/hub/google
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: saml
+          secret:
+            secretName: {{ required "hub.saml.existingSecret is required" .Values.hub.saml.existingSecret }}
+            items:
+              - key: {{ .Values.hub.saml.existingSecretCertKey }}
+                path: tls.crt
+              - key: {{ .Values.hub.saml.existingSecretKeyKey }}
+                path: tls.key
+        - name: google
+          secret:
+            secretName: {{ required "hub.google.existingSecret is required" .Values.hub.google.existingSecret }}
+            items:
+              - key: {{ .Values.hub.google.existingSecretKey }}
+                path: credentials.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

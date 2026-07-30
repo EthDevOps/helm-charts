@@ -1,0 +1,134 @@
+# Default values for devops-hub.
+# The hub is a single container: Go API + built SPA, listening on :8080.
+
+image:
+  repository: devops-hub
+  pullPolicy: Always
+  # Defaults to the chart appVersion when empty.
+  tag: ""
+
+imagePullSecrets: []
+
+nameOverride: ""
+
+replicaCount: 2
+
+hub:
+  # Externally visible base URL of the hub (SAML SP root) — set this to the
+  # real URL; the default is a render-safe placeholder.
+  rootUrl: "https://devops-hub.example.org"
+
+  # saml | dev. Never run `dev` in a cluster: it bypasses authentication.
+  authMode: saml
+
+  saml:
+    # IdP SAML metadata endpoint (required for authMode=saml), e.g.
+    # https://accounts.google.com/o/saml2/idp?idpid=...
+    idpMetadataUrl: ""
+    # Assertion attribute carrying group memberships.
+    groupsAttribute: "groups"
+    # Assertion attribute carrying the primary email (empty = NameID).
+    emailAttribute: ""
+    # Secret holding the SP signing keypair (PEM).
+    existingSecret: "devops-hub-managed-secret"
+    existingSecretCertKey: "saml-sp-cert"
+    existingSecretKeyKey: "saml-sp-key"
+
+  google:
+    # Workspace admin the service account impersonates (domain-wide delegation).
+    impersonateAdmin: ""
+    # Secret holding the service-account JSON key.
+    existingSecret: "devops-hub-managed-secret"
+    existingSecretKey: "google-service-account-key"
+
+  linear:
+    # Short key of the Linear team requests are filed in, e.g. DEV.
+    teamKey: ""
+    # Secret holding the Linear API key.
+    existingSecret: "devops-hub-managed-secret"
+    existingSecretKey: "linear-api-key"
+
+  # Request store. The pods are stateless (read-only rootfs, >1 replica), so
+  # clusters use PostgreSQL; sqlite exists for local development only.
+  database:
+    driver: postgres
+    # Secret holding the DSN, e.g. postgres://hub:...@host:5432/devopshub
+    existingSecret: "devops-hub-managed-secret"
+    existingSecretKey: "database-dsn"
+
+  # Mattermost bot used for the approval flow (DMs the approver, listens for
+  # yes/no replies). Leave url empty to disable (approvals stay pending and
+  # are only visible on the Linear issue).
+  mattermost:
+    # Base URL of the Mattermost server, e.g. https://chat.example.org
+    url: ""
+    # Secret holding the bot account's access token.
+    existingSecret: ""
+    existingSecretKey: "mattermost-bot-token"
+
+  # Extra environment variables for the hub container.
+  extraEnv: []
+
+service:
+  # In-cluster service port (targets the container's 8080).
+  port: 80
+  # Expose internally via Teleport application access.
+  teleport:
+    enabled: false
+    name: devops-hub
+    allowEfOrg: true
+  # Expose on the public load balancer (SAML still gates every request).
+  public:
+    enabled: false
+    domain: ""
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+    ephemeral-storage: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+    ephemeral-storage: 64Mi
+
+# PodDisruptionBudget — keeps one replica up during node drains. Disable (or
+# keep replicaCount > 1) so single-replica deploys don't block maintenance.
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# The image runs as distroless nonroot (uid/gid 65532).
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 65532
+
+serviceAccount:
+  create: true
+  automount: false
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "false"
+
+podLabels: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
