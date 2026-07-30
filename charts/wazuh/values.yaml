@@ -207,6 +207,20 @@ wazuh:
         registration: 1515
         api: 55000
 
+    # Liveness defaults to a tcpSocket check on the registration port, which
+    # stays healthy even when a core daemon has died (wazuh-remoted holds the
+    # port open regardless). Enable daemonCheck to exec `wazuh-control status`
+    # and fail the probe when any listed daemon is not running.
+    livenessProbe:
+      timeoutSeconds: 5
+      daemonCheck:
+        enabled: false
+        daemons:
+          - wazuh-analysisd
+          - wazuh-remoted
+          - wazuh-db
+          - wazuh-clusterd
+
     resources:
       limits:
         cpu: "2"
@@ -239,6 +253,19 @@ wazuh:
       annotations: {}
       ports:
         agentEvents: 1514
+
+    # See wazuh.master.livenessProbe. Workers are the nodes that actually
+    # process agent events, so a dead wazuh-analysisd here silently stops
+    # agent keepalives being recorded while the pod still reports Running.
+    livenessProbe:
+      timeoutSeconds: 5
+      daemonCheck:
+        enabled: false
+        daemons:
+          - wazuh-analysisd
+          - wazuh-remoted
+          - wazuh-db
+          - wazuh-clusterd
 
     resources:
       limits:
