@@ -8,6 +8,14 @@ auth:
   user: kubernetes
   key: some-key
 
+# klog verbosity (-v) for the cephcsi *driver* containers (rbd/cephfs plugin +
+# controller). The CSI sidecars stay pinned at -v=1. Upstream ships -v=5, which
+# floods the logs with client-go V(4) "failed to acquire lease" leader-election
+# retries (~1-2/sec on every non-leader provisioner replica → ~160k lines/day
+# across the colo clusters, and a false "failed" signal in the log sweeps).
+# 1 keeps startup + errors, drops the churn. Raise temporarily to debug.
+logLevel: 1
+
 # CephFS driver (RWX/shared-filesystem volumes) alongside the always-on rbd
 # driver. Disabled by default — existing consumers see no change. Requires a
 # CephFS filesystem + MDS on the cluster and a user with mds/mgr/cephfs-osd

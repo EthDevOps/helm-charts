@@ -67,7 +67,7 @@ spec:
             - "--type=cephfs"
             - "--controllerserver=true"
             - "--endpoint=$(CSI_ENDPOINT)"
-            - "--v=5"
+            - "--v={{ .Values.logLevel | default 1 }}"
             - "--drivername=cephfs.csi.ceph.com"
             - "--pidlimit=-1"
             - "--enableprofiling=false"

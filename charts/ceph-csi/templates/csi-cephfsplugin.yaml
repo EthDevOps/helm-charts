@@ -49,7 +49,7 @@ spec:
             - "--type=cephfs"
             - "--nodeserver=true"
             - "--endpoint=$(CSI_ENDPOINT)"
-            - "--v=5"
+            - "--v={{ .Values.logLevel | default 1 }}"
             - "--drivername=cephfs.csi.ceph.com"
             - "--enableprofiling=false"
             # use the kernel cephfs client (Debian kernels ship the module);

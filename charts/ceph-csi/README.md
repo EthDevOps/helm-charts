@@ -1,6 +1,6 @@
 # ceph-csi
 
-![Version: 0.0.13](https://img.shields.io/badge/Version-0.0.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.0.14](https://img.shields.io/badge/Version-0.0.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for Ceph as CSI
 
@@ -22,6 +22,7 @@ A Helm chart for Ceph as CSI
 | cephfs.fsName | string | `"cephfs"` |  |
 | cephfs.subvolumeGroup | string | `"csi"` |  |
 | clusterId | string | `"08b71cc9-5ef7-44f2-8040-4b2dd66c5111"` |  |
+| logLevel | int | `1` |  |
 | monitors[0] | string | `"192.168.1.0:6789"` |  |
 | monitors[1] | string | `"192.168.1.1:6789"` |  |
 | monitors[2] | string | `"192.168.1.2:6789"` |  |

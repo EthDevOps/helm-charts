@@ -68,7 +68,7 @@ spec:
             - "--controllerserver=true"
             - "--endpoint=$(CSI_ENDPOINT)"
             - "--csi-addons-endpoint=$(CSI_ADDONS_ENDPOINT)"
-            - "--v=5"
+            - "--v={{ .Values.logLevel | default 1 }}"
             - "--drivername=rbd.csi.ceph.com"
             - "--pidlimit=-1"
             - "--rbdhardmaxclonedepth=8"
@@ -263,7 +263,7 @@ spec:
           image: quay.io/cephcsi/cephcsi:canary
           args:
             - "--type=controller"
-            - "--v=5"
+            - "--v={{ .Values.logLevel | default 1 }}"
             - "--drivername=rbd.csi.ceph.com"
             - "--drivernamespace=$(DRIVER_NAMESPACE)"
             - "--setmetadata=true"
