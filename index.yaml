@@ -1070,6 +1070,17 @@ entries:
     version: 0.0.1
   devops-hub:
   - apiVersion: v2
+    appVersion: v0.1.2
+    created: "2026-07-31T00:29:42.425275138Z"
+    description: EF DevOps Hub - internal portal with Google Workspace profile self-service
+      and a request portal filed into Linear with Mattermost-based approvals
+    digest: 0a3b30b601a78c31c8c6f4a8a726449254b7d9321997b0f5ebbdb43a08ac1722
+    name: devops-hub
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/devops-hub-0.2.2/devops-hub-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
     appVersion: v0.1.0
     created: "2026-07-30T21:35:33.488915887Z"
     description: EF DevOps Hub - internal portal with Google Workspace profile self-service
@@ -8658,6 +8669,18 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.1/teleport-argo-sync-0.0.1.tgz
     version: 0.0.1
+  twentycrm:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2026-07-31T00:29:42.675112698Z"
+    description: High-performance, open-source CRM platform built on a modern stack
+      with GraphQL API, PostgreSQL, and real-time updates.
+    digest: 32e0a2f78f816453b7df103f67de04190db84c20e549eef106bc2194139ea987
+    name: twentycrm
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/twentycrm-0.1.0/twentycrm-0.1.0.tgz
+    version: 0.1.0
   vexa:
   - apiVersion: v2
     appVersion: 0.12.4
@@ -10653,4 +10676,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-07-30T21:35:33.489637102Z"
+generated: "2026-07-31T00:29:42.676712383Z"
