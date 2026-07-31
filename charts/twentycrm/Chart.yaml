@@ -1,6 +1,0 @@
-apiVersion: v2
-appVersion: "latest"
-description: High-performance, open-source CRM platform built on a modern stack with GraphQL API, PostgreSQL, and real-time updates.
-name: twentycrm
-type: application
-version: 0.1.0

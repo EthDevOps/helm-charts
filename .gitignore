@@ -15,3 +15,7 @@ Chart.lock
 .idea
 .vscode
 .cursor
+
+# Local Claude Code settings
+.claude/
+**/.claude/
