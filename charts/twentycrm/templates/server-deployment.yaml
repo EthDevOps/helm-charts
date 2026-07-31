@@ -1,0 +1,189 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-server
+  labels:
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: server
+spec:
+  replicas: {{ .Values.server.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      {{- include "twentycrm.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "twentycrm.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: server
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.postgres.enabled }}
+      initContainers:
+      {{- with .Values.extraInitContainers }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      - name: wait-for-postgres
+        image: postgres:16-alpine
+        command: ['/bin/sh', '-c']
+        args:
+          - |
+            until pg_isready -h {{ include "twentycrm.postgres.host" . }} -p 5432 -U {{ .Values.postgres.user }} -d {{ .Values.postgres.database }}; do
+              echo "Waiting for PostgreSQL to be ready..."
+              sleep 2
+            done
+            echo "PostgreSQL is ready"
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.postgres.existingSecret }}{{ .Values.postgres.existingSecret }}{{ else }}{{ .Release.Name }}-postgres-secret{{ end }}
+              key: {{ if .Values.postgres.existingSecret }}{{ .Values.postgres.existingSecretKey }}{{ else }}postgres-password{{ end }}
+        - name: PGSSLMODE
+          value: "disable"
+      {{- end }}
+      containers:
+      - name: server
+        image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
+        imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          export PG_DATABASE_URL="postgres://${PG_DATABASE_USER}:${PG_DATABASE_PASSWORD}@${PG_DATABASE_HOST}:${PG_DATABASE_PORT}/${PG_DATABASE_NAME}"
+          exec node dist/src/main
+        env:
+        - name: PORT
+          value: {{ .Values.server.port | quote }}
+        - name: SERVER_URL
+          value: {{ include "twentycrm.server.url" . | quote }}
+        - name: FRONT_BASE_URL
+          value: {{ include "twentycrm.server.url" . | quote }}
+        - name: POSTGRES_ADMIN_USER
+          value: {{ .Values.postgres.user | quote }}
+        - name: POSTGRES_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.postgres.existingSecret }}{{ .Values.postgres.existingSecret }}{{ else }}{{ .Release.Name }}-postgres-secret{{ end }}
+              key: {{ if .Values.postgres.existingSecret }}{{ .Values.postgres.existingSecretKey }}{{ else }}postgres-password{{ end }}
+        - name: PG_DATABASE_HOST
+          value: {{ include "twentycrm.postgres.host" . | quote }}
+        - name: PG_DATABASE_PORT
+          value: "5432"
+        - name: PG_DATABASE_USER
+          value: {{ .Values.postgres.user | quote }}
+        - name: PG_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.postgres.existingSecret }}{{ .Values.postgres.existingSecret }}{{ else }}{{ .Release.Name }}-postgres-secret{{ end }}
+              key: {{ if .Values.postgres.existingSecret }}{{ .Values.postgres.existingSecretKey }}{{ else }}postgres-password{{ end }}
+        - name: PG_DATABASE_NAME
+          value: {{ .Values.postgres.database | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.postgres.existingSecret }}{{ .Values.postgres.existingSecret }}{{ else }}{{ .Release.Name }}-postgres-secret{{ end }}
+              key: {{ if .Values.postgres.existingSecret }}{{ .Values.postgres.existingSecretKey }}{{ else }}postgres-password{{ end }}
+        - name: REDIS_URL
+          value: {{ include "twentycrm.redis.url" . | quote }}
+        - name: REDIS_HOST
+          value: {{ if .Values.redis.enabled }}{{ .Release.Name }}-redis{{ else }}redis{{ end }}
+        - name: REDIS_PORT
+          value: {{ .Values.redis.port | quote }}
+        - name: ACCESS_TOKEN_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.existingSecret }}{{ .Values.secrets.existingSecret }}{{ else }}{{ .Release.Name }}-tokens{{ end }}
+              key: {{ if .Values.secrets.existingSecret }}{{ .Values.secrets.existingSecretKeys.accessToken }}{{ else }}accessToken{{ end }}
+        - name: LOGIN_TOKEN_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.existingSecret }}{{ .Values.secrets.existingSecret }}{{ else }}{{ .Release.Name }}-tokens{{ end }}
+              key: {{ if .Values.secrets.existingSecret }}{{ .Values.secrets.existingSecretKeys.loginToken }}{{ else }}loginToken{{ end }}
+        - name: REFRESH_TOKEN_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.secrets.existingSecret }}{{ .Values.secrets.existingSecret }}{{ else }}{{ .Release.Name }}-tokens{{ end }}
+              key: {{ if .Values.secrets.existingSecret }}{{ .Values.secrets.existingSecretKeys.refreshToken }}{{ else }}refreshToken{{ end }}
+        - name: ACCESS_TOKEN_EXPIRES_IN
+          value: {{ .Values.tokenExpiration.accessToken | quote }}
+        - name: LOGIN_TOKEN_EXPIRES_IN
+          value: {{ .Values.tokenExpiration.loginToken | quote }}
+        - name: REFRESH_TOKEN_EXPIRES_IN
+          value: {{ .Values.tokenExpiration.refreshToken | quote }}
+        - name: STORAGE_TYPE
+          value: "local"
+        - name: STORAGE_LOCAL_PATH
+          value: "/app/packages/twenty-server/.local-storage"
+        - name: RUN_DATABASE_MIGRATIONS
+          value: {{ .Values.server.runMigrations | quote }}
+        {{- with .Values.server.env }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.server.port }}
+          protocol: TCP
+        {{- if .Values.server.readinessProbe }}
+        readinessProbe:
+          {{- toYaml .Values.server.readinessProbe | nindent 10 }}
+        {{- end }}
+        {{- if .Values.server.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.server.livenessProbe | nindent 10 }}
+        {{- end }}
+        {{- if .Values.server.storage.enabled }}
+        volumeMounts:
+        - name: server-storage
+          mountPath: /app/packages/twenty-server/.local-storage
+        - name: docker-data
+          mountPath: /app/docker-data
+        {{- end }}
+        resources:
+          {{- toYaml .Values.server.resources | nindent 10 }}
+      {{- if .Values.server.storage.enabled }}
+      volumes:
+      - name: server-storage
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-server-storage
+      - name: docker-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-docker-data
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-server
+  labels:
+    {{- include "twentycrm.labels" . | nindent 4 }}
+    app.kubernetes.io/component: server
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "twentycrm.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: server
+  ports:
+  - name: http
+    port: {{ .Values.server.port }}
+    targetPort: http
+  {{- if .Values.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: {{ .Values.service.sessionAffinityTimeout }}
+  {{- end }}

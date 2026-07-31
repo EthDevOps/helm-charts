@@ -22,9 +22,13 @@ hub:
   authMode: saml
 
   saml:
-    # IdP SAML metadata endpoint (required for authMode=saml), e.g.
-    # https://accounts.google.com/o/saml2/idp?idpid=...
+    # IdP SAML metadata endpoint, for IdPs that serve one (e.g. Keycloak's
+    # /realms/<realm>/protocol/saml/descriptor).
     idpMetadataUrl: ""
+    # Google Workspace has no metadata endpoint — its metadata is download-
+    # only. Put the downloaded XML in the existingSecret under this key and
+    # it is mounted and used instead of idpMetadataUrl.
+    idpMetadataSecretKey: "saml-idp-metadata"
     # Assertion attribute carrying group memberships.
     groupsAttribute: "groups"
     # Assertion attribute carrying the primary email (empty = NameID).
