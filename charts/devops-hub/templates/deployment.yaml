@@ -12,9 +12,15 @@ spec:
       app: {{ .Release.Name }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- if or .Values.podAnnotations .Values.hub.requestTemplates }}
       annotations:
+        {{- if .Values.hub.requestTemplates }}
+        {{- /* Roll the pods whenever the template catalog changes. */}}
+        checksum/request-templates: {{ include (print $.Template.BasePath "/configmap-templates.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels:
         app: {{ .Release.Name }}
@@ -100,6 +106,10 @@ spec:
                   name: {{ required "hub.mattermost.existingSecret is required with hub.mattermost.url" .Values.hub.mattermost.existingSecret }}
                   key: {{ .Values.hub.mattermost.existingSecretKey }}
             {{- end }}
+            {{- if .Values.hub.requestTemplates }}
+            - name: HUB_TEMPLATES_DIR
+              value: /etc/hub/templates
+            {{- end }}
             {{- with .Values.hub.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -110,6 +120,11 @@ spec:
             - name: google
               mountPath: /etc/hub/google
               readOnly: true
+            {{- if .Values.hub.requestTemplates }}
+            - name: request-templates
+              mountPath: /etc/hub/templates
+              readOnly: true
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -139,6 +154,11 @@ spec:
             items:
               - key: {{ .Values.hub.google.existingSecretKey }}
                 path: credentials.json
+        {{- if .Values.hub.requestTemplates }}
+        - name: request-templates
+          configMap:
+            name: {{ .Release.Name }}-request-templates
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -33,6 +33,29 @@ issue):
 
 In practice all the `existingSecret`s point at the same ESO-managed secret.
 
+## Request templates as config
+
+`hub.requestTemplates` (optional) replaces the request-form catalog compiled
+into the image: keys are filenames (one template per file), values are
+template YAML in the format documented in the hub repo's `docs/TEMPLATES.md`
+(the shipped catalog in `backend/internal/requests/templates/` doubles as
+reference copies). When set it renders a ConfigMap mounted at
+`/etc/hub/templates` and the catalog **replaces the built-ins entirely**, so
+include every template the hub should offer. Pods roll automatically when
+the catalog changes (checksum annotation); the backend validates the catalog
+at boot and refuses to start on errors, so a broken catalog fails the
+rollout while old pods keep serving. Left empty, the image's built-in
+catalog applies.
+
+```yaml
+hub:
+  requestTemplates:
+    general.yaml: |
+      id: general
+      name: General DevOps Request
+      ...
+```
+
 ## Exposure
 
 - `service.teleport.enabled` — internal access via Teleport app access

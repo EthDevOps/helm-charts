@@ -1,0 +1,21 @@
+{{- /*
+Request-template catalog as config. Each key under hub.requestTemplates is a
+filename (one template per file), its value the template YAML — the same
+format as backend/internal/requests/templates/*.yaml, which double as
+reference copies. When set, the catalog REPLACES the built-in one entirely,
+so include every template the hub should offer.
+*/ -}}
+{{- if .Values.hub.requestTemplates }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-request-templates
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: hub
+data:
+  {{- range $name, $content := .Values.hub.requestTemplates }}
+  {{ $name }}: |
+    {{- $content | nindent 4 }}
+  {{- end }}
+{{- end }}
