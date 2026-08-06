@@ -48,9 +48,30 @@ hub:
   linear:
     # Short key of the Linear team requests are filed in, e.g. DEV.
     teamKey: ""
-    # Secret holding the Linear API key.
+    # OAuth application auth ("Hub-Bot", preferred): the hub mints app-actor
+    # tokens via the client credentials grant, so issues and comments are
+    # attributed to the app rather than a person. Set oauthExistingSecret to
+    # enable; the legacy API key below is ignored then.
+    oauthExistingSecret: ""
+    oauthClientIdKey: "linear-client-id"
+    oauthClientSecretKey: "linear-client-secret"
+    # App webhook signing secret: enables POST /webhooks/linear so issue and
+    # comment changes mirror in near-real-time (signature-verified; the URL
+    # must be reachable from Linear's cloud — public exposure). With
+    # webhooks on, set hub.trackerSyncInterval to a slow reconciliation
+    # cadence, e.g. 30m.
+    webhookExistingSecret: ""
+    webhookSecretKey: "linear-webhook-secret"
+    # Personal API key auth (legacy; acts as the key's owner). Used only
+    # when oauthExistingSecret is unset.
     existingSecret: "devops-hub-managed-secret"
     existingSecretKey: "linear-api-key"
+
+  # How often the tracker poll mirrors Linear state/comments (Go duration,
+  # e.g. 60s, 30m; "0" disables). Empty uses the backend default (60s) —
+  # the right primary cadence without webhooks; with webhooks enabled this
+  # poll is just reconciliation, so slow it down (e.g. 30m).
+  trackerSyncInterval: ""
 
   # Request store. The pods are stateless (read-only rootfs, >1 replica), so
   # clusters use PostgreSQL; sqlite exists for local development only.
