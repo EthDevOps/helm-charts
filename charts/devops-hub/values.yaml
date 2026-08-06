@@ -70,6 +70,29 @@ hub:
     existingSecret: ""
     existingSecretKey: "mattermost-bot-token"
 
+  # Request-template catalog as config (IaC). Keys are filenames, one
+  # template per file; values are template YAML in the format of
+  # backend/internal/requests/templates/*.yaml — copy those files as a
+  # starting point. When set, this catalog REPLACES the built-in one
+  # entirely, so include every template the hub should offer. The backend
+  # validates the catalog at boot and refuses to start on errors (old pods
+  # keep serving), and pods roll automatically when the catalog changes.
+  # Empty: the hub uses the catalog compiled into the image.
+  requestTemplates: {}
+  # requestTemplates:
+  #   general.yaml: |
+  #     id: general
+  #     name: General DevOps Request
+  #     description: Anything that doesn't fit the other templates.
+  #     icon: lifebuoy
+  #     titlePrefix: "DevOps Request: "
+  #     labels: []
+  #     body:
+  #       - type: textarea
+  #         id: details
+  #         label: Details
+  #         required: true
+
   # Extra environment variables for the hub container.
   extraEnv: []
 
