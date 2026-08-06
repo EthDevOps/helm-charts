@@ -83,11 +83,35 @@ spec:
               value: linear
             - name: HUB_LINEAR_TEAM_KEY
               value: {{ .Values.hub.linear.teamKey | quote }}
+            {{- if .Values.hub.linear.oauthExistingSecret }}
+            - name: HUB_LINEAR_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.hub.linear.oauthExistingSecret }}
+                  key: {{ .Values.hub.linear.oauthClientIdKey }}
+            - name: HUB_LINEAR_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.hub.linear.oauthExistingSecret }}
+                  key: {{ .Values.hub.linear.oauthClientSecretKey }}
+            {{- else }}
             - name: HUB_LINEAR_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ required "hub.linear.existingSecret is required" .Values.hub.linear.existingSecret }}
                   key: {{ .Values.hub.linear.existingSecretKey }}
+            {{- end }}
+            {{- if .Values.hub.linear.webhookExistingSecret }}
+            - name: HUB_LINEAR_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.hub.linear.webhookExistingSecret }}
+                  key: {{ .Values.hub.linear.webhookSecretKey }}
+            {{- end }}
+            {{- if .Values.hub.trackerSyncInterval }}
+            - name: HUB_TRACKER_SYNC_INTERVAL
+              value: {{ .Values.hub.trackerSyncInterval | quote }}
+            {{- end }}
             - name: HUB_DB_DRIVER
               value: {{ .Values.hub.database.driver | quote }}
             - name: HUB_DB_DSN

@@ -19,7 +19,7 @@ and consumed by the ArgoCD wrapper chart in
 | `hub.google.impersonateAdmin` | Workspace admin for domain-wide delegation |
 | `hub.google.existingSecret` | Secret with `google-service-account-key` (JSON) |
 | `hub.linear.teamKey` | Linear team short key (e.g. `DEV`) |
-| `hub.linear.existingSecret` | Secret with `linear-api-key` |
+| `hub.linear.oauthExistingSecret` | Secret with `linear-client-id` + `linear-client-secret` (Hub-Bot OAuth app, preferred) — or `hub.linear.existingSecret` with `linear-api-key` (legacy personal key, used when the OAuth secret is unset) |
 | `hub.database.existingSecret` | Secret with `database-dsn` (postgres:// URL) |
 
 Optional — the Mattermost approval flow (recommended; without it,
@@ -30,6 +30,14 @@ issue):
 |---|---|
 | `hub.mattermost.url` | Mattermost base URL, e.g. `https://chat.example.org` |
 | `hub.mattermost.existingSecret` | Secret with `mattermost-bot-token` |
+
+Optional — Linear webhooks (near-real-time issue/comment mirroring instead
+of relying on the poll):
+
+| Value | Description |
+|---|---|
+| `hub.linear.webhookExistingSecret` | Secret with `linear-webhook-secret` (the OAuth app webhook's signing secret); enables `POST /webhooks/linear`, which must be reachable from Linear's cloud (public exposure) |
+| `hub.trackerSyncInterval` | Poll cadence (Go duration). With webhooks on, slow it to a reconciliation pass, e.g. `30m` |
 
 In practice all the `existingSecret`s point at the same ESO-managed secret.
 
