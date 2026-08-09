@@ -134,6 +134,32 @@ spec:
             - name: HUB_TEMPLATES_DIR
               value: /etc/hub/templates
             {{- end }}
+            {{- if .Values.hub.securityTools.enabled }}
+            - name: HUB_WEBAUTHN_RP_ID
+              value: {{ required "hub.securityTools.webauthn.rpId is required" .Values.hub.securityTools.webauthn.rpId | quote }}
+            - name: HUB_WEBAUTHN_ORIGINS
+              value: {{ required "hub.securityTools.webauthn.origins is required" .Values.hub.securityTools.webauthn.origins | quote }}
+            - name: HUB_SECURE_SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.hub.securityTools.existingSecret }}
+                  key: {{ .Values.hub.securityTools.existingSecretKey }}
+            - name: HUB_DRIVE_PROVIDER
+              value: google
+            - name: HUB_BIGQUERY_PROJECT
+              value: {{ required "hub.securityTools.bigquery.project is required" .Values.hub.securityTools.bigquery.project | quote }}
+            - name: HUB_BIGQUERY_DATASET
+              value: {{ required "hub.securityTools.bigquery.dataset is required" .Values.hub.securityTools.bigquery.dataset | quote }}
+            - name: HUB_BIGQUERY_TABLE
+              value: {{ required "hub.securityTools.bigquery.table is required" .Values.hub.securityTools.bigquery.table | quote }}
+            {{- if .Values.hub.securityTools.internalEmailDomains }}
+            - name: HUB_INTERNAL_EMAIL_DOMAINS
+              value: {{ .Values.hub.securityTools.internalEmailDomains | quote }}
+            {{- end }}
+            {{- else }}
+            - name: HUB_SECURITY_TOOLS
+              value: "0"
+            {{- end }}
             {{- with .Values.hub.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

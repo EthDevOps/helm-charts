@@ -114,6 +114,37 @@ hub:
   #         label: Details
   #         required: true
 
+  # Security Tools (hub >= v0.6.0): hub-native hardware-key (WebAuthn) auth
+  # + the Google Drive inventory console. Disabled: the modules disappear
+  # from the nav and their routes are not served.
+  securityTools:
+    enabled: false
+    webauthn:
+      # WebAuthn Relying Party ID — the hub's registrable domain, e.g.
+      # devops-hub.example.org. CHANGING THIS INVALIDATES every registered
+      # security key (users re-register).
+      rpId: ""
+      # Comma-separated browser origins allowed to complete ceremonies,
+      # e.g. https://devops-hub.example.org
+      origins: ""
+    # Secret holding the HMAC secret that signs secure-session cookies
+    # (any long random string; rotating it ends all secure sessions).
+    existingSecret: "devops-hub-managed-secret"
+    existingSecretKey: "secure-session-secret"
+    # BigQuery location of the Google Workspace Drive-inventory export.
+    # The Google service account (hub.google) must be a principal on this
+    # project (bigquery jobUser + data viewer/editor) and carry the extra
+    # delegated scopes: drive, drive.labels,
+    # admin.directory.group.member.readonly.
+    bigquery:
+      project: ""
+      dataset: ""
+      table: ""
+    # Comma-separated internal-domain list for snapshot-side classification
+    # and the external-sharing reports. Empty keeps the image default
+    # (ethereum.org,pse.dev,ethereum.foundation).
+    internalEmailDomains: ""
+
   # Extra environment variables for the hub container.
   extraEnv: []
 
