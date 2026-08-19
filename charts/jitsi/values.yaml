@@ -55,6 +55,10 @@ keycloak_adapter:
   imageTag: latest
   imagePullPolicy: Always
   keycloak_url: ""
+  # Optional origin for the adapter's server-side token/userinfo calls, e.g. an
+  # in-cluster Service URL when pods cannot hairpin to the public keycloak_url.
+  # Defaults to keycloak_url.
+  keycloak_url_internal: ""
   keycloak_realm: ""
   keycloak_client_id: ""
   enableDebug: "false"

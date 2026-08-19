@@ -10,6 +10,10 @@ spec:
       app: {{ .Release.Name }}-keycloak-adapter
   template:
     metadata:
+      annotations:
+        # Roll the pod when the adapter ConfigMaps change — env is only read at
+        # startup, so without this a config change never reaches the container.
+        checksum/config: {{ include (print $.Template.BasePath "/keycloak-adapter/configmap.yaml") . | sha256sum }}
       labels:
         app: {{ .Release.Name }}-keycloak-adapter
     spec:

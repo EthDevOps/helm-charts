@@ -5,6 +5,9 @@ metadata:
   name: {{ .Release.Name }}-keycloak-adapter-config
 data:
   KEYCLOAK_ORIGIN: "{{ .Values.keycloak_adapter.keycloak_url }}"
+  # Backend token/userinfo calls (adapter.ts) use this origin; browser redirects
+  # use KEYCLOAK_ORIGIN. Set it when pods can't reach the public IdP URL.
+  KEYCLOAK_ORIGIN_INTERNAL: "{{ .Values.keycloak_adapter.keycloak_url_internal | default .Values.keycloak_adapter.keycloak_url }}"
   KEYCLOAK_REALM: "{{ .Values.keycloak_adapter.keycloak_realm }}"
   KEYCLOAK_CLIENT_ID: "{{ .Values.keycloak_adapter.keycloak_client_id }}"
   JWT_EXP_SECOND: "{{ .Values.auth.jwtExpSeconds }}"
