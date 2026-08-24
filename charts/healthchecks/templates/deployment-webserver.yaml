@@ -57,6 +57,12 @@ spec:
           httpGet:
             path: /
             port: http
+            # Django rejects any request whose Host is not in ALLOWED_HOSTS
+            # (set to .Values.baseDomain) with a 400 before routing, so the
+            # kubelet's default pod-IP Host would make this probe unsatisfiable.
+            httpHeaders:
+              - name: Host
+                value: {{ .Values.baseDomain }}
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
