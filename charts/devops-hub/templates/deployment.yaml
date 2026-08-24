@@ -1,0 +1,223 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: hub
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- if or .Values.podAnnotations .Values.hub.requestTemplates }}
+      annotations:
+        {{- if .Values.hub.requestTemplates }}
+        {{- /* Roll the pods whenever the template catalog changes. */}}
+        checksum/request-templates: {{ include (print $.Template.BasePath "/configmap-templates.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      labels:
+        app: {{ .Release.Name }}
+        app.kubernetes.io/component: hub
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ .Release.Name }}
+      {{- else if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: hub
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: HUB_LISTEN_ADDR
+              value: ":8080"
+            - name: HUB_AUTH_MODE
+              value: {{ .Values.hub.authMode | quote }}
+            - name: HUB_SAML_ROOT_URL
+              value: {{ required "hub.rootUrl is required" .Values.hub.rootUrl | quote }}
+            - name: HUB_SAML_IDP_METADATA_URL
+              value: {{ .Values.hub.saml.idpMetadataUrl | quote }}
+            {{- if .Values.hub.saml.idpMetadataSecretKey }}
+            - name: HUB_SAML_IDP_METADATA_FILE
+              value: /etc/hub/saml/idp-metadata.xml
+            {{- end }}
+            - name: HUB_SAML_GROUPS_ATTRIBUTE
+              value: {{ .Values.hub.saml.groupsAttribute | quote }}
+            {{- if .Values.hub.saml.emailAttribute }}
+            - name: HUB_SAML_EMAIL_ATTRIBUTE
+              value: {{ .Values.hub.saml.emailAttribute | quote }}
+            {{- end }}
+            - name: HUB_SAML_CERT_FILE
+              value: /etc/hub/saml/tls.crt
+            - name: HUB_SAML_KEY_FILE
+              value: /etc/hub/saml/tls.key
+            - name: HUB_DIRECTORY_PROVIDER
+              value: google
+            - name: HUB_GOOGLE_CREDENTIALS_FILE
+              value: /etc/hub/google/credentials.json
+            - name: HUB_GOOGLE_IMPERSONATE_ADMIN
+              value: {{ .Values.hub.google.impersonateAdmin | quote }}
+            - name: HUB_TRACKER_PROVIDER
+              value: linear
+            - name: HUB_LINEAR_TEAM_KEY
+              value: {{ .Values.hub.linear.teamKey | quote }}
+            {{- if .Values.hub.linear.oauthExistingSecret }}
+            - name: HUB_LINEAR_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.hub.linear.oauthExistingSecret }}
+                  key: {{ .Values.hub.linear.oauthClientIdKey }}
+            - name: HUB_LINEAR_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.hub.linear.oauthExistingSecret }}
+                  key: {{ .Values.hub.linear.oauthClientSecretKey }}
+            {{- else }}
+            - name: HUB_LINEAR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "hub.linear.existingSecret is required" .Values.hub.linear.existingSecret }}
+                  key: {{ .Values.hub.linear.existingSecretKey }}
+            {{- end }}
+            {{- if .Values.hub.linear.webhookExistingSecret }}
+            - name: HUB_LINEAR_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.hub.linear.webhookExistingSecret }}
+                  key: {{ .Values.hub.linear.webhookSecretKey }}
+            {{- end }}
+            {{- if .Values.hub.trackerSyncInterval }}
+            - name: HUB_TRACKER_SYNC_INTERVAL
+              value: {{ .Values.hub.trackerSyncInterval | quote }}
+            {{- end }}
+            - name: HUB_DB_DRIVER
+              value: {{ .Values.hub.database.driver | quote }}
+            - name: HUB_DB_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "hub.database.existingSecret is required" .Values.hub.database.existingSecret }}
+                  key: {{ .Values.hub.database.existingSecretKey }}
+            {{- if .Values.hub.mattermost.url }}
+            - name: HUB_MESSENGER_PROVIDER
+              value: mattermost
+            - name: HUB_MATTERMOST_URL
+              value: {{ .Values.hub.mattermost.url | quote }}
+            - name: HUB_MATTERMOST_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "hub.mattermost.existingSecret is required with hub.mattermost.url" .Values.hub.mattermost.existingSecret }}
+                  key: {{ .Values.hub.mattermost.existingSecretKey }}
+            {{- end }}
+            {{- if .Values.hub.requestTemplates }}
+            - name: HUB_TEMPLATES_DIR
+              value: /etc/hub/templates
+            {{- end }}
+            {{- if .Values.hub.securityTools.enabled }}
+            - name: HUB_WEBAUTHN_RP_ID
+              value: {{ required "hub.securityTools.webauthn.rpId is required" .Values.hub.securityTools.webauthn.rpId | quote }}
+            - name: HUB_WEBAUTHN_ORIGINS
+              value: {{ required "hub.securityTools.webauthn.origins is required" .Values.hub.securityTools.webauthn.origins | quote }}
+            - name: HUB_SECURE_SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.hub.securityTools.existingSecret }}
+                  key: {{ .Values.hub.securityTools.existingSecretKey }}
+            - name: HUB_DRIVE_PROVIDER
+              value: google
+            - name: HUB_BIGQUERY_PROJECT
+              value: {{ required "hub.securityTools.bigquery.project is required" .Values.hub.securityTools.bigquery.project | quote }}
+            - name: HUB_BIGQUERY_DATASET
+              value: {{ required "hub.securityTools.bigquery.dataset is required" .Values.hub.securityTools.bigquery.dataset | quote }}
+            - name: HUB_BIGQUERY_TABLE
+              value: {{ required "hub.securityTools.bigquery.table is required" .Values.hub.securityTools.bigquery.table | quote }}
+            {{- if .Values.hub.securityTools.internalEmailDomains }}
+            - name: HUB_INTERNAL_EMAIL_DOMAINS
+              value: {{ .Values.hub.securityTools.internalEmailDomains | quote }}
+            {{- end }}
+            {{- else }}
+            - name: HUB_SECURITY_TOOLS
+              value: "0"
+            {{- end }}
+            {{- with .Values.hub.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: saml
+              mountPath: /etc/hub/saml
+              readOnly: true
+            - name: google
+              mountPath: /etc/hub/google
+              readOnly: true
+            {{- if .Values.hub.requestTemplates }}
+            - name: request-templates
+              mountPath: /etc/hub/templates
+              readOnly: true
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: saml
+          secret:
+            secretName: {{ required "hub.saml.existingSecret is required" .Values.hub.saml.existingSecret }}
+            items:
+              - key: {{ .Values.hub.saml.existingSecretCertKey }}
+                path: tls.crt
+              - key: {{ .Values.hub.saml.existingSecretKeyKey }}
+                path: tls.key
+              {{- if .Values.hub.saml.idpMetadataSecretKey }}
+              - key: {{ .Values.hub.saml.idpMetadataSecretKey }}
+                path: idp-metadata.xml
+              {{- end }}
+        - name: google
+          secret:
+            secretName: {{ required "hub.google.existingSecret is required" .Values.hub.google.existingSecret }}
+            items:
+              - key: {{ .Values.hub.google.existingSecretKey }}
+                path: credentials.json
+        {{- if .Values.hub.requestTemplates }}
+        - name: request-templates
+          configMap:
+            name: {{ .Release.Name }}-request-templates
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
