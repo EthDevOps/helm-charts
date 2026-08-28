@@ -5231,6 +5231,28 @@ entries:
   kube-guard:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-08-28T12:11:42.186254522Z"
+    description: A Kubernetes admission controller that monitors shell access, port
+      forwarding, PVC mounts, privileged pods, host access, RBAC changes, and namespace
+      deletions
+    digest: a2d5ad9e298ff915d0f350ee70002fc3d475ec23795c90f003d67b5f3a191083
+    home: https://github.com/your-org/kube-guard
+    keywords:
+    - security
+    - admission-controller
+    - monitoring
+    - mattermost
+    maintainers:
+    - email: team@example.com
+      name: KubeGuard Team
+    name: kube-guard
+    sources:
+    - https://github.com/your-org/kube-guard
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/kube-guard-0.2.5/kube-guard-0.2.5.tgz
+    version: 0.2.5
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-08-28T11:57:25.767075771Z"
     description: A Kubernetes admission controller that monitors shell access, port
       forwarding, PVC mounts, privileged pods, host access, RBAC changes, and namespace
@@ -10771,4 +10793,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-08-28T11:57:25.768784317Z"
+generated: "2026-08-28T12:11:42.187107216Z"
