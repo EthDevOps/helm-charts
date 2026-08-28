@@ -36,15 +36,37 @@ spec:
           SERVICE_NAME="{{ .Values.service.name | default (printf "%s-webhook" (include "kube-guard.fullname" .)) }}"
           NAMESPACE="{{ .Release.Namespace }}"
           SECRET_NAME="{{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}"
+          CA_SECRET_NAME="${SECRET_NAME}-ca"
 
-          # Generate CA private key
-          openssl genrsa -out /tmp/ca.key 2048
+          # Reuse the existing CA when it is valid for at least 30 more days.
+          # The CA key is stored alongside the CA cert so it survives upgrades.
+          # Rotating the CA on every upgrade would leave running pods serving a
+          # leaf signed by the old CA, which the API server rejects.
+          REUSE_CA=0
+          EXISTING_CA_KEY=$(kubectl get secret "$CA_SECRET_NAME" -n "$NAMESPACE" -o jsonpath='{.data.ca\.key}' 2>/dev/null | base64 -d 2>/dev/null || true)
+          EXISTING_CA_CRT=$(kubectl get secret "$CA_SECRET_NAME" -n "$NAMESPACE" -o jsonpath='{.data.ca\.crt}' 2>/dev/null | base64 -d 2>/dev/null || true)
+          if [ -n "$EXISTING_CA_KEY" ] && [ -n "$EXISTING_CA_CRT" ]; then
+            printf '%s\n' "$EXISTING_CA_CRT" > /tmp/existing-ca.crt
+            if openssl x509 -checkend $((30 * 24 * 3600)) -noout -in /tmp/existing-ca.crt >/dev/null 2>&1; then
+              echo "Reusing existing CA (valid for more than 30 days)"
+              printf '%s\n' "$EXISTING_CA_KEY" > /tmp/ca.key
+              cp /tmp/existing-ca.crt /tmp/ca.crt
+              REUSE_CA=1
+            else
+              echo "Existing CA expires within 30 days; rotating CA"
+            fi
+          fi
 
-          # Generate CA certificate
-          openssl req -new -x509 -key /tmp/ca.key -out /tmp/ca.crt -days 365 \
-            -subj "/CN=kube-guard-ca" \
-            -extensions v3_ca \
-            -config <(echo "[req]"; echo "distinguished_name=req"; echo "[v3_ca]"; echo "basicConstraints=CA:TRUE"; echo "keyUsage=keyCertSign,cRLSign")
+          if [ "$REUSE_CA" -eq 0 ]; then
+            # Generate CA private key
+            openssl genrsa -out /tmp/ca.key 2048
+
+            # Generate CA certificate
+            openssl req -new -x509 -key /tmp/ca.key -out /tmp/ca.crt -days 365 \
+              -subj "/CN=kube-guard-ca" \
+              -extensions v3_ca \
+              -config <(echo "[req]"; echo "distinguished_name=req"; echo "[v3_ca]"; echo "basicConstraints=CA:TRUE"; echo "keyUsage=keyCertSign,cRLSign")
+          fi
 
           # Generate server private key
           openssl genrsa -out /tmp/tls.key 2048
@@ -91,9 +113,11 @@ spec:
             --namespace=$NAMESPACE \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          # Create or update the CA secret for webhook configuration
-          kubectl create secret generic ${SECRET_NAME}-ca \
+          # Create or update the CA secret (cert + key) for webhook
+          # configuration and future CA reuse
+          kubectl create secret generic "$CA_SECRET_NAME" \
             --from-file=ca.crt=/tmp/ca.crt \
+            --from-file=ca.key=/tmp/ca.key \
             --namespace=$NAMESPACE \
             --dry-run=client -o yaml | kubectl apply -f -
 

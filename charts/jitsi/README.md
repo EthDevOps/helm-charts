@@ -1,6 +1,6 @@
 # jitsi-meet
 
-![Version: 1.10.0](https://img.shields.io/badge/Version-1.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
+![Version: 1.11.0](https://img.shields.io/badge/Version-1.11.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
 
 Jitsi Meet packaged for Kubernetes
 
@@ -202,6 +202,7 @@ Jitsi Meet packaged for Kubernetes
 | keycloak_adapter.keycloak_client_id | string | `""` |  |
 | keycloak_adapter.keycloak_realm | string | `""` |  |
 | keycloak_adapter.keycloak_url | string | `""` |  |
+| keycloak_adapter.keycloak_url_internal | string | `""` |  |
 | keycloak_adapter.resources.limits.cpu | string | `"200m"` |  |
 | keycloak_adapter.resources.limits.ephemeral-storage | string | `"256Mi"` |  |
 | keycloak_adapter.resources.limits.memory | string | `"256Mi"` |  |

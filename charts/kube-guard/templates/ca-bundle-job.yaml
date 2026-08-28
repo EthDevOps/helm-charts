@@ -29,6 +29,7 @@ spec:
 
           SECRET_NAME="{{ .Values.webhook.tls.secretName | default (printf "%s-tls" (include "kube-guard.fullname" .)) }}"
           NAMESPACE="{{ .Release.Namespace }}"
+          DEPLOYMENT_NAME="{{ include "kube-guard.fullname" . }}"
 
           # Get CA bundle from our CA certificate
           CA_BUNDLE=$(kubectl get secret ${SECRET_NAME}-ca -n $NAMESPACE -o jsonpath='{.data.ca\.crt}')
@@ -49,6 +50,20 @@ spec:
             -p='[{"op": "replace", "path": "/webhooks/0/clientConfig/caBundle", "value": "'$CA_BUNDLE'"}]'
 
           echo "CA bundle updated successfully"
+
+          # Pods load the TLS cert at startup, so when the CA changed the
+          # currently served leaf no longer matches the webhook caBundle and
+          # the API server rejects it (silently, with failurePolicy Ignore).
+          # Annotating the pod template triggers a rolling restart so pods
+          # pick up a leaf signed by the CA the webhook configuration trusts.
+          CA_HASH=$(printf '%s' "$CA_BUNDLE" | sha256sum | cut -d' ' -f1)
+          CURRENT_HASH=$(kubectl get deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.template.metadata.annotations.kube-guard\.io/ca-hash}' 2>/dev/null || true)
+          if [ "$CA_HASH" != "$CURRENT_HASH" ]; then
+            echo "CA changed; annotating deployment to trigger rollout"
+            kubectl annotate deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" "kube-guard.io/ca-hash=$CA_HASH" --overwrite
+          else
+            echo "CA unchanged; no rollout needed"
+          fi
 
         resources:
           limits:
