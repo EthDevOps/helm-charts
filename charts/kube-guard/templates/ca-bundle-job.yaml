@@ -58,9 +58,13 @@ spec:
           # pick up a leaf signed by the CA the webhook configuration trusts.
           CA_HASH=$(printf '%s' "$CA_BUNDLE" | sha256sum | cut -d' ' -f1)
           CURRENT_HASH=$(kubectl get deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" -o jsonpath='{.spec.template.metadata.annotations.kube-guard\.io/ca-hash}' 2>/dev/null || true)
-          if [ "$CA_HASH" != "$CURRENT_HASH" ]; then
-            echo "CA changed; annotating deployment to trigger rollout"
-            kubectl annotate deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" "kube-guard.io/ca-hash=$CA_HASH" --overwrite
+           if [ "$CA_HASH" != "$CURRENT_HASH" ]; then
+            echo "CA changed; annotating pod template to trigger rollout"
+            # Patch the pod template (not the deployment object) so the hash
+            # change actually triggers a rolling restart. Merge patch: creates
+            # the annotations map if missing, preserves other annotations.
+            kubectl patch deployment "$DEPLOYMENT_NAME" -n "$NAMESPACE" --type='merge' \
+              -p='{"spec": {"template": {"metadata": {"annotations": {"kube-guard.io/ca-hash": "'$CA_HASH'"}}}}}'
           else
             echo "CA unchanged; no rollout needed"
           fi
