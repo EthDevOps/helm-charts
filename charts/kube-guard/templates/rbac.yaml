@@ -34,6 +34,11 @@ rules:
 - apiGroups: ["admissionregistration.k8s.io"]
   resources: ["validatingadmissionwebhooks", "mutatingadmissionwebhooks", "validatingwebhookconfigurations", "mutatingwebhookconfigurations"]
   verbs: ["get", "list", "patch", "update"]
+# ca-bundle hook reads and annotates the webhook deployment after patching
+# the webhook caBundles (rollout on CA rotation)
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "patch"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
