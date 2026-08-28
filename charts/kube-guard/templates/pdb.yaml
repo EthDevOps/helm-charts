@@ -11,7 +11,12 @@ spec:
   {{- else }}
   maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
   {{- end }}
+  # Select only the webhook pods, not hook job pods (e.g. cert-gen): a Job
+  # does not implement the scale subresource, so the PDB controller cannot
+  # calculate expected pods and reports DisruptionAllowed=False while the
+  # job runs, which fails ArgoCD health checks for the PDB.
   selector:
     matchLabels:
-      {{- include "kube-guard.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "kube-guard.name" . }}
+      kube-guard.io/component: webhook
 {{- end }}

@@ -16,6 +16,10 @@ spec:
     metadata:
       labels:
         {{- include "kube-guard.selectorLabels" . | nindent 8 }}
+        # Identifies webhook pods so the PodDisruptionBudget never matches
+        # hook job pods (jobs lack the scale subresource, which breaks the
+        # PDB and fails ArgoCD syncs while the job runs)
+        kube-guard.io/component: webhook
     spec:
       serviceAccountName: {{ include "kube-guard.serviceAccountName" . }}
       containers:
