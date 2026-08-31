@@ -15,6 +15,11 @@ reporting healthy while agents silently stop being processed. When
 livenessProbe.daemonCheck is enabled, assert the listed daemons are actually
 running instead.
 
+`wazuh-control status` exits non-zero whenever any daemon is stopped, including
+the optional ones (wazuh-maild, wazuh-agentlessd, wazuh-integratord, wazuh-dbd,
+wazuh-csyslogd) that are not running on a healthy manager. Its exit code is
+therefore useless as a health signal -- only the per-daemon assertion below is.
+
 Call with a dict: {"cfg": <master|worker values>, "port": <tcpSocket fallback>}
 */}}
 {{- define "wazuh.manager.livenessProbe" -}}
@@ -25,7 +30,7 @@ exec:
     - /bin/sh
     - -c
     - |
-      status=$(/var/ossec/bin/wazuh-control status) || exit 1
+      status=$(/var/ossec/bin/wazuh-control status 2>/dev/null)
       for daemon in {{ join " " $check.daemons }}; do
         echo "$status" | grep -q "^$daemon is running" || {
           echo "$daemon is not running" >&2
