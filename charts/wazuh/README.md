@@ -1,6 +1,6 @@
 # wazuh
 
-![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
 
 Wazuh is a free and open source security platform that unifies XDR and SIEM protection for endpoints and cloud workloads.
 
@@ -43,6 +43,7 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | dashboard.ingress.enabled | bool | `false` |  |
 | dashboard.ingress.host | string | `"wazuh.example.com"` |  |
 | dashboard.ingress.tls | list | `[]` |  |
+| dashboard.podAnnotations | object | `{}` |  |
 | dashboard.replicas | int | `1` |  |
 | dashboard.resources.limits.cpu | string | `"1"` |  |
 | dashboard.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
@@ -82,6 +83,7 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | indexer.initContainers.volumeMountHack.resources.requests.ephemeral-storage | string | `"128Mi"` |  |
 | indexer.initContainers.volumeMountHack.resources.requests.memory | string | `"128Mi"` |  |
 | indexer.plugins | list | `[]` |  |
+| indexer.podAnnotations | object | `{}` |  |
 | indexer.replicas | int | `3` |  |
 | indexer.resources.limits.cpu | string | `"2"` |  |
 | indexer.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
@@ -134,6 +136,7 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | wazuh.master.livenessProbe.daemonCheck.daemons[3] | string | `"wazuh-clusterd"` |  |
 | wazuh.master.livenessProbe.daemonCheck.enabled | bool | `false` |  |
 | wazuh.master.livenessProbe.timeoutSeconds | int | `5` |  |
+| wazuh.master.podAnnotations | object | `{}` |  |
 | wazuh.master.resources.limits.cpu | string | `"2"` |  |
 | wazuh.master.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | wazuh.master.resources.limits.memory | string | `"1Gi"` |  |
@@ -158,6 +161,7 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | wazuh.worker.livenessProbe.daemonCheck.daemons[3] | string | `"wazuh-clusterd"` |  |
 | wazuh.worker.livenessProbe.daemonCheck.enabled | bool | `false` |  |
 | wazuh.worker.livenessProbe.timeoutSeconds | int | `5` |  |
+| wazuh.worker.podAnnotations | object | `{}` |  |
 | wazuh.worker.replicas | int | `2` |  |
 | wazuh.worker.resources.limits.cpu | string | `"2"` |  |
 | wazuh.worker.resources.limits.ephemeral-storage | string | `"1Gi"` |  |

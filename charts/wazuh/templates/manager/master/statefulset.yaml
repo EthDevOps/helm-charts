@@ -34,12 +34,10 @@ spec:
         app: {{ include "wazuh.fullname" . }}-manager
         node-type: master
       name: wazuh-manager-master
+      {{- with .Values.wazuh.master.podAnnotations }}
       annotations:
-        {{- toYaml .Values.wazuh.master.annotations | nindent 8 }}
-        {{- if .Values.reloader.enabled -}}
-        secret.reloader.stakater.com/reload: "wazuh-authd-pass,indexer-certs"
-        configmap.reloader.stakater.com/reload: "{{ template "wazuh.fullname" . }}-master-config"
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       volumes:
         - name: config
