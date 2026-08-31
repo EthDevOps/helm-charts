@@ -4,8 +4,6 @@ metadata:
   name: {{ include "wazuh.fullname" . }}-dashboard-config
   labels:
     app: {{ include "wazuh.fullname" . }}-dashboard
-  annotations:
-    {{- toYaml .Values.dashboard.annotations | nindent 4 }}
 data:
   opensearch_dashboards.yml: |
     {{- tpl .Values.dashboard.config . | indent 2 }}
