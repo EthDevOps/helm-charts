@@ -28,6 +28,21 @@ config:
   monitoredNamespaces:
     - "*"
 
+  # Additional per-namespace channel routing. Alerts for a listed namespace are
+  # sent to that channel IN ADDITION to the global channel above. Namespaces
+  # listed here are monitored even if absent from monitoredNamespaces.
+  # Cluster-scoped alerts (e.g. ClusterRole changes) only go to the global channel.
+  # Each entry may set its own webhookUrl (e.g. another team's Mattermost hook);
+  # if omitted, the global webhook above is used.
+  # Example:
+  # namespaceChannels:
+  #   - channel: "team-a-alerts"
+  #     namespaces: ["team-a", "team-a-staging"]
+  #   - channel: "team-b-alerts"
+  #     webhookUrl: "https://mattermost.team-b.example.com/hooks/xyz789"
+  #     namespaces: ["team-b"]
+  namespaceChannels: []
+
   # Users to exclude from notifications (e.g. service accounts, CI bots)
   # Example: ["system:serviceaccount:kube-system:replicaset-controller", "ci-bot"]
   ignoredUsers: []

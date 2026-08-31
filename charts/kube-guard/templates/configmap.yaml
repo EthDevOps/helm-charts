@@ -17,6 +17,20 @@ data:
       - {{ . | quote }}
     {{- end }}
 
+    namespace_channels:
+    {{- range .Values.config.namespaceChannels }}
+      - channel: {{ .channel | quote }}
+        {{- if .webhookUrl }}
+        webhook_url: {{ .webhookUrl | quote }}
+        {{- end }}
+        namespaces:
+        {{- range .namespaces }}
+          - {{ . | quote }}
+        {{- end }}
+    {{- else }}
+      []
+    {{- end }}
+
     ignored_users:
     {{- range .Values.config.ignoredUsers }}
       - {{ . | quote }}

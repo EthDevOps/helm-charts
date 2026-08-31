@@ -10,8 +10,23 @@ config:
     # Channel to send notifications to
     channel: "security-alerts"
 
-  # Namespace to monitor
-  monitoredNamespace: "production"
+  # Namespaces to monitor. Use ["*"] for all namespaces.
+  monitoredNamespaces:
+    - "*"
+
+  # Route alerts for specific namespaces to additional channels.
+  # The global channel above still receives every alert.
+  # An entry may set webhookUrl to post to a different Mattermost hook
+  # (e.g. another team's instance); omitted = global webhook is used.
+  namespaceChannels:
+    - channel: "team-a-alerts"
+      namespaces:
+        - "team-a"
+        - "team-a-staging"
+    - channel: "team-b-alerts"
+      webhookUrl: "https://mattermost.team-b.company.com/hooks/xyz789"
+      namespaces:
+        - "team-b"
 
   # Notification settings
   notifications:

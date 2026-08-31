@@ -1,6 +1,6 @@
 # kube-guard
 
-![Version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Kubernetes admission controller that monitors shell access, port forwarding, PVC mounts, privileged pods, host access, RBAC changes, and namespace deletions
 
@@ -25,6 +25,7 @@ A Kubernetes admission controller that monitors shell access, port forwarding, P
 | config.mattermost.channel | string | `"alerts"` |  |
 | config.mattermost.webhookUrl | string | `"https://your-mattermost.example.com/hooks/your-webhook-id"` |  |
 | config.monitoredNamespaces[0] | string | `"*"` |  |
+| config.namespaceChannels | list | `[]` |  |
 | config.notifications.hostAccess | bool | `true` |  |
 | config.notifications.namespaceDelete | bool | `true` |  |
 | config.notifications.portForward | bool | `true` |  |
