@@ -57,6 +57,9 @@ spec:
             secretName: {{ .Values.wazuh.authd.existingSecret | default "wazuh-authd-pass" }}
         - emptyDir: {}
           name: result-config
+        {{- with include "wazuh.sharedConfig.volume" . }}
+        {{- . | trim | nindent 8 }}
+        {{- end }}
         - name: scripts-volume
           emptyDir: {}
 
@@ -197,6 +200,12 @@ spec:
               mountPath: /wazuh-config-mount/etc/authd.pass
               subPath: authd.pass
               readOnly: true
+            # Shared agent config / local rules / local decoders (master only;
+            # wazuh-clusterd syncs them to the workers). Must come after the
+            # result-config mount above so the files nest inside it.
+            {{- with include "wazuh.sharedConfig.mounts" . }}
+            {{- . | trim | nindent 12 }}
+            {{- end }}
             # PVC
             - name: {{ include "wazuh.fullname" . }}-manager-master
               mountPath: /var/ossec/api/configuration

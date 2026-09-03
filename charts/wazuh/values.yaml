@@ -178,6 +178,29 @@ wazuh:
 
   extraOssConfig: ""
 
+  # Files delivered to the MASTER's /var/ossec/etc from an existing ConfigMap.
+  # Each entry is mounted (subPath, one file each) under /wazuh-config-mount/etc/
+  # and the image entrypoint copies it onto the PVC at every container start,
+  # so a content change needs a master restart to land (pair with
+  # `configmap.reloader.stakater.com/reload: <configmap>` in master.annotations
+  # when a reloader is available). Master only by design: wazuh-clusterd
+  # replicates etc/shared, etc/rules and etc/decoders to the workers itself.
+  #
+  # All maps are <target name> -> <ConfigMap key>.
+  #   agentConf: <agent group>  -> etc/shared/<group>/agent.conf
+  #   rules:     <file name>    -> etc/rules/<file name>
+  #   decoders:  <file name>    -> etc/decoders/<file name>
+  #
+  # The group directory for every agentConf entry MUST already exist on the
+  # master (`agent_groups -a -g <group>`). The entrypoint copies as root, so a
+  # missing directory is created root-owned and wazuh-remoted can then never
+  # write merged.mg into it: the group's agents silently receive nothing.
+  sharedConfig:
+    existingConfigMap: ""
+    agentConf: {}
+    rules: {}
+    decoders: {}
+
   googleWorkspace:
     existingSecret: ""
 

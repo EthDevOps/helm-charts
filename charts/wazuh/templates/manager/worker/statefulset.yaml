@@ -113,6 +113,34 @@ spec:
               name: config
               readOnly: true
               subPath: script.sh
+
+        # Splices wazuh.extraOssConfig into ossec.conf, mirroring the master.
+        - name: config-updater
+          image: {{ .Values.utilityImage.busybox | quote }}
+          imagePullPolicy: {{ .Values.utilityImage.pullPolicy }}
+          resources:
+            {{- toYaml .Values.wazuh.initContainer.resources | nindent 12 }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cat > /tmp/content-to-insert.txt << 'EOF'
+              {{- .Values.wazuh.extraOssConfig | nindent 14 }}
+              EOF
+
+              cp /wazuh-config-mount/etc/ossec.conf /tmp/config
+              sed -i '$d' /tmp/config
+
+              cat /tmp/config > /wazuh-config-mount/etc/ossec.conf
+              cat /tmp/content-to-insert.txt >> /wazuh-config-mount/etc/ossec.conf
+              echo "</ossec_config>" >> /wazuh-config-mount/etc/ossec.conf
+
+              echo "====CONFIG_START===="
+              cat /wazuh-config-mount/etc/ossec.conf
+              echo "====CONFIG_END===="
+          volumeMounts:
+            - mountPath: /wazuh-config-mount/etc/
+              name: result-config
       containers:
         - name: wazuh-manager
           image: "{{ .Values.wazuh.images.repository }}:{{ .Values.wazuh.images.tag }}"
