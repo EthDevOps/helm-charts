@@ -3,7 +3,7 @@ name: wazuh
 description: Wazuh is a free and open source security platform that unifies XDR and SIEM protection for endpoints and cloud workloads.
 type: application
 appVersion: 4.14.5
-version: 0.3.0
+version: 0.4.0
 home: https://wazuh.com/
 sources:
   - https://github.com/EthDevOps/helm-charts
@@ -33,6 +33,10 @@ dependencies:
 annotations:
   artifacthub.io/category: security
   artifacthub.io/changes: |
+    - kind: added
+      description: "wazuh.sharedConfig: deliver agent.conf (per group), local rules and local decoders to the master from an existing ConfigMap via /wazuh-config-mount, so the centralised agent configuration can come from git."
+    - kind: fixed
+      description: "Worker StatefulSet now runs the config-updater init container, so wazuh.extraOssConfig is applied to workers as well as the master."
     - kind: changed
       description: "BREAKING: worker LB Service is now templated per-pod. The chart now emits N LoadBalancer Services (one per worker replica, pinned via statefulset.kubernetes.io/pod-name) instead of a single multi-pod Service. Consume the new ethquokkaops.io/balance-group + ethquokkaops.io/balance annotations (or their LB-controller equivalents) so an upstream LB sees a single backend with multiple sticky-hashed server lines. Required to keep agent-to-worker routing deterministic; Wazuh worker nodes do not share per-agent state across the cluster."
     - kind: added

@@ -865,3 +865,57 @@ snapshotrestore:
   - "snapshotrestore"
   description: "Demo snapshotrestore user"
 {{- end }}
+
+{{/*
+Shared-config delivery (wazuh.sharedConfig). Renders the volume and the
+per-file subPath mounts for the master's main container. Files nest under
+the result-config emptyDir at /wazuh-config-mount/etc/ so the image
+entrypoint's `cp -r /wazuh-config-mount/* /var/ossec` lands them on the PVC.
+*/}}
+{{- define "wazuh.sharedConfig.enabled" -}}
+{{- $c := .Values.wazuh.sharedConfig -}}
+{{- if or $c.agentConf $c.rules $c.decoders -}}
+{{- if not $c.existingConfigMap -}}
+{{- fail "wazuh.sharedConfig.existingConfigMap is required when agentConf, rules or decoders are set" -}}
+{{- end -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{- define "wazuh.sharedConfig.volume" -}}
+{{- if include "wazuh.sharedConfig.enabled" . }}
+- name: shared-config
+  configMap:
+    name: {{ .Values.wazuh.sharedConfig.existingConfigMap }}
+    # A file that does not yet exist on the PVC is created with the mode of the
+    # source, so it must stay readable by the wazuh user.
+    defaultMode: 0644
+{{- end }}
+{{- end -}}
+
+{{- define "wazuh.sharedConfig.mounts" -}}
+{{- if include "wazuh.sharedConfig.enabled" . }}
+{{- $c := .Values.wazuh.sharedConfig }}
+{{- range $group, $key := $c.agentConf }}
+{{- if not $key }}{{ fail (printf "wazuh.sharedConfig.agentConf.%s: ConfigMap key must not be empty" $group) }}{{ end }}
+- name: shared-config
+  mountPath: /wazuh-config-mount/etc/shared/{{ $group }}/agent.conf
+  subPath: {{ $key }}
+  readOnly: true
+{{- end }}
+{{- range $file, $key := $c.rules }}
+{{- if not $key }}{{ fail (printf "wazuh.sharedConfig.rules.%s: ConfigMap key must not be empty" $file) }}{{ end }}
+- name: shared-config
+  mountPath: /wazuh-config-mount/etc/rules/{{ $file }}
+  subPath: {{ $key }}
+  readOnly: true
+{{- end }}
+{{- range $file, $key := $c.decoders }}
+{{- if not $key }}{{ fail (printf "wazuh.sharedConfig.decoders.%s: ConfigMap key must not be empty" $file) }}{{ end }}
+- name: shared-config
+  mountPath: /wazuh-config-mount/etc/decoders/{{ $file }}
+  subPath: {{ $key }}
+  readOnly: true
+{{- end }}
+{{- end }}
+{{- end -}}

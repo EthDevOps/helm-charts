@@ -1,6 +1,6 @@
 # wazuh
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
 
 Wazuh is a free and open source security platform that unifies XDR and SIEM protection for endpoints and cloud workloads.
 
@@ -151,6 +151,10 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | wazuh.master.storageSize | string | `"50Gi"` |  |
 | wazuh.service.annotations | object | `{}` |  |
 | wazuh.service.port | int | `1516` |  |
+| wazuh.sharedConfig.agentConf | object | `{}` |  |
+| wazuh.sharedConfig.decoders | object | `{}` |  |
+| wazuh.sharedConfig.existingConfigMap | string | `""` |  |
+| wazuh.sharedConfig.rules | object | `{}` |  |
 | wazuh.syslog_enable | bool | `true` |  |
 | wazuh.worker.annotations | object | `{}` |  |
 | wazuh.worker.conf | string | `"{{- include \"wazuh.worker.conf\" . | indent 2 -}}\n"` |  |
