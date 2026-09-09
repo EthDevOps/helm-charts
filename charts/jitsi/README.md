@@ -1,6 +1,6 @@
 # jitsi-meet
 
-![Version: 1.11.0](https://img.shields.io/badge/Version-1.11.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
+![Version: 1.11.1](https://img.shields.io/badge/Version-1.11.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
 
 Jitsi Meet packaged for Kubernetes
 
@@ -48,10 +48,11 @@ Jitsi Meet packaged for Kubernetes
 | jibri.image.repository | string | `"jitsi/jibri"` |  |
 | jibri.livenessProbe.exec.command[0] | string | `"/bin/bash"` |  |
 | jibri.livenessProbe.exec.command[1] | string | `"-c"` |  |
-| jibri.livenessProbe.exec.command[2] | string | `"curl -sq localhost:2222/jibri/api/v1.0/health | jq '\"\\(.status.health.healthStatus) \\(.status.busyStatus)\"' | grep -qP 'HEALTHY (IDLE|BUSY)'"` |  |
-| jibri.livenessProbe.failureThreshold | int | `2` |  |
-| jibri.livenessProbe.initialDelaySeconds | int | `5` |  |
-| jibri.livenessProbe.periodSeconds | int | `5` |  |
+| jibri.livenessProbe.exec.command[2] | string | `"set -o pipefail; curl -sf --max-time 3 localhost:2222/jibri/api/v1.0/health | jq -es '.[0].status.health.healthStatus == \"HEALTHY\" and (.[0].status.busyStatus == \"IDLE\" or .[0].status.busyStatus == \"BUSY\")' > /dev/null"` |  |
+| jibri.livenessProbe.failureThreshold | int | `30` |  |
+| jibri.livenessProbe.initialDelaySeconds | int | `30` |  |
+| jibri.livenessProbe.periodSeconds | int | `10` |  |
+| jibri.livenessProbe.timeoutSeconds | int | `5` |  |
 | jibri.livestreaming | bool | `false` |  |
 | jibri.persistence.enabled | bool | `false` |  |
 | jibri.persistence.existingClaim | string | `nil` |  |
@@ -61,10 +62,11 @@ Jitsi Meet packaged for Kubernetes
 | jibri.podLabels | object | `{}` |  |
 | jibri.readinessProbe.exec.command[0] | string | `"/bin/bash"` |  |
 | jibri.readinessProbe.exec.command[1] | string | `"-c"` |  |
-| jibri.readinessProbe.exec.command[2] | string | `"curl -sq localhost:2222/jibri/api/v1.0/health | jq '\"\\(.status.health.healthStatus) \\(.status.busyStatus)\"' | grep -qP 'HEALTHY (IDLE|BUSY)'"` |  |
-| jibri.readinessProbe.failureThreshold | int | `2` |  |
-| jibri.readinessProbe.initialDelaySeconds | int | `5` |  |
-| jibri.readinessProbe.periodSeconds | int | `5` |  |
+| jibri.readinessProbe.exec.command[2] | string | `"set -o pipefail; curl -sf --max-time 3 localhost:2222/jibri/api/v1.0/health | jq -es '.[0].status.health.healthStatus == \"HEALTHY\" and (.[0].status.busyStatus == \"IDLE\" or .[0].status.busyStatus == \"BUSY\")' > /dev/null"` |  |
+| jibri.readinessProbe.failureThreshold | int | `3` |  |
+| jibri.readinessProbe.initialDelaySeconds | int | `10` |  |
+| jibri.readinessProbe.periodSeconds | int | `10` |  |
+| jibri.readinessProbe.timeoutSeconds | int | `5` |  |
 | jibri.recorder.password | string | `nil` |  |
 | jibri.recorder.user | string | `"recorder"` |  |
 | jibri.recording | bool | `true` |  |
