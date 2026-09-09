@@ -538,31 +538,44 @@ jibri:
     user: recorder
     password:
 
+  ## Both probes assert healthStatus == HEALTHY and a live busyStatus.
+  ## Compare exactly: the previous `grep -qP 'HEALTHY (IDLE|BUSY)'` matched
+  ## "UNHEALTHY BUSY" as a substring, so a jibri wedged on a dead session kept
+  ## passing its own liveness probe. `jq -es` also fails an empty, truncated or
+  ## non-JSON body, and `pipefail` surfaces a curl error.
+  ## Liveness is deliberately slow to fire (5m) so a transient blip cannot kill
+  ## an in-progress recording; a real wedge lasts indefinitely.
   livenessProbe:
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    failureThreshold: 2
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 30
     exec:
       command:
         - /bin/bash
         - "-c"
         - >-
-          curl -sq localhost:2222/jibri/api/v1.0/health
-          | jq '"\(.status.health.healthStatus) \(.status.busyStatus)"'
-          | grep -qP 'HEALTHY (IDLE|BUSY)'
+          set -o pipefail;
+          curl -sf --max-time 3 localhost:2222/jibri/api/v1.0/health
+          | jq -es '.[0].status.health.healthStatus == "HEALTHY"
+          and (.[0].status.busyStatus == "IDLE" or .[0].status.busyStatus == "BUSY")'
+          > /dev/null
 
   readinessProbe:
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    failureThreshold: 2
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
     exec:
       command:
         - /bin/bash
         - "-c"
         - >-
-          curl -sq localhost:2222/jibri/api/v1.0/health
-          | jq '"\(.status.health.healthStatus) \(.status.busyStatus)"'
-          | grep -qP 'HEALTHY (IDLE|BUSY)'
+          set -o pipefail;
+          curl -sf --max-time 3 localhost:2222/jibri/api/v1.0/health
+          | jq -es '.[0].status.health.healthStatus == "HEALTHY"
+          and (.[0].status.busyStatus == "IDLE" or .[0].status.busyStatus == "BUSY")'
+          > /dev/null
 
   extraEnvs: {}
   custom:
