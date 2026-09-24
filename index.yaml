@@ -1071,6 +1071,17 @@ entries:
   devops-hub:
   - apiVersion: v2
     appVersion: v0.6.0
+    created: "2026-09-24T11:10:43.014497986Z"
+    description: EF DevOps Hub - internal portal with Google Workspace profile self-service
+      and a request portal filed into Linear with Mattermost-based approvals
+    digest: e44ffed56adc4a7962f8e5a9eea8dae3bd27a814d91a86a70c0de089cb3f2657
+    name: devops-hub
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/devops-hub-0.6.0/devops-hub-0.6.0.tgz
+    version: 0.6.0
+  - apiVersion: v2
+    appVersion: v0.6.0
     created: "2026-08-09T21:16:03.61126224Z"
     description: EF DevOps Hub - internal portal with Google Workspace profile self-service
       and a request portal filed into Linear with Mattermost-based approvals
@@ -11039,4 +11050,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-09-09T20:14:08.86534587Z"
+generated: "2026-09-24T11:10:43.015478057Z"
