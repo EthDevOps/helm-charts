@@ -67,6 +67,13 @@ hub:
     existingSecret: "devops-hub-managed-secret"
     existingSecretKey: "linear-api-key"
 
+  warpgate:
+    # Full URL incl. scheme; empty = backend default https://eu.gate.ethdevops.io
+    url: ""
+    # Admin API token secret; empty existingSecret = mock provider
+    existingSecret: "devops-hub-managed-secret"
+    existingSecretKey: "warpgate-token"
+
   # How often the tracker poll mirrors Linear state/comments (Go duration,
   # e.g. 60s, 30m; "0" disables). Empty uses the backend default (60s) —
   # the right primary cadence without webhooks; with webhooks enabled this

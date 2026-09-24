@@ -79,6 +79,21 @@ spec:
               value: /etc/hub/google/credentials.json
             - name: HUB_GOOGLE_IMPERSONATE_ADMIN
               value: {{ .Values.hub.google.impersonateAdmin | quote }}
+            {{- with .Values.hub.warpgate }}
+            {{- if .url }}
+            - name: HUB_WARPGATE_URL
+              value: {{ .url | quote }}
+            {{- end }}
+            - name: HUB_WARPGATE_PROVIDER
+              value: {{ ternary "api" "mock" (not (empty .existingSecret)) | quote }}
+            {{- if .existingSecret }}
+            - name: HUB_WARPGATE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret }}
+                  key: {{ .existingSecretKey }}
+            {{- end }}
+            {{- end }}
             - name: HUB_TRACKER_PROVIDER
               value: linear
             - name: HUB_LINEAR_TEAM_KEY
