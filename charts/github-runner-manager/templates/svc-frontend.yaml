@@ -6,9 +6,12 @@ metadata:
     app.kubernetes.io/name: {{ .Release.Name }}-github-autoscaler-ui
     ethquokkaops.io/expose-to-teleport: "true"
     ethquokkaops.io/allow-ef-org: "true"
+  {{- with .Values.frontendService.annotations }}
   annotations:
-    teleport.dev/name: github-runners
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  type: {{ .Values.frontendService.type }}
   selector:
     app: {{ .Release.Name }}-github-autoscaler-ui
   ports:

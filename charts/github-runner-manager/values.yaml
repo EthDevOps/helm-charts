@@ -103,6 +103,13 @@ service:
   type: ClusterIP
   annotations: {}
 
+# The UI Service (<release>-github-autoscaler-ui). `service` above is the
+# backend's. Annotations merge with the default; set a key to null to drop it.
+frontendService:
+  type: ClusterIP
+  annotations:
+    teleport.dev/name: github-runners
+
 # NetworkPolicy guarding ingress/egress for the autoscaler and UI pods.
 # Defaults are permissive (cluster-wide ingress to listening ports,
 # unrestricted egress so the backend can call GitHub APIs and resolve DNS).
