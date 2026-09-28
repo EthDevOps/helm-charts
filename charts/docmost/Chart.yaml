@@ -3,10 +3,10 @@ name: docmost
 description: OpenSource alternative for Notion
 type: application
 
-version: 0.2.7
+version: 0.3.0
 
 # App metadata
-appVersion: "1.0.0"
+appVersion: "0.96.0"
 maintainers:
   - name: elasticroentgen
     email: markus.keil@ethereum.org

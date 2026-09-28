@@ -1,16 +1,99 @@
 replicaCount: 1
 appDomain: docmost.example.com
+# Defaults to https://<appDomain>
+appUrl: ""
+
 image:
   repository: docmost/docmost
-  # TODO: pin a specific tag instead of latest
-  tag: latest
+  # Defaults to .Chart.AppVersion
+  tag: ""
   pullPolicy: Always
+
+# APP_SECRET signs sessions AND encrypts data at rest (AES-256-GCM).
+# It must stay stable forever; min. 32 chars (openssl rand -hex 32).
+# Set existingSecret (recommended) or value. With neither, the pod expects a
+# pre-created secret named <release>-docmost; it is never auto-generated.
+appSecret:
+  existingSecret: ""
+  key: APP_SECRET
+  value: ""
+
+# Used when postgresql.enabled=false. For CNPG point this at the
+# `<cluster>-app` secret, whose `uri` key holds the full connection string.
+externalDatabase:
+  existingSecret: ""
+  key: uri
+
+# Used when redis.enabled=false. Single endpoint only: docmost cannot talk
+# Sentinel/Cluster. Format: redis[s]://[user[:pass]@]host[:port][/db]
+externalRedis:
+  url: ""
+  # Or read the URL from a secret (takes precedence over url)
+  existingSecret: ""
+  key: REDIS_URL
+
+storage:
+  # local | s3 | azure. Anything but local allows replicaCount > 1.
+  driver: local
+  s3:
+    region: ""
+    bucket: ""
+    endpoint: ""
+    forcePathStyle: false
+    # Optional public/CDN base URL for files
+    url: ""
+    # Secret holding the credentials
+    existingSecret: ""
+    accessKeyIdKey: AWS_S3_ACCESS_KEY_ID
+    secretAccessKeyKey: AWS_S3_SECRET_ACCESS_KEY
+  # azure: set AZURE_STORAGE_* via env / envFrom
+
+# Only used with storage.driver=local
+persistence:
+  size: 1Gi
+  storageClass: ""
+  # ReadWriteMany (e.g. CephFS) also allows replicaCount > 1 with local storage
+  accessModes:
+    - ReadWriteOnce
+  existingClaim: ""
+
+mail:
+  enabled: false
+  # smtp | postmark
+  driver: smtp
+  host: ""
+  port: ""
+  secure: ""
+  ignoreTLS: ""
+  fromAddress: "hello@example.com"
+  fromName: "Docmost"
+  existingSecret:
+    name: ""
+    usernameKey: SMTP_USERNAME
+    passwordKey: SMTP_PASSWORD
+    # Only read when driver=postmark
+    postmarkTokenKey: POSTMARK_TOKEN
+
+# Any other plain docmost env var, see
+# https://docmost.com/docs/self-hosting/configuration and upstream .env.example:
+#   FILE_UPLOAD_SIZE_LIMIT, FILE_IMPORT_SIZE_LIMIT, JWT_TOKEN_EXPIRES_IN,
+#   DATABASE_MAX_POOL, DRAWIO_URL, GOTENBERG_URL, DISABLE_TELEMETRY,
+#   IFRAME_EMBED_ALLOWED, IFRAME_ALLOWED_ORIGINS, ALLOWED_PRIVATE_NETWORKS,
+#   SEARCH_DRIVER, TYPESENSE_URL, TYPESENSE_LOCALE, AI_DRIVER,
+#   AI_COMPLETION_MODEL, AI_EMBEDDING_MODEL, AI_EMBEDDING_DIMENSION,
+#   OPENAI_API_URL, OLLAMA_API_URL, MAIL_BLOCKED_RECIPIENT_DOMAINS,
+#   DEBUG_MODE, DEBUG_DB, LOG_HTTP, ...
+env:
+  DISABLE_TELEMETRY: "true"
+# Raw EnvVar entries (e.g. valueFrom for OPENAI_API_KEY, TYPESENSE_API_KEY)
+extraEnv: []
+# e.g. [{secretRef: {name: docmost-extra}}]
+envFrom: []
 
 service:
   type: ClusterIP
   annotations: {}
 
-# Resources for the main docmost container
 resources:
   requests:
     cpu: 100m
@@ -21,7 +104,7 @@ resources:
     memory: 2Gi
     ephemeral-storage: 1Gi
 
-# Init container that fixes storage permissions
+# Init container that chowns the local storage PVC (local driver only)
 initContainer:
   image: alpine:3.20
   imagePullPolicy: Always
@@ -34,6 +117,13 @@ initContainer:
       cpu: 200m
       memory: 128Mi
       ephemeral-storage: 256Mi
+
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+# Defaults to spreading replicas across nodes when replicaCount > 1
+topologySpreadConstraints: []
 
 podSecurityContext:
   fsGroup: 1000
@@ -64,9 +154,20 @@ podDisruptionBudget:
   enabled: true
   maxUnavailable: 1
 
+# Websockets are required (real-time editor); ingress-nginx handles them
+# out of the box.
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+  tls:
+    secretName: docmost-tls
+
+# Bundled single-instance postgres. Disable for CNPG and set externalDatabase.
 postgresql:
   enabled: true
   image:
+    # Upstream compose uses 18; major bumps need a manual dump/restore.
     tag: 17-alpine
     pullPolicy: Always
   auth:
@@ -86,9 +187,20 @@ postgresql:
 
 redis:
   enabled: true
-  architecture: standalone
   image:
     pullPolicy: Always
+  # Upstream runs redis with `--appendonly yes --maxmemory-policy noeviction`.
+  # noeviction is required: docmost's BullMQ queues break under LRU eviction.
+  redis:
+    configuration: |
+      bind 0.0.0.0
+      port 6379
+      tcp-keepalive 300
+      dir /data
+      appendonly yes
+      maxmemory-policy noeviction
+      loglevel notice
+      logfile ""
   resources:
     requests:
       cpu: 100m
@@ -98,26 +210,3 @@ redis:
       cpu: 500m
       memory: 512Mi
       ephemeral-storage: 512Mi
-
-persistence:
-  size: 1Gi
-
-mail:
-  enabled: false
-  driver: smtp
-  host: ""
-  port: ""
-  secure: ""
-  fromAddress: "hello@example.com"
-  fromName: "Docmost"
-  existingSecret:
-    name: ""
-    usernameKey: SMTP_USERNAME
-    passwordKey: SMTP_PASSWORD
-
-ingress:
-  enabled: true
-  annotations: {}
-  tls:
-    secretName: docmost-tls
-

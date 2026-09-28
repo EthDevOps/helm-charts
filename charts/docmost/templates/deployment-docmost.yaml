@@ -1,3 +1,14 @@
+{{- $local := include "docmost.localStorage" . }}
+{{- $rwx := has "ReadWriteMany" .Values.persistence.accessModes }}
+{{- if and $local (not $rwx) (gt (int .Values.replicaCount) 1) }}
+{{- fail "replicaCount > 1 needs storage.driver s3/azure or a ReadWriteMany persistence volume" }}
+{{- end }}
+{{- if and (not .Values.postgresql.enabled) (not .Values.externalDatabase.existingSecret) }}
+{{- fail "postgresql.enabled=false requires externalDatabase.existingSecret (CNPG: <cluster>-app)" }}
+{{- end }}
+{{- if and (not .Values.redis.enabled) (not .Values.externalRedis.existingSecret) (not .Values.externalRedis.url) }}
+{{- fail "redis.enabled=false requires externalRedis.url or externalRedis.existingSecret" }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,18 +16,16 @@ metadata:
   labels:
     app: {{ .Release.Name }}-docmost
   annotations:
-    # docmost upstream image is unpinned (defaults to :latest). Operators
-    # should override image.tag with a specific version in their values.
-    # See TODO in values.yaml.
     # The app container runs as uid/gid 1000 (baked into the image); the
     # fix-permissions init container needs root to chown the PVC. Both are
     # below kube-score's 10000 threshold and cannot be raised without
     # rebuilding the image.
-    kube-score/ignore: container-image-tag,container-security-context-user-group-id
+    kube-score/ignore: container-security-context-user-group-id
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
-    type: Recreate
+    # An RWO volume can't be attached to old and new pod at once
+    type: {{ if and $local (not $rwx) }}Recreate{{ else }}RollingUpdate{{ end }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-docmost
@@ -24,9 +33,39 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-docmost
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml .Values.topologySpreadConstraints | nindent 8 }}
+      {{- else if gt (int .Values.replicaCount) 1 }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: {{ .Release.Name }}-docmost
+      {{- end }}
+      {{- if $local }}
       initContainers:
         - name: fix-permissions
           image: {{ .Values.initContainer.image }}
@@ -49,58 +88,150 @@ spec:
                 - CHOWN
           resources:
             {{- toYaml .Values.initContainer.resources | nindent 12 }}
+      {{- end }}
       containers:
         - name: docmost
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: APP_URL
-              value: "https://{{ .Values.appDomain }}"
+              value: {{ .Values.appUrl | default (printf "https://%s" .Values.appDomain) | quote }}
             - name: APP_SECRET
-              value: "{{ .Values.appSecret }}"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "docmost.appSecretName" . }}
+                  key: {{ .Values.appSecret.key }}
+            {{- if .Values.postgresql.enabled }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secretName" .Subcharts.postgresql }}
+                  key: {{ include "postgresql.userPasswordKey" .Subcharts.postgresql }}
             - name: DATABASE_URL
-              value: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:{{ .Values.postgresql.auth.password }}@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql}}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}?schema=public"
+              value: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:$(DB_PASSWORD)@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql }}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}?schema=public"
+            {{- else }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret }}
+                  key: {{ .Values.externalDatabase.key }}
+            {{- end }}
+            {{- if .Values.redis.enabled }}
             - name: REDIS_URL
-              value: "redis://{{ printf "%s-master" (include "common.names.fullname" .Subcharts.redis) }}:{{ .Values.redis.master.service.ports.redis }}"
-          {{- if .Values.mail.enabled }}
+              value: "redis://{{ include "redis.masterService" .Subcharts.redis }}:{{ .Values.redis.master.service.ports.redis }}"
+            {{- else if .Values.externalRedis.existingSecret }}
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalRedis.existingSecret }}
+                  key: {{ .Values.externalRedis.key }}
+            {{- else }}
+            - name: REDIS_URL
+              value: {{ .Values.externalRedis.url | quote }}
+            {{- end }}
+            - name: STORAGE_DRIVER
+              value: {{ .Values.storage.driver | quote }}
+            {{- if eq .Values.storage.driver "s3" }}
+            {{- with .Values.storage.s3 }}
+            - name: AWS_S3_REGION
+              value: {{ .region | quote }}
+            - name: AWS_S3_BUCKET
+              value: {{ required "storage.s3.bucket is required" .bucket | quote }}
+            - name: AWS_S3_ENDPOINT
+              value: {{ .endpoint | quote }}
+            - name: AWS_S3_FORCE_PATH_STYLE
+              value: {{ .forcePathStyle | quote }}
+            {{- if .url }}
+            - name: AWS_S3_URL
+              value: {{ .url | quote }}
+            {{- end }}
+            {{- if .existingSecret }}
+            - name: AWS_S3_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret }}
+                  key: {{ .accessKeyIdKey }}
+            - name: AWS_S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret }}
+                  key: {{ .secretAccessKeyKey }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.mail }}
+            {{- if .enabled }}
             - name: MAIL_DRIVER
-              value: {{ .Values.mail.driver | quote }}
-            - name: SMTP_HOST
-              value: {{ .Values.mail.host | quote }}
-            - name: SMTP_PORT
-              value: {{ .Values.mail.port | quote }}
-            - name: SMTP_SECURE
-              value: {{ .Values.mail.secure | quote }}
+              value: {{ .driver | quote }}
             - name: MAIL_FROM_ADDRESS
-              value: {{ .Values.mail.fromAddress | quote }}
+              value: {{ .fromAddress | quote }}
             - name: MAIL_FROM_NAME
-              value: {{ .Values.mail.fromName | quote }}
+              value: {{ .fromName | quote }}
+            {{- if eq .driver "smtp" }}
+            - name: SMTP_HOST
+              value: {{ .host | quote }}
+            - name: SMTP_PORT
+              value: {{ .port | quote }}
+            - name: SMTP_SECURE
+              value: {{ .secure | quote }}
+            {{- if .ignoreTLS }}
+            - name: SMTP_IGNORETLS
+              value: {{ .ignoreTLS | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with .existingSecret }}
+            {{- if .name }}
+            {{- if eq $.Values.mail.driver "postmark" }}
+            - name: POSTMARK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}
+                  key: {{ .postmarkTokenKey }}
+            {{- else }}
             - name: SMTP_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mail.existingSecret.name }}
-                  key: {{ .Values.mail.existingSecret.usernameKey }}
+                  name: {{ .name }}
+                  key: {{ .usernameKey }}
             - name: SMTP_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mail.existingSecret.name }}
-                  key: {{ .Values.mail.existingSecret.passwordKey }}
-          {{- end }}
+                  name: {{ .name }}
+                  key: {{ .passwordKey }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- range $k, $v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: 3000
+          # /api/health pings postgres + redis; /api/health/live is process-only
+          # so a DB/redis blip doesn't restart every pod.
           readinessProbe:
             httpGet:
-              path: /
+              path: /api/health
               port: http
             initialDelaySeconds: 15
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/health/live
               port: http
             initialDelaySeconds: 30
             periodSeconds: 20
@@ -108,10 +239,14 @@ spec:
             failureThreshold: 6
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if $local }}
           volumeMounts:
             - name: docmost-storage
               mountPath: /app/data/storage
+          {{- end }}
+      {{- if $local }}
       volumes:
         - name: docmost-storage
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-docmost-pvc
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-docmost-pvc" .Release.Name) }}
+      {{- end }}

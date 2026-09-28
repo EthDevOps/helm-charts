@@ -1,6 +1,6 @@
 # docmost
 
-![Version: 0.2.7](https://img.shields.io/badge/Version-0.2.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.96.0](https://img.shields.io/badge/AppVersion-0.96.0-informational?style=flat-square)
 
 OpenSource alternative for Notion
 
@@ -21,17 +21,31 @@ OpenSource alternative for Notion
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| affinity | object | `{}` |  |
 | appDomain | string | `"docmost.example.com"` |  |
+| appSecret.existingSecret | string | `""` |  |
+| appSecret.key | string | `"APP_SECRET"` |  |
+| appSecret.value | string | `""` |  |
+| appUrl | string | `""` |  |
 | containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
 | containerSecurityContext.runAsGroup | int | `1000` |  |
 | containerSecurityContext.runAsNonRoot | bool | `true` |  |
 | containerSecurityContext.runAsUser | int | `1000` |  |
+| env.DISABLE_TELEMETRY | string | `"true"` |  |
+| envFrom | list | `[]` |  |
+| externalDatabase.existingSecret | string | `""` |  |
+| externalDatabase.key | string | `"uri"` |  |
+| externalRedis.existingSecret | string | `""` |  |
+| externalRedis.key | string | `"REDIS_URL"` |  |
+| externalRedis.url | string | `""` |  |
+| extraEnv | list | `[]` |  |
 | image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docmost/docmost"` |  |
-| image.tag | string | `"latest"` |  |
+| image.tag | string | `""` |  |
 | ingress.annotations | object | `{}` |  |
+| ingress.className | string | `""` |  |
 | ingress.enabled | bool | `true` |  |
 | ingress.tls.secretName | string | `"docmost-tls"` |  |
 | initContainer.image | string | `"alpine:3.20"` |  |
@@ -46,17 +60,24 @@ OpenSource alternative for Notion
 | mail.enabled | bool | `false` |  |
 | mail.existingSecret.name | string | `""` |  |
 | mail.existingSecret.passwordKey | string | `"SMTP_PASSWORD"` |  |
+| mail.existingSecret.postmarkTokenKey | string | `"POSTMARK_TOKEN"` |  |
 | mail.existingSecret.usernameKey | string | `"SMTP_USERNAME"` |  |
 | mail.fromAddress | string | `"hello@example.com"` |  |
 | mail.fromName | string | `"Docmost"` |  |
 | mail.host | string | `""` |  |
+| mail.ignoreTLS | string | `""` |  |
 | mail.port | string | `""` |  |
 | mail.secure | string | `""` |  |
 | networkPolicy.egress[0] | object | `{}` |  |
 | networkPolicy.enabled | bool | `true` |  |
 | networkPolicy.ingress[0].ports[0].port | int | `3000` |  |
 | networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
+| nodeSelector | object | `{}` |  |
+| persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| persistence.existingClaim | string | `""` |  |
 | persistence.size | string | `"1Gi"` |  |
+| persistence.storageClass | string | `""` |  |
+| podAnnotations | object | `{}` |  |
 | podDisruptionBudget.enabled | bool | `true` |  |
 | podDisruptionBudget.maxUnavailable | int | `1` |  |
 | podSecurityContext.fsGroup | int | `1000` |  |
@@ -74,9 +95,9 @@ OpenSource alternative for Notion
 | postgresql.resources.requests.cpu | string | `"250m"` |  |
 | postgresql.resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | postgresql.resources.requests.memory | string | `"256Mi"` |  |
-| redis.architecture | string | `"standalone"` |  |
 | redis.enabled | bool | `true` |  |
 | redis.image.pullPolicy | string | `"Always"` |  |
+| redis.redis.configuration | string | `"bind 0.0.0.0\nport 6379\ntcp-keepalive 300\ndir /data\nappendonly yes\nmaxmemory-policy noeviction\nloglevel notice\nlogfile \"\"\n"` |  |
 | redis.resources.limits.cpu | string | `"500m"` |  |
 | redis.resources.limits.ephemeral-storage | string | `"512Mi"` |  |
 | redis.resources.limits.memory | string | `"512Mi"` |  |
@@ -92,6 +113,17 @@ OpenSource alternative for Notion
 | resources.requests.memory | string | `"512Mi"` |  |
 | service.annotations | object | `{}` |  |
 | service.type | string | `"ClusterIP"` |  |
+| storage.driver | string | `"local"` |  |
+| storage.s3.accessKeyIdKey | string | `"AWS_S3_ACCESS_KEY_ID"` |  |
+| storage.s3.bucket | string | `""` |  |
+| storage.s3.endpoint | string | `""` |  |
+| storage.s3.existingSecret | string | `""` |  |
+| storage.s3.forcePathStyle | bool | `false` |  |
+| storage.s3.region | string | `""` |  |
+| storage.s3.secretAccessKeyKey | string | `"AWS_S3_SECRET_ACCESS_KEY"` |  |
+| storage.s3.url | string | `""` |  |
+| tolerations | list | `[]` |  |
+| topologySpreadConstraints | list | `[]` |  |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)
