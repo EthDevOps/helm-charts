@@ -18,6 +18,7 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-claper
+        app.kubernetes.io/name: claper
     spec:
       {{- with .Values.podSecurityContext }}
       securityContext:
@@ -44,7 +45,14 @@ spec:
               value: {{ .Values.secretKeyBase | quote }}
               {{- end }}
             - name: DATABASE_URL
+              {{- if .Values.externalDatabase.existingSecret.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret.name }}
+                  key: {{ .Values.externalDatabase.existingSecret.key }}
+              {{- else }}
               value: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:{{ .Values.postgresql.auth.password }}@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql }}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}"
+              {{- end }}
             - name: PRESENTATION_STORAGE
               value: {{ .Values.presentationStorage.type | quote }}
             - name: PRESENTATION_STORAGE_DIR

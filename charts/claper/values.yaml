@@ -66,6 +66,14 @@ podDisruptionBudget:
   enabled: true
   maxUnavailable: 1
 
+# Use an external database (e.g. a CNPG cluster) instead of the bundled
+# postgresql subchart. Set postgresql.enabled: false alongside it.
+# CNPG's <cluster>-app secret carries a ready-made connection string under `uri`.
+externalDatabase:
+  existingSecret:
+    name: ""
+    key: uri
+
 postgresql:
   enabled: true
   image:
@@ -82,6 +90,9 @@ postgresql:
   # NetworkPolicy presence makes kube-score happy.
   networkPolicy:
     enabled: true
+    # Let the claper pod reach postgres; an empty list denies all ingress.
+    allowedPods:
+      - app.kubernetes.io/name: claper
   resources:
     requests:
       cpu: 100m

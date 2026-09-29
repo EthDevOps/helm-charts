@@ -1,6 +1,6 @@
 # claper
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 OpenSource interactive presentation tool
 
@@ -26,6 +26,8 @@ OpenSource interactive presentation tool
 | containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
 | containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
 | containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
+| externalDatabase.existingSecret.key | string | `"uri"` |  |
+| externalDatabase.existingSecret.name | string | `""` |  |
 | image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"ghcr.io/claperco/claper"` |  |
 | image.tag | string | `"latest"` |  |
@@ -74,6 +76,7 @@ OpenSource interactive presentation tool
 | postgresql.enabled | bool | `true` |  |
 | postgresql.image.pullPolicy | string | `"Always"` |  |
 | postgresql.image.tag | string | `"15-alpine"` |  |
+| postgresql.networkPolicy.allowedPods[0]."app.kubernetes.io/name" | string | `"claper"` |  |
 | postgresql.networkPolicy.enabled | bool | `true` |  |
 | postgresql.resources.limits.cpu | string | `"1"` |  |
 | postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
