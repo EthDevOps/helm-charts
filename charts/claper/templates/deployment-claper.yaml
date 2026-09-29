@@ -35,7 +35,14 @@ spec:
             - name: BASE_URL
               value: "https://{{ .Values.appDomain }}"
             - name: SECRET_KEY_BASE
-              value: "{{ .Values.secretKeyBase }}"
+              {{- if .Values.secretKeyBaseExistingSecret.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretKeyBaseExistingSecret.name }}
+                  key: {{ .Values.secretKeyBaseExistingSecret.key }}
+              {{- else }}
+              value: {{ .Values.secretKeyBase | quote }}
+              {{- end }}
             - name: DATABASE_URL
               value: "postgresql://{{ include "postgresql.v1.username" .Subcharts.postgresql }}:{{ .Values.postgresql.auth.password }}@{{ include "postgresql.v1.primary.fullname" .Subcharts.postgresql }}:{{ include "postgresql.v1.service.port" .Subcharts.postgresql }}/{{ include "postgresql.v1.database" .Subcharts.postgresql }}"
             - name: PRESENTATION_STORAGE

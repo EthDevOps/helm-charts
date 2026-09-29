@@ -1,6 +1,9 @@
 replicaCount: 1
 appDomain: claper.example.com
 secretKeyBase: ""
+secretKeyBaseExistingSecret:
+  name: ""
+  key: SECRET_KEY_BASE
 image:
   repository: ghcr.io/claperco/claper
   tag: latest

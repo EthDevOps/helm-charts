@@ -1,6 +1,6 @@
 # claper
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 OpenSource interactive presentation tool
 
@@ -98,6 +98,8 @@ OpenSource interactive presentation tool
 | resources.requests.ephemeral-storage | string | `"256Mi"` |  |
 | resources.requests.memory | string | `"512Mi"` |  |
 | secretKeyBase | string | `""` |  |
+| secretKeyBaseExistingSecret.key | string | `"SECRET_KEY_BASE"` |  |
+| secretKeyBaseExistingSecret.name | string | `""` |  |
 | service.annotations | object | `{}` |  |
 | service.nodePort | string | `""` |  |
 | service.type | string | `"ClusterIP"` |  |
