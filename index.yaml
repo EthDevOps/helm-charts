@@ -398,6 +398,24 @@ entries:
   claper:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-09-29T10:22:47.007506897Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    description: OpenSource interactive presentation tool
+    digest: 24b1fc99b229245e76c4414e8eda4fa5b5da9424413e4f7566fe232d1e863b30
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: claper
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/claper-0.3.0/claper-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-05-13T10:36:18.974078002Z"
     dependencies:
     - condition: postgresql.enabled
@@ -11072,4 +11090,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-09-28T09:02:31.897003009Z"
+generated: "2026-09-29T10:22:47.007914643Z"
