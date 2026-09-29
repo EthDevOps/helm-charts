@@ -645,9 +645,12 @@ prosody:
       optional: true
   - configMapRef:
       name: '{{ include "prosody.fullname" . }}-common'
+  ## Pin to commit SHAs: raw main/ URLs break when upstream renames a plugin
+  ## (token_affiliation -> token_affiliation_legacy, 2026-05-23), and the init
+  ## container now fails the pod on a 404.
   customPluginUrls:
-    - https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/main/token_lobby_bypass/mod_token_lobby_bypass.lua
-    - https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/main/token_affiliation/mod_token_affiliation.lua
+    - https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/95dd594962b330c0a8536b361ef20b8ddf3930ee/token_lobby_bypass/mod_token_lobby_bypass.lua
+    - https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/1ec3abbd0d1799ddfdbfa42f114a7062ea4fe0c7/token_affiliation/mod_token_affiliation.lua
 
   ## Server-side room policy module (paired with keycloak_adapter.roomPermissions).
   ## Mounts the existing keycloak-adapter permissions configmap and the chart-shipped

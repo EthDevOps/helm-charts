@@ -46,7 +46,20 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          command: ['sh', '-c', 'apk add wget && wget -i /urls/plugins.txt -P /prosody-plugins-custom && sed -i "s/create-persistent-lobby-room/create-lobby-room/g" /prosody-plugins-custom/mod_lobby_autostart.lua 2>/dev/null; true']
+          # Fails the pod on any download error. It used to end in `; true`, so a
+          # 404 (upstream renamed token_affiliation) started prosody without the
+          # module and also skipped the lobby_autostart sed fix below.
+          # -nc keeps init retries from saving duplicate .1 copies into the emptyDir.
+          command:
+            - sh
+            - -ec
+            - |
+              grep -q '[^[:space:]]' /urls/plugins.txt || exit 0
+              apk add wget
+              wget -nv -nc -i /urls/plugins.txt -P /prosody-plugins-custom
+              if [ -f /prosody-plugins-custom/mod_lobby_autostart.lua ]; then
+                sed -i "s/create-persistent-lobby-room/create-lobby-room/g" /prosody-plugins-custom/mod_lobby_autostart.lua
+              fi
           resources:
             {{- toYaml .Values.initContainer.resources | nindent 12 }}
           volumeMounts:

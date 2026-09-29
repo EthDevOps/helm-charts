@@ -1,6 +1,6 @@
 # jitsi-meet
 
-![Version: 1.11.1](https://img.shields.io/badge/Version-1.11.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
+![Version: 1.11.2](https://img.shields.io/badge/Version-1.11.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: stable-10741](https://img.shields.io/badge/AppVersion-stable--10741-informational?style=flat-square)
 
 Jitsi Meet packaged for Kubernetes
 
@@ -225,8 +225,8 @@ Jitsi Meet packaged for Kubernetes
 | prosody.custom.defaults._prosody_cfg_lua | string | `""` |  |
 | prosody.custom.defaults._saslauthd_conf | string | `""` |  |
 | prosody.custom.tag | string | `"stable-9111"` |  |
-| prosody.customPluginUrls[0] | string | `"https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/main/token_lobby_bypass/mod_token_lobby_bypass.lua"` |  |
-| prosody.customPluginUrls[1] | string | `"https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/main/token_affiliation/mod_token_affiliation.lua"` |  |
+| prosody.customPluginUrls[0] | string | `"https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/95dd594962b330c0a8536b361ef20b8ddf3930ee/token_lobby_bypass/mod_token_lobby_bypass.lua"` |  |
+| prosody.customPluginUrls[1] | string | `"https://raw.githubusercontent.com/jitsi-contrib/prosody-plugins/1ec3abbd0d1799ddfdbfa42f114a7062ea4fe0c7/token_affiliation/mod_token_affiliation.lua"` |  |
 | prosody.enabled | bool | `true` |  |
 | prosody.extraEnvFrom[0].secretRef.name | string | `"{{ include \"prosody.fullname\" . }}-jibri"` |  |
 | prosody.extraEnvFrom[1].secretRef.name | string | `"{{ include \"prosody.fullname\" . }}-jicofo"` |  |
