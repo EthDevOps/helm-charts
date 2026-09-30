@@ -119,6 +119,34 @@ spec:
             {{- if .Values.extraVolumeMounts }}
             {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
             {{- end }}
+        {{- if .Values.metrics.enabled }}
+        - name: metrics
+          image: {{ .Values.metrics.image }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: metrics
+              containerPort: 9187
+              protocol: TCP
+          env:
+            # Superuser created by the official image: POSTGRES_USER or postgres.
+            - name: DATA_SOURCE_USER
+              value: {{ .Values.auth.username | default "postgres" | quote }}
+            - name: DATA_SOURCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secretName" . }}
+                  # Mirrors which key ends up as POSTGRES_PASSWORD above.
+                  key: {{ if and .Values.auth.username .Values.auth.password }}{{ include "postgresql.userPasswordKey" . }}{{ else }}{{ include "postgresql.adminPasswordKey" . }}{{ end }}
+            - name: DATA_SOURCE_URI
+              value: "127.0.0.1:5432/postgres?sslmode=disable"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: metrics
+          resources:
+            {{- toYaml .Values.metrics.resources | nindent 12 }}
+        {{- end }}
       volumes:
         - name: dshm
           emptyDir:

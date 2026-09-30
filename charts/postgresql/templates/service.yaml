@@ -5,9 +5,15 @@ metadata:
   labels:
     {{- include "postgresql.labels" . | nindent 4 }}
     app.kubernetes.io/component: primary
-  {{- if .Values.service.annotations }}
+  {{- if or .Values.service.annotations .Values.metrics.enabled }}
   annotations:
-    {{- toYaml .Values.service.annotations | nindent 4 }}
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- if .Values.metrics.enabled }}
+    prometheus.io/forcescrape: "true"
+    prometheus.io/port: "9187"
+    {{- end }}
   {{- end }}
 spec:
   type: {{ .Values.service.type }}

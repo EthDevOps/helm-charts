@@ -717,6 +717,22 @@ initContainers: []
 ##
 sidecars: []
 
+## Prometheus metrics via a postgres_exporter sidecar. The Service gets the
+## prometheus.io/forcescrape annotations picked up by the cluster vmagent.
+## @param metrics.enabled Run the postgres_exporter sidecar on port 9187
+## @param metrics.image postgres_exporter image
+## @param metrics.resources Resources for the exporter container
+##
+metrics:
+  enabled: false
+  image: quay.io/prometheuscommunity/postgres-exporter:v0.20.1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 64Mi
+
 ## Enable diagnostic mode
 ##
 diagnosticMode:

@@ -34,4 +34,16 @@ spec:
     - protocol: TCP
       port: 5432
   {{- end }}
+  {{- if .Values.metrics.enabled }}
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: monitoring
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: vmagent
+    ports:
+    - protocol: TCP
+      port: 9187
+  {{- end }}
 {{- end }}
