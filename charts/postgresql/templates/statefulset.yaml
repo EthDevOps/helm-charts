@@ -122,6 +122,10 @@ spec:
         {{- if .Values.metrics.enabled }}
         - name: metrics
           image: {{ .Values.metrics.image }}
+          {{- with .Values.metrics.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           ports:

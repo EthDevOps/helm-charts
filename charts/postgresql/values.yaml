@@ -721,11 +721,14 @@ sidecars: []
 ## prometheus.io/forcescrape annotations picked up by the cluster vmagent.
 ## @param metrics.enabled Run the postgres_exporter sidecar on port 9187
 ## @param metrics.image postgres_exporter image
+## @param metrics.args Extra postgres_exporter flags, e.g. --no-collector.stat_user_tables
+## for databases with thousands of tables (per-table collectors blow up memory)
 ## @param metrics.resources Resources for the exporter container
 ##
 metrics:
   enabled: false
   image: quay.io/prometheuscommunity/postgres-exporter:v0.20.1
+  args: []
   resources:
     requests:
       cpu: 10m

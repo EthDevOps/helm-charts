@@ -1,6 +1,6 @@
 # postgresql
 
-![Version: 1.1.10](https://img.shields.io/badge/Version-1.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 16.0](https://img.shields.io/badge/AppVersion-16.0-informational?style=flat-square)
+![Version: 1.1.11](https://img.shields.io/badge/Version-1.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 16.0](https://img.shields.io/badge/AppVersion-16.0-informational?style=flat-square)
 
 PostgreSQL object-relational database system
 
@@ -82,6 +82,7 @@ PostgreSQL object-relational database system
 | livenessProbe.periodSeconds | int | `10` |  |
 | livenessProbe.successThreshold | int | `1` |  |
 | livenessProbe.timeoutSeconds | int | `5` |  |
+| metrics.args | list | `[]` |  |
 | metrics.enabled | bool | `false` |  |
 | metrics.image | string | `"quay.io/prometheuscommunity/postgres-exporter:v0.20.1"` |  |
 | metrics.resources.limits.memory | string | `"64Mi"` |  |
