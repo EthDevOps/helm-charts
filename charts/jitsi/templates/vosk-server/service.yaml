@@ -12,7 +12,7 @@ spec:
       port: 2700
       targetPort: 2700
   type: ClusterIP
-{{- else if eq .Values.transcription.type "whisper" }}
+{{- else if and (eq .Values.transcription.type "whisper") (not .Values.transcription.whisper.websocketUrl) }}
 apiVersion: v1
 kind: Service
 metadata:

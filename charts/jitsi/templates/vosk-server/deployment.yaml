@@ -26,7 +26,7 @@ spec:
           {{- toYaml .Values.transcription.resources | nindent 12 }}
         ports:
         - containerPort: 2700
-{{- else if eq .Values.transcription.type "whisper" }}
+{{- else if and (eq .Values.transcription.type "whisper") (not .Values.transcription.whisper.websocketUrl) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
