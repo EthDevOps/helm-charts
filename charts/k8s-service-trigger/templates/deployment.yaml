@@ -21,15 +21,12 @@ spec:
       - name: service-monitor
         image: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-service-trigger:{{ .Values.imageVersion }}
         imagePullPolicy: Always
-        env:
-        - name: SEMAPHORE_AUTH_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.secretName }}
-              key: {{ .Values.secretKey }}
+        # Later envFrom sources win, so keys in the secret override the configmap.
         envFrom:
         - configMapRef:
             name: {{ .Release.Name }}-config
+        - secretRef:
+            name: {{ .Values.existingSecret }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         securityContext:

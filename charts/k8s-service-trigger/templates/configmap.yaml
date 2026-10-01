@@ -1,10 +1,20 @@
+{{- $config := dict
+  "WOODPECKER_URL" .Values.woodpeckerUrl
+  "WOODPECKER_REPO" .Values.woodpeckerRepo
+  "TENANT" .Values.tenant
+  "PROJECT" .Values.project
+  "PLAYBOOK" .Values.playbook
+  "ANSIBLE_ARGS" .Values.ansibleArgs
+  "K8S_CLUSTER_NAME" .Values.clusterName
+  "MATTERMOST_WEBHOOK_URL" .Values.mattermostWebhook
+}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-config
 data:
-  SEMAPHORE_URL: {{ .Values.semaphoreUrl | quote }}
-  TENANT: {{ .Values.tenant | quote }}
-  PROJECT: {{ .Values.project | quote }}
-  K8S_CLUSTER_NAME: {{ .Values.clusterName | quote }}
-  MATTERMOST_WEBHOOK_URL: {{ .Values.mattermostWebhook | quote }}
+  {{- range $key, $value := $config }}
+  {{- if $value }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}

@@ -1,17 +1,26 @@
-secretName: my-secret
-secretKey: GITHUB_TOKEN
-
-# Tenant identifier
-tenant: ""
-# Project identifier
-project: ""
 imageVersion: v0.1.0
 
-# semaphore config
-semaphoreUrl: ""
-semaphoreToken: ""
+# -- Name of an existing secret (must exist). Every key in it becomes an env var, so
+# any setting below can be passed there instead and overrides the plain value.
+# Keys: WOODPECKER_TOKEN (required), WOODPECKER_URL, WOODPECKER_REPO, TENANT,
+# PROJECT, PLAYBOOK, ANSIBLE_ARGS, K8S_CLUSTER_NAME, MATTERMOST_WEBHOOK_URL
+existingSecret: k8s-service-trigger
 
+# -- Woodpecker base URL (env WOODPECKER_URL)
+woodpeckerUrl: ""
+# -- Woodpecker repo as owner/name (env WOODPECKER_REPO)
+woodpeckerRepo: ""
+# -- Tenant identifier (env TENANT)
+tenant: ""
+# -- Project identifier (env PROJECT)
+project: ""
+# -- Playbook relative to <tenant>/<project>/ansible/; app defaults to playbook.yaml (env PLAYBOOK)
+playbook: ""
+# -- Extra ansible-playbook args, e.g. "--tags k8s-update" (env ANSIBLE_ARGS)
+ansibleArgs: ""
+# -- Cluster name shown in notifications (env K8S_CLUSTER_NAME)
 clusterName: ""
+# -- Mattermost incoming webhook (env MATTERMOST_WEBHOOK_URL)
 mattermostWebhook: ""
 
 resources:
@@ -49,7 +58,7 @@ containerSecurityContext:
 
 networkPolicy:
   enabled: true
-  # Default: allow all egress (needs to reach Semaphore, Mattermost, k8s API).
+  # Default: allow all egress (needs to reach Woodpecker, Mattermost, k8s API).
   egress:
     - {}
   # No ingress traffic expected — controller-only workload.
