@@ -1,6 +1,1 @@
-apiVersion: v2
-appVersion: "0.0.1"
-description: Triggers webhooks on service changes
-name: k8s-service-trigger
-type: application
-version: 0.0.10
+apiVersion: v2\nappVersion: \"0.0.1\"\ndescription: Triggers webhooks on service changes\nname: k8s-service-trigger\ntype: application\nversion: 0.0.11
