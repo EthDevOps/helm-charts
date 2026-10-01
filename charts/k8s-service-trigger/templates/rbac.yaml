@@ -1,1 +1,29 @@
-apiVersion: v1\nkind: ServiceAccount\nmetadata:\n  name: service-monitor\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRole\nmetadata:\n  name: service-monitor\nrules:\n- apiGroups: [\"\"]\n  resources: [\"services\"]\n  verbs: [\"get\", \"watch\", \"list\"]\n- apiGroups: [\"\"]\n  resources: [\"namespaces\"]\n  verbs: [\"get\", \"list\"]\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind: ClusterRoleBinding\nmetadata:\n  name: service-monitor\nsubjects:\n- kind: ServiceAccount\n  name: service-monitor\n  namespace: {{ .Release.Namespace }}\nroleRef:\n  kind: ClusterRole\n  name: service-monitor\n  apiGroup: rbac.authorization.k8s.io
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-monitor
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: service-monitor
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: service-monitor
+subjects:
+- kind: ServiceAccount
+  name: service-monitor
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: service-monitor
+  apiGroup: rbac.authorization.k8s.io
