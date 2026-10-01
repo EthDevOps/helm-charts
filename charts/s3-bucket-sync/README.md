@@ -1,6 +1,6 @@
 # s3-bucket-sync
 
-![Version: 0.0.24](https://img.shields.io/badge/Version-0.0.24-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.11.0](https://img.shields.io/badge/AppVersion-v0.11.0-informational?style=flat-square)
+![Version: 0.0.25](https://img.shields.io/badge/Version-0.0.25-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.14.0](https://img.shields.io/badge/AppVersion-v0.14.0-informational?style=flat-square)
 
 Keeps 2 s3 buckets in sync
 
@@ -26,6 +26,8 @@ Keeps 2 s3 buckets in sync
 | cronjob.failedJobsHistoryLimit | int | `1` |  |
 | cronjob.startingDeadlineSeconds | int | `300` |  |
 | cronjob.successfulJobsHistoryLimit | int | `3` |  |
+| crypt.password | string | `""` |  |
+| crypt.salt | string | `""` |  |
 | customConfig | string | `"test.config"` |  |
 | destinationAccessKey | string | `"my-access-key"` |  |
 | destinationBucket | string | `"my-bucket"` |  |
@@ -42,7 +44,7 @@ Keeps 2 s3 buckets in sync
 | filters.rules | string | `""` |  |
 | healthcheckUrl | string | `"http://localhost"` |  |
 | imagePullPolicy | string | `"Always"` |  |
-| imageTag | string | `"v0.12.0"` |  |
+| imageTag | string | `"v0.14.0"` |  |
 | minioExtraArgs | string | `""` |  |
 | networkPolicy.egress[0] | object | `{}` |  |
 | networkPolicy.enabled | bool | `true` |  |

@@ -25,11 +25,17 @@ destinationSecretKeys:
   accessKey: "DESTINATION_ACCESS_KEY"
   secretKey: "DESTINATION_SECRET_KEY"
 
+# Client-side encryption of everything written to the destination (rclone crypt).
+# The image refuses to run its built-in B2 template without it.
+crypt:
+  password: ""
+  salt: ""
+
 useAtomic: false
 healthcheckUrl: "http://localhost"
 backupSchedule: "30 * * * *"
 minioExtraArgs: ""
-imageTag: "v0.12.0"
+imageTag: "v0.14.0"
 imagePullPolicy: Always
 enableDebug: "0"
 enableOverwrite: "0"

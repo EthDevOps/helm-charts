@@ -69,6 +69,10 @@ spec:
               - secretRef:
                   name: {{ .Release.Name }}-sync-credentials
             {{- end }}
+            {{- if .Values.crypt.password }}
+              - secretRef:
+                  name: {{ .Release.Name }}-sync-crypt
+            {{- end }}
             env:
             {{- if or .Values.extraSyncArgs .Values.filters.enabled }}
               - name: EXTRA_SYNC_ARGS
