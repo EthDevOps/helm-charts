@@ -39,6 +39,16 @@ of relying on the poll):
 | `hub.linear.webhookExistingSecret` | Secret with `linear-webhook-secret` (the OAuth app webhook's signing secret); enables `POST /webhooks/linear`, which must be reachable from Linear's cloud (public exposure) |
 | `hub.trackerSyncInterval` | Poll cadence (Go duration). With webhooks on, slow it to a reconciliation pass, e.g. `30m` |
 
+Optional — GitHub Tools (Block GitHub User: block abusive accounts from the
+GitHub org; without it the module runs against mock fixture accounts):
+
+| Value | Description |
+|---|---|
+| `hub.github.appId` | ID of an org-owned GitHub App with organization permissions "Blocking users: Read and write" and "Members: Read-only", installed on the org |
+| `hub.github.existingSecret` | Secret with `github-app-private-key` (the app's PEM private key) |
+| `hub.github.org` | GitHub org (default `ethereum`) |
+| `hub.github.installationId` | App installation ID; discovered from the org when empty |
+
 In practice all the `existingSecret`s point at the same ESO-managed secret.
 
 ## Request templates as config
