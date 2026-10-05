@@ -74,6 +74,20 @@ hub:
     existingSecret: "devops-hub-managed-secret"
     existingSecretKey: "warpgate-token"
 
+  github:
+    # GitHub org blocks apply to (Block GitHub User); empty = backend
+    # default "ethereum".
+    org: ""
+    # Org-owned GitHub App with organization permissions "Blocking users:
+    # Read and write" and "Members: Read-only".
+    appId: ""
+    # Optional; discovered from the org when empty.
+    installationId: ""
+    # App private key (PEM) secret; empty existingSecret or appId = mock
+    # provider (fixture accounts).
+    existingSecret: ""
+    existingSecretKey: "github-app-private-key"
+
   # How often the tracker poll mirrors Linear state/comments (Go duration,
   # e.g. 60s, 30m; "0" disables). Empty uses the backend default (60s) —
   # the right primary cadence without webhooks; with webhooks enabled this

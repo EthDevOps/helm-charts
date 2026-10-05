@@ -94,6 +94,27 @@ spec:
                   key: {{ .existingSecretKey }}
             {{- end }}
             {{- end }}
+            {{- with .Values.hub.github }}
+            {{- if .org }}
+            - name: HUB_GITHUB_ORG
+              value: {{ .org | quote }}
+            {{- end }}
+            - name: HUB_GITHUB_PROVIDER
+              value: {{ ternary "api" "mock" (and (not (empty .existingSecret)) (not (empty .appId))) | quote }}
+            {{- if and .existingSecret .appId }}
+            - name: HUB_GITHUB_APP_ID
+              value: {{ .appId | quote }}
+            {{- if .installationId }}
+            - name: HUB_GITHUB_APP_INSTALLATION_ID
+              value: {{ .installationId | quote }}
+            {{- end }}
+            - name: HUB_GITHUB_APP_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret }}
+                  key: {{ .existingSecretKey }}
+            {{- end }}
+            {{- end }}
             - name: HUB_TRACKER_PROVIDER
               value: linear
             - name: HUB_LINEAR_TEAM_KEY
