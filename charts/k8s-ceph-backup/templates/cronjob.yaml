@@ -195,7 +195,7 @@ data:
     
     minio:
       endpoint: {{ .Values.config.minio.endpoint | default "minio.example.com:9000" | quote }}
-      use_ssl: {{ .Values.config.minio.useSsl | default true }}
+      use_ssl: {{ ne .Values.config.minio.useSsl false }}
       bucket_name: {{ .Values.config.minio.bucketName | default "k8s-ceph-backups" | quote }}
     
     logging:
