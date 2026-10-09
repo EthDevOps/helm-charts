@@ -60,3 +60,17 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+{{/*
+Container resources. The kubelet counts the temp-storage emptyDir against the
+pod's ephemeral-storage limit, so unless one is set explicitly the limit
+follows tempStorage.sizeLimit.
+*/}}
+{{- define "k8s-ceph-backup.resources" -}}
+{{- $res := deepCopy (.Values.resources | default dict) -}}
+{{- $limits := $res.limits | default dict -}}
+{{- if not (hasKey $limits "ephemeral-storage") -}}
+{{- $_ := set $limits "ephemeral-storage" (.Values.tempStorage.sizeLimit | default "10Gi") -}}
+{{- end -}}
+{{- $_ := set $res "limits" $limits -}}
+{{- toYaml $res -}}
+{{- end }}

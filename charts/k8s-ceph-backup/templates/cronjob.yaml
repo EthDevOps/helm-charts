@@ -73,7 +73,7 @@ spec:
             - name: temp-storage
               mountPath: /tmp/k8s-ceph-backup
             resources:
-              {{- toYaml $.Values.resources | nindent 14 }}
+              {{- include "k8s-ceph-backup.resources" $ | nindent 14 }}
           restartPolicy: {{ $.Values.cronjob.restartPolicy | default "OnFailure" }}
           volumes:
           - name: config
@@ -154,7 +154,7 @@ spec:
             - name: temp-storage
               mountPath: /tmp/k8s-ceph-backup
             resources:
-              {{- toYaml .Values.resources | nindent 14 }}
+              {{- include "k8s-ceph-backup.resources" . | nindent 14 }}
           restartPolicy: {{ .Values.cronjob.restartPolicy | default "OnFailure" }}
           volumes:
           - name: config

@@ -56,7 +56,8 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
-    ephemeral-storage: 1Gi
+    # ephemeral-storage: unset, defaults to tempStorage.sizeLimit (the temp
+    # emptyDir counts against it). Set it only to cap below that.
   requests:
     cpu: 250m
     memory: 64Mi
