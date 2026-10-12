@@ -74,6 +74,34 @@ hub:
       ...
 ```
 
+## App launcher catalog
+
+`hub.apps` (optional) is the catalog behind the Apps page (`/apps`): keys
+are filenames (one app per file), values are app YAML in the format
+documented in the hub repo's `docs/APPS.md` (examples in
+`backend/internal/apps/examples/`). Each app has an `id`, `name` and https
+`url`, an optional `description` and `logo`, and at least one visibility
+rule — `groups`, `orgUnits` (an OU and everything beneath it) or
+`everyone: true`. When set it renders a ConfigMap mounted at
+`/etc/hub/apps` (`HUB_APPS_DIR`); pods roll automatically when it changes,
+and the backend validates it at boot, so a broken catalog fails the rollout
+while old pods keep serving. Left empty, the launcher shows no apps.
+
+```yaml
+hub:
+  apps:
+    grafana.yaml: |
+      id: grafana
+      name: Grafana
+      url: https://grafana.example.org
+      groups: [devops@ethereum.org]
+    ops-wiki.yaml: |
+      id: ops-wiki
+      name: Operations Wiki
+      url: https://ops-wiki.example.org
+      orgUnits: ["/Ethereum Foundation/Operations"]
+```
+
 ## Exposure
 
 - `service.teleport.enabled` — internal access via Teleport app access

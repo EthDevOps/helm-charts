@@ -1,0 +1,19 @@
+{{- /*
+App launcher catalog as config. Each key under hub.apps is a filename (one
+app per file), its value the app YAML — the format of
+backend/internal/apps/examples/*.yaml (see docs/APPS.md).
+*/ -}}
+{{- if .Values.hub.apps }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-apps
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/component: hub
+data:
+  {{- range $name, $content := .Values.hub.apps }}
+  {{ $name }}: |
+    {{- $content | nindent 4 }}
+  {{- end }}
+{{- end }}
