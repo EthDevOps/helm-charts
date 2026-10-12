@@ -135,6 +135,26 @@ hub:
   #         label: Details
   #         required: true
 
+  # App launcher catalog (IaC): the tiles on /apps. Keys are filenames, one
+  # app per file; values are app YAML (hub repo docs/APPS.md,
+  # backend/internal/apps/examples/*.yaml). Each app needs at least one of
+  # groups, orgUnits or everyone: true. The backend validates the catalog at
+  # boot and refuses to start on errors (old pods keep serving); pods roll
+  # automatically when it changes. Empty: the launcher shows no apps.
+  apps: {}
+  # apps:
+  #   grafana.yaml: |
+  #     id: grafana
+  #     name: Grafana
+  #     url: https://grafana.example.org
+  #     description: Metrics & dashboards
+  #     groups: [devops@ethereum.org]
+  #   ops-wiki.yaml: |
+  #     id: ops-wiki
+  #     name: Operations Wiki
+  #     url: https://ops-wiki.example.org
+  #     orgUnits: ["/Ethereum Foundation/Operations"]
+
   # Security Tools (hub >= v0.6.0): hub-native hardware-key (WebAuthn) auth
   # + the Google Drive inventory console. Disabled: the modules disappear
   # from the nav and their routes are not served.
