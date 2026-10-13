@@ -483,6 +483,9 @@ postgresql:
     seccompProfile:
       type: RuntimeDefault
   podSecurityContext:
+    # runAsUser is required next to runAsGroup at pod level, or the sandbox
+    # fails: "user group is specified without user".
+    runAsUser: 10001
     fsGroup: 10001
     runAsGroup: 10001
     seccompProfile:
@@ -764,7 +767,7 @@ readinessProbe:
 init:
   image:
     repository: docker.ethquokkaops.io/dh/busybox
-    tag: 1.36.1
+    tag: 1.38.0
     pullPolicy: Always
 
   resources:

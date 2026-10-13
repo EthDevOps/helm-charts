@@ -1,6 +1,6 @@
 # docmost
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.96.0](https://img.shields.io/badge/AppVersion-0.96.0-informational?style=flat-square)
+![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.96.0](https://img.shields.io/badge/AppVersion-0.96.0-informational?style=flat-square)
 
 OpenSource alternative for Notion
 
@@ -48,7 +48,7 @@ OpenSource alternative for Notion
 | ingress.className | string | `""` |  |
 | ingress.enabled | bool | `true` |  |
 | ingress.tls.secretName | string | `"docmost-tls"` |  |
-| initContainer.image | string | `"alpine:3.20"` |  |
+| initContainer.image | string | `"alpine:3.24"` |  |
 | initContainer.imagePullPolicy | string | `"Always"` |  |
 | initContainer.resources.limits.cpu | string | `"200m"` |  |
 | initContainer.resources.limits.ephemeral-storage | string | `"256Mi"` |  |

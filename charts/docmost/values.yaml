@@ -106,7 +106,7 @@ resources:
 
 # Init container that chowns the local storage PVC (local driver only)
 initContainer:
-  image: alpine:3.20
+  image: alpine:3.24
   imagePullPolicy: Always
   resources:
     requests:

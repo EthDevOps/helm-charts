@@ -1,6 +1,6 @@
 # keycloak
 
-![Version: 18.10.10](https://img.shields.io/badge/Version-18.10.10-informational?style=flat-square) ![AppVersion: 26.1](https://img.shields.io/badge/AppVersion-26.1-informational?style=flat-square)
+![Version: 18.10.11](https://img.shields.io/badge/Version-18.10.11-informational?style=flat-square) ![AppVersion: 26.1](https://img.shields.io/badge/AppVersion-26.1-informational?style=flat-square)
 
 Open Source Identity and Access Management For Modern Applications and Services
 
@@ -97,7 +97,7 @@ Open Source Identity and Access Management For Modern Applications and Services
 | nodeSelector | object | `{}` |  |
 | pgchecker.image.pullPolicy | string | `"Always"` |  |
 | pgchecker.image.repository | string | `"busybox"` |  |
-| pgchecker.image.tag | string | `"1.36"` |  |
+| pgchecker.image.tag | string | `"1.38"` |  |
 | pgchecker.resources.limits.cpu | string | `"20m"` |  |
 | pgchecker.resources.limits.ephemeral-storage | string | `"128Mi"` |  |
 | pgchecker.resources.limits.memory | string | `"32Mi"` |  |

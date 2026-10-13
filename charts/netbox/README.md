@@ -1,6 +1,6 @@
 # netbox
 
-![Version: 5.1.14](https://img.shields.io/badge/Version-5.1.14-informational?style=flat-square) ![AppVersion: v3.6.4](https://img.shields.io/badge/AppVersion-v3.6.4-informational?style=flat-square)
+![Version: 5.1.15](https://img.shields.io/badge/Version-5.1.15-informational?style=flat-square) ![AppVersion: v3.6.4](https://img.shields.io/badge/AppVersion-v3.6.4-informational?style=flat-square)
 
 IP address management (IPAM) and data center infrastructure management (DCIM) tool
 
@@ -165,7 +165,7 @@ Kubernetes: `>=1.25.0`
 | ingress.tls | list | `[]` |  |
 | init.image.pullPolicy | string | `"Always"` |  |
 | init.image.repository | string | `"docker.ethquokkaops.io/dh/busybox"` |  |
-| init.image.tag | string | `"1.36.1"` |  |
+| init.image.tag | string | `"1.38.0"` |  |
 | init.resources.limits.cpu | string | `"200m"` |  |
 | init.resources.limits.ephemeral-storage | string | `"128Mi"` |  |
 | init.resources.limits.memory | string | `"128Mi"` |  |
@@ -224,6 +224,7 @@ Kubernetes: `>=1.25.0`
 | postgresql.networkPolicy.enabled | bool | `true` |  |
 | postgresql.podSecurityContext.fsGroup | int | `10001` |  |
 | postgresql.podSecurityContext.runAsGroup | int | `10001` |  |
+| postgresql.podSecurityContext.runAsUser | int | `10001` |  |
 | postgresql.podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | postgresql.resources.limits.cpu | string | `"1"` |  |
 | postgresql.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
