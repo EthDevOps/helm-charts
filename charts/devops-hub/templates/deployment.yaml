@@ -12,11 +12,15 @@ spec:
       app: {{ .Release.Name }}
   template:
     metadata:
-      {{- if or .Values.podAnnotations .Values.hub.requestTemplates }}
+      {{- if or .Values.podAnnotations .Values.hub.requestTemplates .Values.hub.apps }}
       annotations:
         {{- if .Values.hub.requestTemplates }}
         {{- /* Roll the pods whenever the template catalog changes. */}}
         checksum/request-templates: {{ include (print $.Template.BasePath "/configmap-templates.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.hub.apps }}
+        {{- /* Roll the pods whenever the app launcher catalog changes. */}}
+        checksum/apps: {{ include (print $.Template.BasePath "/configmap-apps.yaml") . | sha256sum }}
         {{- end }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
@@ -170,6 +174,10 @@ spec:
             - name: HUB_TEMPLATES_DIR
               value: /etc/hub/templates
             {{- end }}
+            {{- if .Values.hub.apps }}
+            - name: HUB_APPS_DIR
+              value: /etc/hub/apps
+            {{- end }}
             {{- if .Values.hub.securityTools.enabled }}
             - name: HUB_WEBAUTHN_RP_ID
               value: {{ required "hub.securityTools.webauthn.rpId is required" .Values.hub.securityTools.webauthn.rpId | quote }}
@@ -211,6 +219,11 @@ spec:
               mountPath: /etc/hub/templates
               readOnly: true
             {{- end }}
+            {{- if .Values.hub.apps }}
+            - name: apps
+              mountPath: /etc/hub/apps
+              readOnly: true
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -244,6 +257,11 @@ spec:
         - name: request-templates
           configMap:
             name: {{ .Release.Name }}-request-templates
+        {{- end }}
+        {{- if .Values.hub.apps }}
+        - name: apps
+          configMap:
+            name: {{ .Release.Name }}-apps
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
