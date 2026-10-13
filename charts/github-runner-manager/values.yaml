@@ -119,3 +119,6 @@ networkPolicy:
 podDisruptionBudget:
   enabled: true
   maxUnavailable: 1
+frontendService:
+  type: ClusterIP
+  annotations: {}
