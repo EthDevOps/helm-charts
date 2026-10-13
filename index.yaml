@@ -3,6 +3,28 @@ entries:
   appflowy:
   - apiVersion: v2
     appVersion: latest
+    created: "2026-10-13T14:09:07.52333128Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.6
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.5
+    description: AppFlowy Cloud - Collaborative workspace platform
+    digest: 6ed3dc69e65cff90014e82618229fb225a8df1b9e3eb4c0b30788c84f3d93273
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: appflowy
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/appflowy-0.3.1/appflowy-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: latest
     created: "2026-05-19T07:06:42.912656253Z"
     dependencies:
     - condition: postgresql.enabled
@@ -1668,6 +1690,28 @@ entries:
   docmost:
   - apiVersion: v2
     appVersion: 0.96.0
+    created: "2026-10-13T14:09:07.815649558Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.9
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.7
+    description: OpenSource alternative for Notion
+    digest: 2ca8c456ac4a36ea6ff44b9831a50f8933c6bb913b95a3e374d5ad03106e65dd
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: docmost
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/docmost-0.3.1/docmost-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: 0.96.0
     created: "2026-09-28T09:02:31.896038934Z"
     dependencies:
     - condition: postgresql.enabled
@@ -2556,6 +2600,26 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/frag-jetzt-0.1.0/frag-jetzt-0.1.0.tgz
     version: 0.1.0
   github-runner-manager:
+  - apiVersion: v2
+    appVersion: v0.0.1
+    created: "2026-10-13T14:09:08.154351858Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    description: Managed self-hosted runners for GitHub
+    digest: c7a44317345fa12cb430bc9d3c4aed9f79ba76e7e3034212e36be59509bab9f7
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: github-runner-manager
+    sources:
+    - https://github.com/EthDevOps/github-actions-autoscaler
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-1.4.0/github-runner-manager-1.4.0.tgz
+    version: 1.4.0
   - apiVersion: v2
     appVersion: v0.0.1
     created: "2026-07-02T12:20:45.729684249Z"
@@ -5046,6 +5110,42 @@ entries:
   keycloak:
   - apiVersion: v2
     appVersion: "26.1"
+    created: "2026-10-13T14:09:08.548122523Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    description: Open Source Identity and Access Management For Modern Applications
+      and Services
+    digest: 2c75748fcc36604a09db15e5d0984bcf21da64e1e225d478ee98379632150ea4
+    home: https://www.keycloak.org/
+    icon: https://www.keycloak.org/resources/images/keycloak_icon_512px.svg
+    keywords:
+    - sso
+    - idm
+    - openid connect
+    - saml
+    - kerberos
+    - ldap
+    maintainers:
+    - email: unguiculus@gmail.com
+      name: unguiculus
+    - email: thomas.darimont+github@gmail.com
+      name: thomasdarimont
+    - email: markus@ethereum.org
+      name: elasticroentgen
+    name: keycloak
+    sources:
+    - https://github.com/codecentric/helm-charts
+    - https://github.com/jboss-dockerfiles/keycloak
+    - https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+    - https://github.com/ethdevops/helm-charts
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/keycloak-18.10.11/keycloak-18.10.11.tgz
+    version: 18.10.11
+  - apiVersion: v2
+    appVersion: "26.1"
     created: "2026-05-13T10:48:04.85817487Z"
     dependencies:
     - condition: postgresql.enabled
@@ -6303,6 +6403,32 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/mattermost-sync-1.0.0/mattermost-sync-1.0.0.tgz
     version: 1.0.0
   netbox:
+  - apiVersion: v2
+    appVersion: v3.6.4
+    created: "2026-10-13T14:09:08.928426318Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    - condition: redis.enabled
+      name: redis
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.0.6
+    description: IP address management (IPAM) and data center infrastructure management
+      (DCIM) tool
+    digest: 7e1176690b988103e6282e78c298b553dabcab166c08a6d179fb5a0b6ac3697f
+    home: https://github.com/bootc/netbox-chart
+    icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/docs/netbox_logo.png
+    kubeVersion: '>=1.25.0'
+    maintainers:
+    - email: bootc@boo.tc
+      name: Chris Boot
+      url: https://github.com/bootc
+    name: netbox
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/netbox-5.1.15/netbox-5.1.15.tgz
+    version: 5.1.15
   - apiVersion: v2
     appVersion: v3.6.4
     created: "2026-05-19T07:06:44.115205721Z"
@@ -11265,4 +11391,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-10-12T01:43:48.409276705Z"
+generated: "2026-10-13T14:09:08.929698315Z"
