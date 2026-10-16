@@ -1,6 +1,6 @@
 # wazuh
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
+![Version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 4.14.5](https://img.shields.io/badge/AppVersion-4.14.5-informational?style=flat-square)
 
 Wazuh is a free and open source security platform that unifies XDR and SIEM protection for endpoints and cloud workloads.
 
@@ -56,8 +56,11 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | dashboard.service.type | string | `"ClusterIP"` |  |
 | fullnameOverride | string | `nil` |  |
 | indexer.annotations | object | `{}` |  |
+| indexer.config.extraSecurityFiles | object | `{}` |  |
 | indexer.config.internalUsers | string | `"{{- include \"wazuh.indexer.internalUsers\" . | indent 2 -}}"` |  |
 | indexer.config.opensearch | string | `"{{- include \"wazuh.indexer.opensearchConfig\" . | indent 2 -}}"` |  |
+| indexer.config.rolesMapping | string | `""` |  |
+| indexer.config.securityConfig | string | `""` |  |
 | indexer.cred.existingSecret | string | `""` |  |
 | indexer.cred.password | string | `"SecretPassword"` |  |
 | indexer.cred.username | string | `"admin"` |  |
@@ -65,6 +68,7 @@ Wazuh is a free and open source security platform that unifies XDR and SIEM prot
 | indexer.env.DISABLE_INSTALL_DEMO_CONFIG | string | `"true"` |  |
 | indexer.env.NETWORK_HOST | string | `"0.0.0.0"` |  |
 | indexer.env.OPENSEARCH_JAVA_OPTS | string | `"-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"` |  |
+| indexer.extraEnv | list | `[]` |  |
 | indexer.images.imagePullSecrets.enabled | bool | `false` |  |
 | indexer.images.imagePullSecrets.secret | object | `{}` |  |
 | indexer.images.pullPolicy | string | `"Always"` |  |

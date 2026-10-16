@@ -9,3 +9,15 @@ data:
     {{- tpl .Values.indexer.config.internalUsers . | indent 2 }}
   opensearch.yml: |
     {{- tpl .Values.indexer.config.opensearch . | indent 2 }}
+  {{- with .Values.indexer.config.securityConfig }}
+  config.yml: |
+    {{- tpl . $ | nindent 4 }}
+  {{- end }}
+  {{- with .Values.indexer.config.rolesMapping }}
+  roles_mapping.yml: |
+    {{- tpl . $ | nindent 4 }}
+  {{- end }}
+  {{- range $file, $content := .Values.indexer.config.extraSecurityFiles }}
+  {{ $file }}: |
+    {{- $content | nindent 4 }}
+  {{- end }}

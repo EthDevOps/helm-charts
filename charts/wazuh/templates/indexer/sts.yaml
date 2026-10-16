@@ -101,6 +101,9 @@ spec:
                   fieldPath: metadata.namespace
             - name: DISABLE_INSTALL_DEMO_CONFIG
               value: {{ .Values.indexer.env.DISABLE_INSTALL_DEMO_CONFIG | quote }}
+            {{- with .Values.indexer.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           resources:
             {{- toYaml .Values.indexer.resources | nindent 12 }}
           volumeMounts:
@@ -137,6 +140,24 @@ spec:
               mountPath: /usr/share/wazuh-indexer/config/opensearch-security/internal_users.yml
               subPath: internal_users.yml
               readOnly: true
+            {{- if .Values.indexer.config.securityConfig }}
+            - name: indexer-conf
+              mountPath: /usr/share/wazuh-indexer/config/opensearch-security/config.yml
+              subPath: config.yml
+              readOnly: true
+            {{- end }}
+            {{- if .Values.indexer.config.rolesMapping }}
+            - name: indexer-conf
+              mountPath: /usr/share/wazuh-indexer/config/opensearch-security/roles_mapping.yml
+              subPath: roles_mapping.yml
+              readOnly: true
+            {{- end }}
+            {{- range $file, $_ := .Values.indexer.config.extraSecurityFiles }}
+            - name: indexer-conf
+              mountPath: /usr/share/wazuh-indexer/config/opensearch-security/{{ $file }}
+              subPath: {{ $file }}
+              readOnly: true
+            {{- end }}
           ports:
             - containerPort: {{ .Values.indexer.service.httpPort }}
               name: indexer-rest
