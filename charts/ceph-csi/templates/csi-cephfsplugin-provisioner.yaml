@@ -46,15 +46,23 @@ spec:
       hostNetwork: true
       dnsPolicy: ClusterFirst
       affinity:
+        # Preferred (not required) anti-affinity: with hostNetwork + replicas 3 on
+        # exactly 3 workers, a `required` rule on kubernetes.io/hostname makes the
+        # rolling-update surge pod (the 4th replica) unschedulable, stalling the
+        # rollout. `preferred` lets the surge pod briefly co-locate while an old
+        # pod still runs so the rollout completes; steady state still spreads one
+        # provisioner per worker.
         podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - csi-cephfsplugin-provisioner
-              topologyKey: "kubernetes.io/hostname"
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - csi-cephfsplugin-provisioner
+                topologyKey: "kubernetes.io/hostname"
       serviceAccountName: cephfs-csi-provisioner
       priorityClassName: system-cluster-critical
       containers:
