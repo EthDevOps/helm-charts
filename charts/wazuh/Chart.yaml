@@ -3,7 +3,7 @@ name: wazuh
 description: Wazuh is a free and open source security platform that unifies XDR and SIEM protection for endpoints and cloud workloads.
 type: application
 appVersion: 4.14.5
-version: 0.4.0
+version: 0.4.1
 home: https://wazuh.com/
 sources:
   - https://github.com/EthDevOps/helm-charts
@@ -33,6 +33,8 @@ dependencies:
 annotations:
   artifacthub.io/category: security
   artifacthub.io/changes: |
+    - kind: added
+      description: "indexer.config.securityConfig / rolesMapping / extraSecurityFiles: optionally render config.yml, roles_mapping.yml and extra files (e.g. SAML IdP metadata) into config/opensearch-security/; indexer.extraEnv for secrets referenced from them as ${env.NAME}. All default off."
     - kind: added
       description: "wazuh.sharedConfig: deliver agent.conf (per group), local rules and local decoders to the master from an existing ConfigMap via /wazuh-config-mount, so the centralised agent configuration can come from git."
     - kind: fixed

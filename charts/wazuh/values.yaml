@@ -96,12 +96,29 @@ indexer:
       {{- include "wazuh.indexer.opensearchConfig" . | indent 2 -}}
     internalUsers: |-
       {{- include "wazuh.indexer.internalUsers" . | indent 2 -}}
+    # Optional opensearch-security files. Each non-empty value is rendered into
+    # the indexer ConfigMap and mounted under config/opensearch-security/; the
+    # image defaults are used otherwise. Like internal_users.yml they only take
+    # effect once pushed to the cluster with securityadmin.sh.
+    # config.yml (authentication domains, e.g. SAML). Values may reference
+    # container env as ${env.NAME}; supply secrets that way via extraEnv.
+    securityConfig: ""
+    # roles_mapping.yml
+    rolesMapping: ""
+    # Additional files, filename: content (e.g. SAML IdP metadata, referenced
+    # from config.yml as opensearch-security/<filename>; paths there resolve
+    # relative to config/).
+    extraSecurityFiles: {}
 
   env:
     OPENSEARCH_JAVA_OPTS: "-Xms1g -Xmx1g -Dlog4j2.formatMsgNoLookups=true"
     CLUSTER_NAME: "wazuh"
     NETWORK_HOST: "0.0.0.0"
     DISABLE_INSTALL_DEMO_CONFIG: "true"
+
+  # Extra container env for the indexer, in Kubernetes EnvVar form (e.g. a
+  # secretKeyRef for a SAML exchange_key referenced from securityConfig).
+  extraEnv: []
 
   plugins: []
 
