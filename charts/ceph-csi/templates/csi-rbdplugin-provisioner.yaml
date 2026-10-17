@@ -31,6 +31,21 @@ metadata:
       container-image-tag
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # hostNetwork + fixed container ports (8090-8093/8681 rbd, 8094-8096/8683
+      # cephfs) mean a rolling-update surge pod (the 4th replica) cannot co-locate
+      # on any worker already running a same-app provisioner pod: the host ports
+      # are already bound, so a preferred anti-affinity does not help. The default
+      # maxSurge of 25% therefore makes the surge pod permanently unschedulable on
+      # a 3-worker cluster and stalls every rollout (observed 31d on v2,
+      # "3 node(s) didn't have free ports for the requested pod ports"). Recreate
+      # one pod at a time (maxSurge 0) so the rollout never needs more replicas
+      # than there are schedulable workers; the preferred anti-affinity above
+      # still spreads steady state one provisioner per worker.
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: csi-rbdplugin-provisioner
@@ -97,7 +112,10 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             # - name: KMS_CONFIGMAP_NAME
-            #   value: encryptionConfig
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: ceph-csi-kms
+            #       key: kms-config
             - name: CSI_ENDPOINT
               value: unix:///csi/csi-provisioner.sock
             - name: CSI_ADDONS_ENDPOINT
@@ -137,8 +155,6 @@ spec:
             - "--leader-election=true"
             - "--feature-gates=HonorPVReclaimPolicy=true"
             - "--prevent-volume-mode-conversion=true"
-            # if fstype is not specified in storageclass, ext4 is default
-            - "--default-fstype=ext4"
             - "--extra-create-metadata=true"
             - "--immediate-topology=false"
             - "--http-endpoint=$(POD_IP):8090"

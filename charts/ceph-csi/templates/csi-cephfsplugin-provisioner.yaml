@@ -23,14 +23,30 @@ metadata:
   annotations:
     # The cephcsi provisioner container mounts /dev and /sys from the host
     # and the upstream cephcsi image runs as root (uid 0). The sidecars
-    # (csi-provisioner, csi-resizer, csi-snapshotter) also ship without a
-    # configurable non-root user. The image tag uses the upstream-recommended
-    # mutable channel ("canary"); pin a stable release per environment.
+    # (csi-provisioner, csi-resizer, csi-snapshotter) also
+    # ship without a configurable non-root user. The image tag uses the
+    # upstream-recommended mutable channel ("canary"); pin a stable release
+    # per environment.
     kube-score/ignore: >-
       container-security-context-user-group-id,
       container-image-tag
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # hostNetwork + fixed container ports (8094-8096/8683) mean a
+      # rolling-update surge pod (the 4th replica) cannot co-locate on any worker
+      # already running a same-app provisioner pod: the host ports are already
+      # bound, so a preferred anti-affinity does not help. The default maxSurge
+      # of 25% therefore makes the surge pod permanently unschedulable on a
+      # 3-worker cluster and stalls every rollout (observed 31d on v2,
+      # "3 node(s) didn't have free ports for the requested pod ports"). Recreate
+      # one pod at a time (maxSurge 0) so the rollout never needs more replicas
+      # than there are schedulable workers; the preferred anti-affinity above
+      # still spreads steady state one provisioner per worker.
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: csi-cephfsplugin-provisioner
@@ -103,21 +119,21 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: socket-dir
-              mountPath: /csi
-            - name: host-sys
-              mountPath: /sys
-            - name: lib-modules
-              mountPath: /lib/modules
+            - mountPath: /csi
+              name: socket-dir
+            - mountPath: /sys
+              name: host-sys
+            - mountPath: /lib/modules
+              name: lib-modules
               readOnly: true
-            - name: host-dev
-              mountPath: /dev
-            - name: ceph-config
-              mountPath: /etc/ceph/
-            - name: ceph-csi-config
-              mountPath: /etc/ceph-csi-config/
-            - name: keys-tmp-dir
-              mountPath: /tmp/csi/keys
+            - mountPath: /dev
+              name: host-dev
+            - mountPath: /etc/ceph/
+              name: ceph-config
+            - mountPath: /etc/ceph-csi-config/
+              name: ceph-csi-config
+            - mountPath: /tmp/csi/keys
+              name: keys-tmp-dir
         # All sidecar http endpoints below use ports that don't collide with
         # the rbd provisioner's 8090-8093/8681 — both deployments run with
         # hostNetwork and can land on the same node.
@@ -128,10 +144,10 @@ spec:
             - "--v=1"
             - "--timeout=150s"
             - "--leader-election=true"
-            - "--retry-interval-start=500ms"
             - "--feature-gates=HonorPVReclaimPolicy=true"
             - "--prevent-volume-mode-conversion=true"
             - "--extra-create-metadata=true"
+            - "--immediate-topology=false"
             - "--http-endpoint=$(POD_IP):8094"
           env:
             - name: ADDRESS
@@ -163,6 +179,7 @@ spec:
         - name: csi-resizer
           image: registry.k8s.io/sig-storage/csi-resizer:v1.13.1
           args:
+            - "--csi-address=$(ADDRESS)"
             - "--csi-address=$(ADDRESS)"
             - "--v=1"
             - "--timeout=150s"
@@ -252,7 +269,6 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-          imagePullPolicy: Always
       volumes:
         - name: socket-dir
           emptyDir: {
@@ -261,9 +277,6 @@ spec:
         - name: host-sys
           hostPath:
             path: /sys
-        - name: lib-modules
-          hostPath:
-            path: /lib/modules
         - name: host-dev
           hostPath:
             path: /dev
