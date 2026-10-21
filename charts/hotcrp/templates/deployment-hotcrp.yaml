@@ -130,7 +130,13 @@ spec:
           volumeMounts:
             - name: hotcrp-docs
               mountPath: /var/www/html/docs
+            {{- with .Values.hotcrp.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
       volumes:
         - name: hotcrp-docs
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-hotcrp-pvc
+        {{- with .Values.hotcrp.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}

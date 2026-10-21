@@ -103,6 +103,12 @@ spec:
             # config sends error_log to stderr once loaded.)
             - name: nginx-run
               mountPath: /run/nginx
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
       volumes:
         - name: nginx-run
           emptyDir: {}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}

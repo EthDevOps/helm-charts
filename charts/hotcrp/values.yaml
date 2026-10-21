@@ -22,6 +22,10 @@ hotcrp:
   docstore: true
   # Redirect HTTP to HTTPS. Enable when TLS is terminated upstream (ingress).
   redirectToHttps: false
+  # Extra volumes / volumeMounts for the HotCRP container, e.g. a ConfigMap with
+  # an Apache conf-enabled snippet or a PHP conf.d ini file (mount with subPath).
+  extraVolumes: []
+  extraVolumeMounts: []
   # Mark session cookies secure. Enable when served over HTTPS.
   sessionSecure: true
   # Trust X-Forwarded-Proto/Port/Host from the ingress so HotCRP builds correct

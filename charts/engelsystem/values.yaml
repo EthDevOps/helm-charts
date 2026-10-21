@@ -45,6 +45,11 @@ extraEnvFrom: []
 #  - secretRef:
 #      name: my-smtp-secret
 
+# Extra volumes / volumeMounts for the engelsystem container, e.g. a ConfigMap
+# with an additional php-fpm pool or conf.d ini file (mount it with subPath).
+extraVolumes: []
+extraVolumeMounts: []
+
 service:
   type: ClusterIP
   port: 80
