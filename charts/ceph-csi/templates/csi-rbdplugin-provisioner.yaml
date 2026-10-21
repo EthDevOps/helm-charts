@@ -23,9 +23,9 @@ metadata:
     # The cephcsi provisioner container mounts /dev and /sys from the host
     # and the upstream cephcsi image runs as root (uid 0). The sidecars
     # (csi-provisioner, csi-attacher, csi-resizer, csi-snapshotter) also
-    # ship without a configurable non-root user. The image tag uses the
-    # upstream-recommended mutable channel ("canary"); pin a stable release
-    # per environment.
+    # ship without a configurable non-root user. The image tag is pinned via
+    # .Values.image.tag (see values.yaml); do not revert to the
+    # mutable "canary" channel (broke flag compat 2026-10-20).
     kube-score/ignore: >-
       container-security-context-user-group-id,
       container-image-tag
@@ -82,9 +82,8 @@ spec:
       priorityClassName: system-cluster-critical
       containers:
         - name: csi-rbdplugin
-          # for stable functionality replace canary with latest release version
-          # TODO: pin a specific version
-          image: quay.io/cephcsi/cephcsi:canary
+          # pinned via .Values.image.tag; "canary" broke flag compat 2026-10-20
+          image: quay.io/cephcsi/cephcsi:{{ .Values.image.tag }}
           args:
             - "--nodeid=$(NODE_ID)"
             - "--type=rbd"
@@ -278,9 +277,8 @@ spec:
             - name: socket-dir
               mountPath: /csi
         - name: csi-rbdplugin-controller
-          # for stable functionality replace canary with latest release version
-          # TODO: pin a specific version
-          image: quay.io/cephcsi/cephcsi:canary
+          # pinned via .Values.image.tag; "canary" broke flag compat 2026-10-20
+          image: quay.io/cephcsi/cephcsi:{{ .Values.image.tag }}
           args:
             - "--type=controller"
             - "--v={{ .Values.logLevel | default 1 }}"
@@ -307,7 +305,7 @@ spec:
             - name: ceph-config
               mountPath: /etc/ceph/
         - name: liveness-prometheus
-          image: quay.io/cephcsi/cephcsi:canary
+          image: quay.io/cephcsi/cephcsi:{{ .Values.image.tag }}
           args:
             - "--type=liveness"
             - "--endpoint=$(CSI_ENDPOINT)"
