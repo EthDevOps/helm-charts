@@ -7,8 +7,9 @@ metadata:
   annotations:
     # CSI node plugins must run privileged to mount cephfs into kubelet's
     # plugin dir on the host. The upstream cephcsi image runs as root (uid 0)
-    # and cannot be reconfigured. The image tag uses the upstream-recommended
-    # mutable channel ("canary"); pin a stable release per environment.
+    # and cannot be reconfigured. The image tag is pinned via
+    # .Values.image.tag (see values.yaml); do not revert to the
+    # mutable "canary" channel (broke flag compat 2026-10-20).
     kube-score/ignore: >-
       container-security-context-privileged,
       container-security-context-user-group-id,
@@ -41,9 +42,8 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          # for stable functionality replace canary with latest release version
-          # TODO: pin a specific version
-          image: quay.io/cephcsi/cephcsi:canary
+          # pinned via .Values.image.tag; "canary" broke flag compat 2026-10-20
+          image: quay.io/cephcsi/cephcsi:{{ .Values.image.tag }}
           args:
             - "--nodeid=$(NODE_ID)"
             - "--type=cephfs"
@@ -131,7 +131,7 @@ spec:
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
-          image: quay.io/cephcsi/cephcsi:canary
+          image: quay.io/cephcsi/cephcsi:{{ .Values.image.tag }}
           args:
             - "--type=liveness"
             - "--endpoint=$(CSI_ENDPOINT)"

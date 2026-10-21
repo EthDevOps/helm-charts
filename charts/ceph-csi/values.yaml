@@ -8,6 +8,18 @@ auth:
   user: kubernetes
   key: some-key
 
+# cephcsi driver image tag. Was hardcoded to the upstream mutable
+# "canary" channel in the pod specs; the 2026-10-20 canary build
+# dropped the --setmetadata and --csi-addons-endpoint flags the
+# driver containers are started with, crash-looping every new
+# provisioner pod on each helm upgrade (seen on
+# colo-k8s-v2-app-testing, ns cephcsi-system, 2026-10-20). v3.18.1
+# is the latest stable release and the closest stable line to the
+# canary builds that have been running since June 2026. Bump this
+# deliberately when upgrading the driver.
+image:
+  tag: v3.18.1
+
 # klog verbosity (-v) for the cephcsi *driver* containers (rbd/cephfs plugin +
 # controller). The CSI sidecars stay pinned at -v=1. Upstream ships -v=5, which
 # floods the logs with client-go V(4) "failed to acquire lease" leader-election
