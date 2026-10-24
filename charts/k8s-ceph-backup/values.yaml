@@ -85,6 +85,8 @@ config:
     rbdPath: "rbd"
     configPath: "/etc/ceph/ceph.conf"
     keyringPath: "/etc/ceph/keyring"
+    # Ceph user without the "client." prefix (sets CEPH_ARGS=--id). Empty = client.admin.
+    id: ""
   
   gpg:
     path: "gpg"

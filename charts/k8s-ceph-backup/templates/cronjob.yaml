@@ -59,6 +59,12 @@ spec:
                   secretKeyRef:
                     name: {{ $.Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" $)) }}
                     key: secret-key
+              {{- with $.Values.config.ceph.id }}
+              # The tool calls rbd without --id, so pick the Ceph user here
+              # (unset = client.admin). The keyring must hold this user.
+              - name: CEPH_ARGS
+                value: "--id {{ . }}"
+              {{- end }}
             volumeMounts:
             - name: config
               mountPath: /root/.k8s-ceph-backup.yaml
@@ -140,6 +146,12 @@ spec:
                   secretKeyRef:
                     name: {{ $.Values.secrets.minio.secretName | default (printf "%s-minio-credentials" (include "k8s-ceph-backup.fullname" $)) }}
                     key: secret-key
+              {{- with $.Values.config.ceph.id }}
+              # The tool calls rbd without --id, so pick the Ceph user here
+              # (unset = client.admin). The keyring must hold this user.
+              - name: CEPH_ARGS
+                value: "--id {{ . }}"
+              {{- end }}
             volumeMounts:
             - name: config
               mountPath: /root/.k8s-ceph-backup.yaml

@@ -1,6 +1,6 @@
 # k8s-ceph-backup
 
-![Version: 0.0.12](https://img.shields.io/badge/Version-0.0.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 0.0.13](https://img.shields.io/badge/Version-0.0.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 Creates backups of PVC via CEPH
 
@@ -12,6 +12,7 @@ Creates backups of PVC via CEPH
 | backups[0].schedule | string | `"0 2 * * *"` |  |
 | config.backup.tempDir | string | `"/tmp/k8s-ceph-backup"` |  |
 | config.ceph.configPath | string | `"/etc/ceph/ceph.conf"` |  |
+| config.ceph.id | string | `""` |  |
 | config.ceph.keyringPath | string | `"/etc/ceph/keyring"` |  |
 | config.ceph.rbdPath | string | `"rbd"` |  |
 | config.gpg.path | string | `"gpg"` |  |
