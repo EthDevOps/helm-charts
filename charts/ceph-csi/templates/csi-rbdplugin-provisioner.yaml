@@ -124,6 +124,8 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
             - mountPath: /dev
               name: host-dev
             - mountPath: /sys
