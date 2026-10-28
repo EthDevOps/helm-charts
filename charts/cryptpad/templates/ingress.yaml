@@ -23,13 +23,6 @@ spec:
   - host: {{ .Values.baseDomain }}
     http:
       paths:
-      - path: /cryptpad_websocket
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Release.Name }}-svc
-            port:
-              name: websocket
       - path: /
         pathType: Prefix
         backend:
@@ -40,13 +33,6 @@ spec:
   - host: {{ .Values.sandboxDomain }}
     http:
       paths:
-      - path: /cryptpad_websocket
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Release.Name }}-svc
-            port:
-              name: websocket
       - path: /
         pathType: Prefix
         backend:

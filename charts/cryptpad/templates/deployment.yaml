@@ -33,6 +33,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+      {{- if has (toString .Values.installOffice) (list "yes" "true") }}
       - name: install-onlyoffice
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -43,7 +44,7 @@ spec:
         # multi-hundred-MB onlyoffice download/build).
         command: ["/bin/bash", "-c"]
         args:
-        - cd /cryptpad && ./install-onlyoffice.sh --accept-license --trust-repository
+        - cd /cryptpad && ./install-office.sh --accept-license --trust-repository
         volumeMounts:
         - name: openoffice
           mountPath: /cryptpad/onlyoffice-conf
@@ -53,6 +54,7 @@ spec:
           subPath: dist
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+      {{- end }}
       {{- with .Values.extraInitContainers }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
@@ -64,11 +66,9 @@ spec:
           {{- toYaml .Values.containerSecurityContext | nindent 10 }}
         env:
         - name: CPAD_MAIN_DOMAIN
-          value: {{ .Values.baseDomain | quote }}
+          value: "https://{{ .Values.baseDomain }}"
         - name: CPAD_SANDBOX_DOMAIN
-          value: {{ .Values.sandboxDomain | quote }}
-        - name: CPAD_CONF
-          value: "/cryptpad/config/config.js"
+          value: "https://{{ .Values.sandboxDomain }}"
         {{- if .Values.sso.existingSecret }}
         - name: SSO_CLIENT_ID
           valueFrom:
@@ -85,9 +85,6 @@ spec:
         - name: http
           containerPort: 3000
           protocol: TCP
-        - name: websocket
-          containerPort: 3003
-          protocol: TCP
         {{- with .Values.readinessProbe }}
         readinessProbe:
           {{- toYaml . | nindent 10 }}
@@ -101,6 +98,10 @@ spec:
           readOnly: true
           mountPath: /cryptpad/config/config.js
           subPath: config.js
+        - name: config
+          readOnly: true
+          mountPath: /cryptpad/config/infra.js
+          subPath: infra.js
         - name: config
           readOnly: true
           mountPath: /cryptpad/customize/application_config.js

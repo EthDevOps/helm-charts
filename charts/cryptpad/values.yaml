@@ -92,8 +92,6 @@ networkPolicy:
     - ports:
         - port: 3000
           protocol: TCP
-        - port: 3003
-          protocol: TCP
   egress:
     - {}
 
