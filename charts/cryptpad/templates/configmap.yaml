@@ -12,13 +12,8 @@ data:
     //
     // SPDX-License-Identifier: AGPL-3.0-or-later
     // THIS FILE IS MAINLY WITHOUT COMMENTS TO KEEP IT SMALL. CHECK THE EXAMPLE CONFIG FOR EXPLAINATIONS.
+    // Origins, ports and worker topology live in infra.js since 2026.10.0.
     module.exports = {
-      httpUnsafeOrigin: "https://{{ .Values.baseDomain }}",
-      httpSafeOrigin: "https://{{ .Values.sandboxDomain }}",
-      httpAddress: '0.0.0.0',
-      httpPort: 3000,
-      websocketPort: 3003,
-      maxWorkers: 8,
       //otpSessionExpiration: 7*24, // hours
       enforceMFA: false,
 
@@ -81,6 +76,27 @@ data:
         configPath: "./config/sso.js",
       },
     };
+  infra.js: |-
+    // CPAD_MAIN_DOMAIN / CPAD_SANDBOX_DOMAIN override public.origin / sandboxOrigin,
+    // and rewrite every node host to 0.0.0.0 (all nodes run in this one container).
+    module.exports = {
+      "public": {
+        origin: "https://{{ .Values.baseDomain }}",
+        sandboxOrigin: "https://{{ .Values.sandboxDomain }}",
+        httpHost: "0.0.0.0",
+        httpPort: 3000,
+        httpSafePort: 3001,
+        externalWebsocketURL: undefined,
+        fileHost: undefined,
+        httpServerId: "",
+      },
+      "front": [ { host: "localhost", port: 3010 }, { host: "localhost", port: 3011 } ],
+      "core": [ { host: "localhost", port: 3020 }, { host: "localhost", port: 3021 } ],
+      "storage": [
+        { host: "localhost", port: 3030, wsPort: 3040 },
+        { host: "localhost", port: 3031, wsPort: 3041 }
+      ]
+    };
   application_config.js: |-
     define(['/common/application_config_internal.js'], function (AppConfig) {
 
@@ -115,7 +131,7 @@ data:
           url: "https://accounts.google.com",
           client_id: process.env.SSO_CLIENT_ID,
           client_secret: process.env.SSO_CLIENT_SECRET,
-          jwt_alg: "RS256",
+          id_token_alg: "RS256",
         },
       ],
     };

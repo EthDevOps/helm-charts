@@ -1,6 +1,6 @@
 # cryptpad
 
-![Version: 0.0.32](https://img.shields.io/badge/Version-0.0.32-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2024.12.0](https://img.shields.io/badge/AppVersion-2024.12.0-informational?style=flat-square)
+![Version: 0.0.33](https://img.shields.io/badge/Version-0.0.33-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2026.10.0](https://img.shields.io/badge/AppVersion-2026.10.0-informational?style=flat-square)
 
 A Helm chart for cryptpad
 
@@ -44,8 +44,6 @@ A Helm chart for cryptpad
 | networkPolicy.enabled | bool | `true` |  |
 | networkPolicy.ingress[0].ports[0].port | int | `3000` |  |
 | networkPolicy.ingress[0].ports[0].protocol | string | `"TCP"` |  |
-| networkPolicy.ingress[0].ports[1].port | int | `3003` |  |
-| networkPolicy.ingress[0].ports[1].protocol | string | `"TCP"` |  |
 | podAnnotations | object | `{}` |  |
 | podDisruptionBudget.enabled | bool | `true` |  |
 | podDisruptionBudget.maxUnavailable | int | `1` |  |
