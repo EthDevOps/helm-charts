@@ -65,6 +65,10 @@ spec:
             - name: MAX_FILE_SIZE_MB
               value: {{ .Values.maxFileSizeMb | quote }}
           {{- end }}
+          {{- if .Values.remoteIpProxies }}
+            - name: REMOTE_IP_PROXIES
+              value: {{ .Values.remoteIpProxies | quote }}
+          {{- end }}
           {{- if .Values.mail.enabled }}
             - name: MAIL_TRANSPORT
               value: {{ .Values.mail.transport | quote }}

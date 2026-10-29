@@ -112,6 +112,12 @@ presentationStorage:
 
 maxFileSizeMb: ""
 
+# Comma-separated trusted proxy IPs/CIDRs, passed to the container as
+# REMOTE_IP_PROXIES (Claper's Plug.RemoteIp trust list). Behind HAProxy
+# or Warpgate the app otherwise attributes every request to the proxy
+# IP, collapsing rate-limit buckets.
+remoteIpProxies: ""
+
 accountCreation:
   enabled: true
   emailConfirmation: false

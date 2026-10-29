@@ -1,6 +1,6 @@
 # claper
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 OpenSource interactive presentation tool
 
@@ -93,6 +93,7 @@ OpenSource interactive presentation tool
 | readinessProbe.initialDelaySeconds | int | `15` |  |
 | readinessProbe.periodSeconds | int | `10` |  |
 | readinessProbe.timeoutSeconds | int | `5` |  |
+| remoteIpProxies | string | `""` |  |
 | replicaCount | int | `1` |  |
 | resources.limits.cpu | string | `"1"` |  |
 | resources.limits.ephemeral-storage | string | `"1Gi"` |  |
