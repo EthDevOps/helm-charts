@@ -215,7 +215,6 @@ spec:
             - "--timeout=150s"
             - "--leader-election=true"
             - "--extra-create-metadata=true"
-            - "--feature-gates=CSIVolumeGroupSnapshot=true"
             - "--http-endpoint=$(POD_IP):8096"
           env:
             - name: ADDRESS
