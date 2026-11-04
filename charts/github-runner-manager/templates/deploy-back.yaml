@@ -24,6 +24,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-github-autoscaler
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: github-autoscaler
           image: {{ .Values.imageName }}:{{ .Values.imageTag }}

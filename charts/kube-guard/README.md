@@ -1,6 +1,6 @@
 # kube-guard
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Kubernetes admission controller that monitors shell access, port forwarding, PVC mounts, privileged pods, host access, RBAC changes, and namespace deletions
 
@@ -60,6 +60,7 @@ A Kubernetes admission controller that monitors shell access, port forwarding, P
 | image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/kube-guard"` |  |
 | image.tag | string | `"latest"` |  |
+| imagePullSecrets | list | `[]` |  |
 | networkPolicy.egress[0] | object | `{}` |  |
 | networkPolicy.enabled | bool | `true` |  |
 | networkPolicy.ingress[0].ports[0].port | int | `8443` |  |

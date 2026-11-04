@@ -15,6 +15,10 @@ metadata:
       container-ephemeral-storage-request-and-limit,
       container-security-context-user-group-id
 spec:
+  {{- with .Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   containers:
     - name: wget
       image: {{ .Values.testConnection.image }}

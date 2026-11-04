@@ -93,3 +93,6 @@ networkPolicy:
   # Egress rules (allow all by default; restrict per-environment if needed)
   egress:
     - {}
+
+# Pull secrets for private registries, e.g. [{name: docker-pull-secret}]
+imagePullSecrets: []

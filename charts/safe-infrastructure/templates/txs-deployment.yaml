@@ -32,6 +32,10 @@ spec:
           mountPath: /shared-static
         resources:
           {{- toYaml .Values.initResources | nindent 10 }}
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: txs-web
         image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}
@@ -161,6 +165,10 @@ spec:
         {{- include "safe-infrastructure.selectorLabels" $ | nindent 8 }}
         app.kubernetes.io/component: txs-worker-{{ $worker }}
     spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: txs-worker-{{ $worker }}
         image: {{ $.Values.txs.image }}:{{ $.Values.images.txsVersion }}
@@ -254,6 +262,10 @@ spec:
         {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: txs-scheduler
     spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: txs-scheduler
         image: {{ .Values.txs.image }}:{{ .Values.images.txsVersion }}

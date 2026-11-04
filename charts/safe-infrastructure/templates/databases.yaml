@@ -23,6 +23,10 @@ spec:
         {{- include "safe-infrastructure.selectorLabels" $ | nindent 8 }}
         app.kubernetes.io/component: {{ $db }}-db
     spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: postgres
         image: "{{ $.Values.databases.postgres.image.repository }}:{{ $.Values.databases.postgres.image.tag }}"

@@ -1,6 +1,6 @@
 # jitsi-monitor
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.3](https://img.shields.io/badge/AppVersion-v0.1.3-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.3](https://img.shields.io/badge/AppVersion-v0.1.3-informational?style=flat-square)
 
 Monitors the health of Jitsi Meet instances and bridges
 
@@ -30,6 +30,7 @@ Monitors the health of Jitsi Meet instances and bridges
 | image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/jitsi-monitor-docker"` |  |
 | image.tag | string | `"v0.1.6"` |  |
+| imagePullSecrets | list | `[]` |  |
 | networkPolicy.egress[0] | object | `{}` |  |
 | networkPolicy.enabled | bool | `true` |  |
 | networkPolicy.ingress[0].ports[0].port | int | `8000` |  |

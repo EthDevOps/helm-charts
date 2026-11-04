@@ -1,6 +1,6 @@
 # discord-backup-bot
 
-![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.10.0](https://img.shields.io/badge/AppVersion-v0.10.0-informational?style=flat-square)
+![Version: 0.3.4](https://img.shields.io/badge/Version-0.3.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.10.0](https://img.shields.io/badge/AppVersion-v0.10.0-informational?style=flat-square)
 
 A Helm chart for the discord backup bot
 
@@ -23,6 +23,7 @@ A Helm chart for the discord backup bot
 | discordToken | string | `"ReplaceWithDiscordToken"` |  |
 | enableArchive | bool | `false` |  |
 | heartbeatUrl | string | `"http://localhost"` |  |
+| imagePullSecrets | list | `[]` |  |
 | imageTag | string | `"latest"` |  |
 | networkPolicy.egress[0] | object | `{}` |  |
 | networkPolicy.enabled | bool | `true` |  |

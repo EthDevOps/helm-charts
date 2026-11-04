@@ -1,6 +1,6 @@
 # teleport-argo-sync
 
-![Version: 0.0.5](https://img.shields.io/badge/Version-0.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for teleport-argo-sync
 
@@ -34,6 +34,7 @@ A Helm chart for teleport-argo-sync
 | image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"docker.ethquokkaops.io/ethquokkaops/ethdevops/teleport-argocd-sync"` |  |
 | image.tag | string | `"v0.0.5"` |  |
+| imagePullSecrets | list | `[]` |  |
 | networkPolicy.egress[0] | object | `{}` |  |
 | networkPolicy.enabled | bool | `true` |  |
 | networkPolicy.ingress | list | `[]` |  |

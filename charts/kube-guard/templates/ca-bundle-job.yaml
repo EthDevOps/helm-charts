@@ -18,6 +18,10 @@ spec:
     spec:
       restartPolicy: OnFailure
       serviceAccountName: {{ include "kube-guard.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: ca-bundle-updater
         image: alpine/k8s:1.28.0

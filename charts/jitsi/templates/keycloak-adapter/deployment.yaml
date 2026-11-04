@@ -17,6 +17,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-keycloak-adapter
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Release.Name }}-keycloak-adapter
         image: "{{ .Values.keycloak_adapter.imageRepository }}:{{ .Values.keycloak_adapter.imageTag }}"

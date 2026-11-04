@@ -22,6 +22,10 @@ spec:
         {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: ui
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: ui
         image: {{ .Values.ui.image }}:{{ .Values.images.uiVersion }}

@@ -22,6 +22,10 @@ spec:
         {{- include "safe-infrastructure.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: events-web
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: events-web
         image: {{ .Values.events.image }}:{{ .Values.images.eventsVersion }}

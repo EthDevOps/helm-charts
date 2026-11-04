@@ -20,6 +20,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-github-autoscaler-ui
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: github-autoscaler
           image: docker.ethquokkaops.io/ethquokkaops/ethdevops/github-actions-autoscaler-ui:{{ .Values.uiImageTag }}

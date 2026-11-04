@@ -1,6 +1,6 @@
 # safe-infrastructure
 
-![Version: 0.1.21](https://img.shields.io/badge/Version-0.1.21-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.1.22](https://img.shields.io/badge/Version-0.1.22-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for Safe Infrastructure services
 
@@ -104,6 +104,7 @@ A Helm chart for Safe Infrastructure services
 | healthCheck.periodSeconds | int | `30` |  |
 | healthCheck.successThreshold | int | `1` |  |
 | healthCheck.timeoutSeconds | int | `30` |  |
+| imagePullSecrets | list | `[]` |  |
 | images.cfgVersion | string | `"latest"` |  |
 | images.cgwVersion | string | `"latest"` |  |
 | images.eventsVersion | string | `"latest"` |  |

@@ -42,6 +42,10 @@ spec:
                 name: {{ .Release.Name }}-rclone-filters
             {{- end }}
           {{- end }}
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
           - name: {{ .Release.Name }}-minio-mirror
             image: docker.ethquokkaops.io/ethquokkaops/ethdevops/s3-sync-docker:{{ .Values.imageTag }}

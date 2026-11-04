@@ -279,3 +279,6 @@ credentials:
   events:
     adminEmail: admin@safe
     adminPassword: password
+
+# Pull secrets for private registries, e.g. [{name: docker-pull-secret}]
+imagePullSecrets: []

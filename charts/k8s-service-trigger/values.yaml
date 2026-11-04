@@ -63,3 +63,6 @@ networkPolicy:
     - {}
   # No ingress traffic expected — controller-only workload.
   ingress: []
+
+# Pull secrets for private registries, e.g. [{name: docker-pull-secret}]
+imagePullSecrets: []

@@ -22,6 +22,10 @@ spec:
           labels:
             app: {{ .Release.Name }}
         spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
             - name: {{ .Release.Name }}-bot
               image: docker.ethquokkaops.io/ethquokkaops/ethdevops/efdiscordbackupbot:{{ .Values.imageTag }}

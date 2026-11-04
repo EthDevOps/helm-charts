@@ -17,6 +17,10 @@ spec:
       serviceAccountName: service-monitor
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: service-monitor
         image: docker.ethquokkaops.io/ethquokkaops/ethdevops/k8s-service-trigger:{{ .Values.imageVersion }}

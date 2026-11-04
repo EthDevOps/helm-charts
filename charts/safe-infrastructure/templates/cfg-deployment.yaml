@@ -32,6 +32,10 @@ spec:
           mountPath: /shared-static
         resources:
           {{- toYaml .Values.initResources | nindent 10 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: cfg-web
         image: {{ .Values.cfg.image }}:{{ .Values.images.cfgVersion }}

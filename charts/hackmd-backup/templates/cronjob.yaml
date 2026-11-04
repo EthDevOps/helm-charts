@@ -22,6 +22,10 @@ spec:
             app: {{ .Release.Name }}
         spec:
           restartPolicy: OnFailure
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
             - name: hackmd-backup
               image: docker.ethquokkaops.io/ethquokkaops/ethdevops/hackmd-backup-tool:{{ .Values.imageTag }}

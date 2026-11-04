@@ -84,3 +84,6 @@ networkPolicy:
 podDisruptionBudget:
   enabled: true
   maxUnavailable: 1
+
+# Pull secrets for private registries, e.g. [{name: docker-pull-secret}]
+imagePullSecrets: []

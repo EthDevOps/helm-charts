@@ -99,3 +99,6 @@ podDisruptionBudget:
   enabled: true
   maxUnavailable: 1
   # minAvailable: ""  # set this instead of maxUnavailable if preferred
+
+# Pull secrets for private registries, e.g. [{name: docker-pull-secret}]
+imagePullSecrets: []

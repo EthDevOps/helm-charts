@@ -22,6 +22,10 @@ spec:
             app: {{ .Release.Name }}
         spec:
           restartPolicy: Never
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
             - name: notion-backup
               image: docker.ethquokkaops.io/ethquokkaops/ethdevops/notion-backup-tool:{{ .Values.imageTag }}

@@ -23,6 +23,10 @@ spec:
         {{- include "safe-infrastructure.selectorLabels" $ | nindent 8 }}
         app.kubernetes.io/component: {{ $rabbitmq }}-rabbitmq
     spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: rabbitmq
         image: "{{ $.Values.rabbitmq.image.repository }}:{{ $.Values.rabbitmq.image.tag }}"

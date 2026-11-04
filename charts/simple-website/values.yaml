@@ -77,3 +77,6 @@ networkPolicy:
     - {}
   egress:
     - {}
+
+# Pull secrets for private registries, e.g. [{name: docker-pull-secret}]
+imagePullSecrets: []

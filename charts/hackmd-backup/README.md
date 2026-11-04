@@ -1,6 +1,6 @@
 # hackmd-backup
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.1](https://img.shields.io/badge/AppVersion-v0.0.1-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.1](https://img.shields.io/badge/AppVersion-v0.0.1-informational?style=flat-square)
 
 Creates backups from a HackMD instance
 
@@ -29,6 +29,7 @@ Creates backups from a HackMD instance
 | hackmdHost | string | `"hackmd.org"` |  |
 | healthcheckUrl | string | `"http://healthchecks.io/1234"` |  |
 | imagePullPolicy | string | `"Always"` |  |
+| imagePullSecrets | list | `[]` |  |
 | imageTag | string | `"v0.0.1"` |  |
 | networkPolicy.cronjob.egress[0] | object | `{}` |  |
 | networkPolicy.cronjob.ingress | list | `[]` |  |

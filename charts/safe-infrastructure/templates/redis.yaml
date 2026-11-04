@@ -23,6 +23,10 @@ spec:
         {{- include "safe-infrastructure.selectorLabels" $ | nindent 8 }}
         app.kubernetes.io/component: {{ $redis }}-redis
     spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: redis
         image: "{{ $.Values.redis.image.repository }}:{{ $.Values.redis.image.tag }}"

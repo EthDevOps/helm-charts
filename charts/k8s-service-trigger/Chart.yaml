@@ -3,4 +3,4 @@ appVersion: "0.0.1"
 description: Triggers Woodpecker pipelines on LoadBalancer service changes
 name: k8s-service-trigger
 type: application
-version: 0.1.0
+version: 0.1.1

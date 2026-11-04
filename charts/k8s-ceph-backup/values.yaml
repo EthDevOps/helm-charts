@@ -201,3 +201,6 @@ externalSecrets:
       secretKey:
         key: "minio/credentials"
         property: "secret-key"
+
+# Pull secrets for private registries, e.g. [{name: docker-pull-secret}]
+imagePullSecrets: []
