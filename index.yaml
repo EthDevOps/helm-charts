@@ -612,6 +612,19 @@ entries:
   cryptpad:
   - apiVersion: v2
     appVersion: 2026.10.0
+    created: "2026-11-04T12:16:08.453865485Z"
+    description: A Helm chart for cryptpad
+    digest: a927d7224f1df45ce709634575bf05202e40ee6e802fcca94708a51e98d85121
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: cryptpad
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/cryptpad-0.0.35/cryptpad-0.0.35.tgz
+    version: 0.0.35
+  - apiVersion: v2
+    appVersion: 2026.10.0
     created: "2026-10-28T03:39:24.593410411Z"
     description: A Helm chart for cryptpad
     digest: c6e384c575658929bae93eb566c0f39225058d107d455847f1be34f99a09cc55
@@ -1312,6 +1325,21 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/devops-hub-0.2.1/devops-hub-0.2.1.tgz
     version: 0.2.1
   discord-backup-bot:
+  - apiVersion: v2
+    appVersion: v0.10.0
+    created: "2026-11-04T12:16:08.657684852Z"
+    description: A Helm chart for the discord backup bot
+    digest: 8780ae1f3e4274ac7ef527ee43510e48be5357804266476f32b946b63f2d410b
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: discord-backup-bot
+    sources:
+    - https://github.com/EthDevOps/EFDiscordBackupBot
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/discord-backup-bot-0.3.5/discord-backup-bot-0.3.5.tgz
+    version: 0.3.5
   - apiVersion: v2
     appVersion: v0.10.0
     created: "2026-05-13T10:36:19.459984417Z"
@@ -2716,6 +2744,26 @@ entries:
   github-runner-manager:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2026-11-04T12:16:08.83559971Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://ethdevops.github.io/helm-charts
+      version: 1.1.8
+    description: Managed self-hosted runners for GitHub
+    digest: bafebddbbbc5359c3723590cd87f66d95d7f59b42a28016dbd8e90ade91ca50c
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: github-runner-manager
+    sources:
+    - https://github.com/EthDevOps/github-actions-autoscaler
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/github-runner-manager-1.4.2/github-runner-manager-1.4.2.tgz
+    version: 1.4.2
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2026-10-13T14:09:08.154351858Z"
     dependencies:
     - condition: postgresql.enabled
@@ -3360,6 +3408,16 @@ entries:
   gnosis-safe:
   - apiVersion: v2
     appVersion: main
+    created: "2026-11-04T12:16:09.032151829Z"
+    description: A Helm chart for Gnosis Safe Transaction Service
+    digest: 52508cb5f82215c81e3c8528b0bde07cc9a5f681dd3c05f95ec28a161b8a8dd4
+    name: gnosis-safe
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/gnosis-safe-0.2.5/gnosis-safe-0.2.5.tgz
+    version: 0.2.5
+  - apiVersion: v2
+    appVersion: main
     created: "2026-05-13T10:36:20.248072544Z"
     description: A Helm chart for Gnosis Safe Transaction Service
     digest: e751536f76e88864b8b6d55b64d62826c037e41f2783b48e91694d5ea5b01afa
@@ -3419,6 +3477,21 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/gnosis-safe-0.1.1/gnosis-safe-0.1.1.tgz
     version: 0.1.1
   hackmd-backup:
+  - apiVersion: v2
+    appVersion: v0.0.1
+    created: "2026-11-04T12:16:09.214985759Z"
+    description: Creates backups from a HackMD instance
+    digest: 64b8a8556d3d1b2e923923caae7d6de3f1904c95b2cba3ff1d6cf032d1c0b727
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: hackmd-backup
+    sources:
+    - https://github.com/EthDevOps/hackmd-backup-tool
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/hackmd-backup-0.1.6/hackmd-backup-0.1.6.tgz
+    version: 0.1.6
   - apiVersion: v2
     appVersion: v0.0.1
     created: "2026-05-13T10:36:20.430347003Z"
@@ -4040,6 +4113,21 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/huly-0.2.0/huly-0.2.0.tgz
     version: 0.2.0
   jitsi-meet:
+  - apiVersion: v2
+    appVersion: stable-10741
+    created: "2026-11-04T12:16:09.473558474Z"
+    dependencies:
+    - condition: prosody.enabled
+      name: prosody
+      repository: file://../prosody
+      version: '>=1.5.0'
+    description: Jitsi Meet packaged for Kubernetes
+    digest: d48d9e0d06458d60575484a294a540a78ddd1dca919bdf90eafec5d6ac275cfa
+    name: jitsi-meet
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-meet-1.11.5/jitsi-meet-1.11.5.tgz
+    version: 1.11.5
   - apiVersion: v2
     appVersion: stable-10741
     created: "2026-09-30T15:03:42.236292004Z"
@@ -4668,6 +4756,21 @@ entries:
   jitsi-monitor:
   - apiVersion: v2
     appVersion: v0.1.3
+    created: "2026-11-04T12:16:09.672691548Z"
+    description: Monitors the health of Jitsi Meet instances and bridges
+    digest: 39353acba074512144ce9236974b57bfb44b0b122f80342527dd1f3d7a65c126
+    maintainers:
+    - email: george.cordalis@ethereum.org
+      name: gcordalis
+    name: jitsi-monitor
+    sources:
+    - https://github.com/EthDevOps/jitsi-monitor-docker
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/jitsi-monitor-0.1.11/jitsi-monitor-0.1.11.tgz
+    version: 0.1.11
+  - apiVersion: v2
+    appVersion: v0.1.3
     created: "2026-05-13T10:36:21.203266855Z"
     description: Monitors the health of Jitsi Meet instances and bridges
     digest: 7d57b529773ace8bb1242696b2c784c36c51777a4a310708b43e47f15c9b02bd
@@ -4995,6 +5098,16 @@ entries:
   k8s-ceph-backup:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2026-11-04T12:16:09.879060456Z"
+    description: Creates backups of PVC via CEPH
+    digest: 89d7cca47f7503941b7a94aac26b2a88716dfe42231b4e695f0983682346d957
+    name: k8s-ceph-backup
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/k8s-ceph-backup-0.0.15/k8s-ceph-backup-0.0.15.tgz
+    version: 0.0.15
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2026-10-24T10:39:34.070035547Z"
     description: Creates backups of PVC via CEPH
     digest: d83a06de4bf6b2482e02be112cc87d756d5e01d4bf355aa8adc7252feb762097
@@ -5124,6 +5237,16 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/k8s-ceph-backup-0.0.1/k8s-ceph-backup-0.0.1.tgz
     version: 0.0.1
   k8s-service-trigger:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2026-11-04T12:16:10.081590757Z"
+    description: Triggers Woodpecker pipelines on LoadBalancer service changes
+    digest: 2ce66b6850ef179869b13c989cc4f643650b124977cf11bf77d29662d3f6f468
+    name: k8s-service-trigger
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/k8s-service-trigger-0.1.2/k8s-service-trigger-0.1.2.tgz
+    version: 0.1.2
   - apiVersion: v2
     appVersion: 0.0.1
     created: "2026-10-01T09:34:04.732059672Z"
@@ -5642,6 +5765,28 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/keycloak-18.10.1/keycloak-18.10.1.tgz
     version: 18.10.1
   kube-guard:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-11-04T12:16:10.27301192Z"
+    description: A Kubernetes admission controller that monitors shell access, port
+      forwarding, PVC mounts, privileged pods, host access, RBAC changes, and namespace
+      deletions
+    digest: 40a1af75528623b319e36c1462f89c4f7c54a30a83698fdd3ec7778ff66699d4
+    home: https://github.com/your-org/kube-guard
+    keywords:
+    - security
+    - admission-controller
+    - monitoring
+    - mattermost
+    maintainers:
+    - email: team@example.com
+      name: KubeGuard Team
+    name: kube-guard
+    sources:
+    - https://github.com/your-org/kube-guard
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/kube-guard-0.3.2/kube-guard-0.3.2.tgz
+    version: 0.3.2
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2026-08-31T11:15:00.145142356Z"
@@ -7208,6 +7353,21 @@ entries:
   notion-backup:
   - apiVersion: v2
     appVersion: v0.0.1
+    created: "2026-11-04T12:16:10.468803657Z"
+    description: Creates backups from Notion
+    digest: e88f64cf1b9c5f04e48f6b559b1aa96d0d12e6b1c191d77ae072270095814db7
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: notion-backup
+    sources:
+    - https://github.com/EthDevOps/notion-backup-tool
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/notion-backup-0.1.10/notion-backup-0.1.10.tgz
+    version: 0.1.10
+  - apiVersion: v2
+    appVersion: v0.0.1
     created: "2026-05-13T10:36:22.620614444Z"
     description: Creates backups from Notion
     digest: 6e40de9a858c31fe1e3c3c9538ff01c0fd919409e541f7cd5d9169036dae0039
@@ -7482,6 +7642,19 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/outline-0.0.2/outline-0.0.2.tgz
     version: 0.0.2
   patchman:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-11-04T12:16:10.686771459Z"
+    description: A Helm chart for patchman
+    digest: 0f032d7fc378a0b3f146933ebddce2e5c28fb005ca518bdb3be1e8a6d2d176d2
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: patchman
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/patchman-0.0.7/patchman-0.0.7.tgz
+    version: 0.0.7
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2026-05-13T10:36:22.809056612Z"
@@ -8413,6 +8586,21 @@ entries:
   s3-bucket-sync:
   - apiVersion: v2
     appVersion: v0.14.0
+    created: "2026-11-04T12:16:10.869516546Z"
+    description: Keeps 2 s3 buckets in sync
+    digest: dbae23320345321257f12baface590515d3ec6f8d928bf3364e975c25e5bd52e
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: s3-bucket-sync
+    sources:
+    - https://github.com/EthDevOps/s3-sync-docker
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.27/s3-bucket-sync-0.0.27.tgz
+    version: 0.0.27
+  - apiVersion: v2
+    appVersion: v0.14.0
     created: "2026-10-01T10:05:14.141363023Z"
     description: Keeps 2 s3 buckets in sync
     digest: 7762d60d95eb0d870aeb638e2a6109122895cb87d6be574a2074db3dc259f022
@@ -8787,6 +8975,26 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/s3-bucket-sync-0.0.1/s3-bucket-sync-0.0.1.tgz
     version: 0.0.1
   safe-infrastructure:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-11-04T12:16:11.208316206Z"
+    description: A Helm chart for Safe Infrastructure services
+    digest: 647292ca1c41068c6c7c5d4c8946d5aef855908e4231c8f8c60dad252857e921
+    home: https://github.com/safe-global
+    keywords:
+    - safe
+    - blockchain
+    - ethereum
+    - infrastructure
+    maintainers:
+    - name: Safe Team
+    name: safe-infrastructure
+    sources:
+    - https://github.com/safe-global
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/safe-infrastructure-0.1.23/safe-infrastructure-0.1.23.tgz
+    version: 0.1.23
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2026-07-03T12:27:29.90111444Z"
@@ -9230,6 +9438,19 @@ entries:
   simple-website:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-11-04T12:16:11.559319616Z"
+    description: A Helm chart for simple websites
+    digest: 5887eb8b08414d340a504cc49d7d1d206eca9ab9d21afb6a676eb12be17f4503
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: simple-website
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/simple-website-0.0.6/simple-website-0.0.6.tgz
+    version: 0.0.6
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-05-13T10:36:24.001387239Z"
     description: A Helm chart for simple websites
     digest: a736767a2c144c685ece836dec2f3a9514a247729c6b8529343c482507007941
@@ -9281,6 +9502,19 @@ entries:
     - https://github.com/EthDevOps/helm-charts/releases/download/simple-website-0.0.1/simple-website-0.0.1.tgz
     version: 0.0.1
   teleport-argo-sync:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-11-04T12:16:11.922725916Z"
+    description: A Helm chart for teleport-argo-sync
+    digest: c425c858a89710574c47fe1853c07b6c4e6f2cd6898d179104591d19ded74d42
+    maintainers:
+    - email: markus.keil@ethereum.org
+      name: elasticroentgen
+    name: teleport-argo-sync
+    type: application
+    urls:
+    - https://github.com/EthDevOps/helm-charts/releases/download/teleport-argo-sync-0.0.7/teleport-argo-sync-0.0.7.tgz
+    version: 0.0.7
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2026-05-13T10:36:24.185862909Z"
@@ -11595,4 +11829,4 @@ entries:
     urls:
     - https://github.com/EthDevOps/helm-charts/releases/download/wazuh-0.0.2/wazuh-0.0.2.tgz
     version: 0.0.2
-generated: "2026-11-04T12:08:28.093721496Z"
+generated: "2026-11-04T12:16:11.924397024Z"
